@@ -1,4 +1,4 @@
-# Live audio Next.js Starter
+# Live Audio Next.js Starter
 
 This sample demonstrates interacting with Deepgram from Next.js to transcribe your microphone audio. It uses the Deepgram JavaScript SDK. This was originally a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 

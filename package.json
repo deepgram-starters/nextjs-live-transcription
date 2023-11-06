@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@deepgram/sdk": "file:../../deepgram/deepgram-node-sdk",
+    "@deepgram/sdk": "^3.0.0-beta.2",
     "@svgr/webpack": "^8.1.0",
     "@uidotdev/usehooks": "^2.4.1",
     "next": "14.0.1",
