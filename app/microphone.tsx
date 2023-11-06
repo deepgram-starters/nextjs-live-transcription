@@ -141,13 +141,24 @@ export default function Microphone() {
   return (
     <div className="w-full relative">
       <div className="mt-10 flex flex-col align-middle items-center">
-        <Image
-          src="/click.png"
-          width="168"
-          height="129"
-          alt="Deepgram Logo"
-          priority
-        />
+        {!!userMedia && !!microphone && micOpen ? (
+          <Image
+            src="/speak.png"
+            width="168"
+            height="129"
+            alt="Deepgram Logo"
+            priority
+          />
+        ) : (
+          <Image
+            src="/click.png"
+            width="168"
+            height="129"
+            alt="Deepgram Logo"
+            priority
+          />
+        )}
+
         <button className="w-24 h-24" onClick={() => toggleMicrophone()}>
           <Recording
             width="96"
@@ -160,7 +171,9 @@ export default function Microphone() {
           />
         </button>
         <div className="mt-20 p-6 text-xl text-center">
-          {caption ?? "Captions by Deepgram"}
+          {caption && micOpen
+            ? caption
+            : "** Realtime transcription by Deepgram **"}
         </div>
       </div>
       <div
