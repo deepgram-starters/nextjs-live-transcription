@@ -80,6 +80,7 @@ export default function Microphone() {
       const connection = deepgram.listen.live({
         model: "nova",
         interim_results: true,
+        smart_format: true,
       });
 
       connection.on(LiveTranscriptionEvents.Open, () => {
@@ -158,7 +159,7 @@ export default function Microphone() {
             }
           />
         </button>
-        <div className="mt-20 uppercase p-6 text-xl text-center">
+        <div className="mt-20 p-6 text-xl text-center">
           {caption ?? "Captions by Deepgram"}
         </div>
       </div>
