@@ -130,8 +130,12 @@ export default function Microphone() {
     processQueue();
   }, [connection, queue, remove, first, size, isProcessing, isListening]);
 
-  if (isLoadingKey) return "Loading temporary API key...";
-  if (isLoading) return "Loading the app...";
+  if (isLoadingKey)
+    return (
+      <span className="w-full text-center">Loading temporary API key...</span>
+    );
+  if (isLoading)
+    return <span className="w-full text-center">Loading the app...</span>;
 
   return (
     <div className="w-full relative">
