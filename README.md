@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Live audio Next.js Starter
 
-## Getting Started
+This sample demonstrates interacting with Deepgram from Next.js to transcribe your microphone audio. It uses the Deepgram JavaScript SDK. This was originally a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-First, run the development server:
+## Sign-up to Deepgram
+
+Before you start, it's essential to generate a Deepgram API key to use in this project. [Sign-up now for Deepgram](https://console.deepgram.com/signup).
+
+## Quickstart
+
+### Manual
+
+Follow these steps to get started with this starter application.
+
+#### Clone the repository
+
+Go to GitHub and [clone the repository](https://github.com/deepgram-starters/live-nextjs-starter).
+
+#### Install dependencies
+
+Install the project dependencies.
+
+```bash
+npm install
+```
+
+#### Edit the config file
+
+Copy the code from `sample.env.local` and create a new file called `.env.local`. Paste in the code and enter your API key you generated in the [Deepgram console](https://console.deepgram.com/).
+
+```bash
+DEEPGRAM_API_KEY=%api_key%
+```
+
+#### Run the application
+
+Once running, you can [access the application in your browser](http://localhost:3000).
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## What is Deepgram?
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Deepgram is an AI speech platform which specializes in (NLU) Natural Language Understanding features and Transcription. It can help get the following from your audio.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- [Speaker diarization](https://deepgram.com/product/speech-understanding/)
+- [Language detection](https://deepgram.com/product/speech-understanding/)
+- [Summarization](https://deepgram.com/product/speech-understanding/)
+- [Topic detection](https://deepgram.com/product/speech-understanding/)
+- [Language translation](https://deepgram.com/product/speech-understanding/)
+- [Sentiment analysis](https://deepgram.com/product/speech-understanding/)
+- [Entity detection](https://deepgram.com/product/speech-understanding/)
+- [Transcription](https://deepgram.com/product/transcription/)
+- [Redaction](https://deepgram.com/product/transcription/)
 
-## Learn More
+## Create a Free Deepgram Account
 
-To learn more about Next.js, take a look at the following resources:
+Before you start, it's essential to generate a Deepgram API key to use in our starter applications. [Sign-up now for Deepgram](https://console.deepgram.com/signup).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Issue Reporting
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Security Policy](./SECURITY.md) details the procedure for contacting Deepgram.
 
-## Deploy on Vercel
+## Author
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+[Deepgram](https://deepgram.com)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## License
+
+This project is licensed under the MIT license. See the [LICENSE](./LICENSE) file for more info.
