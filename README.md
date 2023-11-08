@@ -2,9 +2,20 @@
 
 This sample demonstrates interacting with Deepgram from Next.js to transcribe your microphone audio. It uses the Deepgram JavaScript SDK. This was originally a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+## Demo features
+
+- Persistent connection to Deepgram
+  - This demo will automatically reconnect in the event the websocket disconnects.
+- Microphone audio buffer
+  - The microphone audio is buffered and instantly sent to Deepgram. In the event the socket disconnects, the audio continues to buffer and then catches up once the connection is re-established.
+- Uses temporary API keys
+  - This demo mints it's own temporary short-lived (a few seconds), limited scope API keys in a server route, to protect your main API key.
+- Browser-side transcription
+  - The connection to Deepgram is established directly from the client, and does not use a server-side component to transcribe the audio.
+
 ## Sign-up to Deepgram
 
-Before you start, it's essential to generate a Deepgram API key to use in this project. [Sign-up now for Deepgram](https://console.deepgram.com/signup).
+Before you start, it's essential to generate a Deepgram API key to use in this project. [Sign-up now for Deepgram](https://dpgr.am/signup-from-nextjs-starter).
 
 ## Quickstart
 
@@ -56,7 +67,7 @@ Deepgram is an AI speech platform which specializes in (NLU) Natural Language Un
 
 ## Create a Free Deepgram Account
 
-Before you start, it's essential to generate a Deepgram API key to use in our starter applications. [Sign-up now for Deepgram](https://console.deepgram.com/signup).
+Before you start, it's essential to generate a Deepgram API key to use in our starter applications. [Sign-up now for Deepgram](https://dpgr.am/signup-from-nextjs-starter).
 
 ## Issue Reporting
 
