@@ -85,7 +85,7 @@ export default async function Home() {
             </span>
           </h2>
           <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore the Deepgram playground.
+            Explore the API for pre-recorded audio.
           </p>
         </a>
 
