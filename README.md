@@ -1,5 +1,7 @@
 # Live Audio Next.js Starter
 
+[![Discord](https://dcbadge.vercel.app/api/server/xWRaCDBtW4?style=flat)](https://discord.gg/xWRaCDBtW4)
+
 This sample demonstrates interacting with Deepgram from Next.js to transcribe your microphone audio. It uses the Deepgram JavaScript SDK. This was originally a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Demo features
@@ -13,9 +15,13 @@ This sample demonstrates interacting with Deepgram from Next.js to transcribe yo
 - Browser-side transcription
   - The connection to Deepgram is established directly from the client, and does not use a server-side component to transcribe the audio.
 
+## What is Deepgram?
+
+[Deepgram](https://deepgram.com/) is a foundational AI company providing speech-to-text and language understanding capabilities to make data readable and actionable by human or machines.
+
 ## Sign-up to Deepgram
 
-Before you start, it's essential to generate a Deepgram API key to use in this project. [Sign-up now for Deepgram](https://dpgr.am/signup-from-nextjs-starter).
+Before you start, it's essential to generate a Deepgram API key to use in this project. [Sign-up now for Deepgram and create an API key](https://console.deepgram.com/signup?jump=keys).
 
 ## Quickstart
 
@@ -51,27 +57,17 @@ Once running, you can [access the application in your browser](http://localhost:
 npm run dev
 ```
 
-## What is Deepgram?
-
-Deepgram is an AI speech platform which specializes in (NLU) Natural Language Understanding features and Transcription. It can help get the following from your audio.
-
-- [Speaker diarization](https://deepgram.com/product/speech-understanding/)
-- [Language detection](https://deepgram.com/product/speech-understanding/)
-- [Summarization](https://deepgram.com/product/speech-understanding/)
-- [Topic detection](https://deepgram.com/product/speech-understanding/)
-- [Language translation](https://deepgram.com/product/speech-understanding/)
-- [Sentiment analysis](https://deepgram.com/product/speech-understanding/)
-- [Entity detection](https://deepgram.com/product/speech-understanding/)
-- [Transcription](https://deepgram.com/product/transcription/)
-- [Redaction](https://deepgram.com/product/transcription/)
-
-## Create a Free Deepgram Account
-
-Before you start, it's essential to generate a Deepgram API key to use in our starter applications. [Sign-up now for Deepgram](https://dpgr.am/signup-from-nextjs-starter).
-
 ## Issue Reporting
 
 If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Security Policy](./SECURITY.md) details the procedure for contacting Deepgram.
+
+## Getting Help
+
+We love to hear from you so if you have questions, comments or find a bug in the project, let us know! You can either:
+
+- [Open an issue in this repository](https://github.com/deepgram-starters/live-nextjs-starter/issues/new)
+- [Join the Deepgram Github Discussions Community](https://github.com/orgs/deepgram/discussions)
+- [Join the Deepgram Discord Community](https://discord.gg/xWRaCDBtW4)
 
 ## Author
 
