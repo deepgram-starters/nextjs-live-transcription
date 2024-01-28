@@ -8,6 +8,9 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { UserButton } from "@clerk/nextjs";
 import { ReactNode } from "react";
 
+import { ThemeProvider } from "@/components/theme-provider";
+import { ModeToggle } from "@/components/mode-toggle";
+
 export const metadata: Metadata = {
   title: "AI Notetaker",
   description:
@@ -17,7 +20,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <ClerkProvider>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <head>
           <meta charSet="UTF-8" />
           <meta
@@ -27,11 +30,21 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <title>Live transcription by Deepgram in Next.js</title>
         </head>
         <body className={inter.className}>
-          <nav className="flex justify-between items-center p-4 shadow-md">
-            <span className="text-xl font-bold">MeetingNotes-AI</span>
-            <UserButton afterSignOutUrl="/" />
-          </nav>
-          {children}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <nav className="flex justify-between items-center p-4 shadow-md">
+              <span className="text-xl font-bold">MeetingNotes-AI</span>
+              <div className="flex items-center space-x-4">
+                <UserButton afterSignOutUrl="/" />
+                <ModeToggle />
+              </div>
+            </nav>
+            {children}
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>
