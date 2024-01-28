@@ -11,6 +11,8 @@ import { ReactNode } from "react";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/mode-toggle";
 
+import ConvexClientProvider from "@/components/convex-client-provider";
+
 export const metadata: Metadata = {
   title: "AI Notetaker",
   description:
@@ -36,14 +38,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             enableSystem
             disableTransitionOnChange
           >
-            <nav className="flex justify-between items-center p-4 shadow-md">
-              <span className="text-xl font-bold">MeetingNotes-AI</span>
-              <div className="flex items-center space-x-4">
-                <UserButton afterSignOutUrl="/" />
-                <ModeToggle />
-              </div>
-            </nav>
-            {children}
+            <ConvexClientProvider>
+              <nav className="flex justify-between items-center p-4 shadow-md">
+                <span className="text-xl font-bold">MeetingNotes-AI</span>
+                <div className="flex items-center space-x-4">
+                  <UserButton afterSignOutUrl="/" />
+                  <ModeToggle />
+                </div>
+              </nav>
+              {children}
+            </ConvexClientProvider>
           </ThemeProvider>
         </body>
       </html>
