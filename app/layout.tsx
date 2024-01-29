@@ -4,14 +4,23 @@ import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
-import { ClerkProvider } from "@clerk/nextjs";
-import { UserButton } from "@clerk/nextjs";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignOutButton,
+  UserButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+} from "@clerk/nextjs";
 import { ReactNode } from "react";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/mode-toggle";
 
 import ConvexClientProvider from "@/components/convex-client-provider";
+
+import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "AI Notetaker",
@@ -42,7 +51,19 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <nav className="flex justify-between items-center p-4 shadow-md">
                 <span className="text-xl font-bold">MeetingNotes-AI</span>
                 <div className="flex items-center space-x-4">
-                  <UserButton afterSignOutUrl="/" />
+                  <SignedIn>
+                    <UserButton afterSignOutUrl="/" />
+                  </SignedIn>
+                  <SignedOut>
+                    <div className="flex items-center space-x-4">
+                      <Button variant="link">
+                        <SignInButton afterSignInUrl="/mymeetings" />
+                      </Button>
+                      <Button variant="default">
+                        <SignUpButton afterSignUpUrl="/mymeetings" />
+                      </Button>
+                    </div>
+                  </SignedOut>
                   <ModeToggle />
                 </div>
               </nav>
