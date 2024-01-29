@@ -4,6 +4,9 @@
 import { useQuery } from "convex/react";
 import { useState } from "react";
 
+//import nextjs stuff
+import Link from "next/link";
+
 //import convex stuff
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
@@ -26,13 +29,6 @@ export default function MyMeetings() {
       <div className="flex flex-row h-full w-full">
         <div className="flex flex-col w-1/2">
           <ListOfMeetings onMeetingSelect={setSelectedMeetingID} />
-        </div>
-        <div className="w-1/2">
-          <Microphone />
-        </div>
-        <Separator orientation="vertical" className="mx-4 h-full"></Separator>
-        <div className="w-1/2">
-          {selectedMeetingID && <Chat meetingID={selectedMeetingID} />}
         </div>
       </div>
     </main>

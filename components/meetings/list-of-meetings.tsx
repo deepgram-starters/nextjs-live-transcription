@@ -3,6 +3,9 @@
 // import react stuff
 import { useState } from "react"; // Import useState
 
+// import nextjs stuff
+import Link from "next/link";
+
 // import convex stuff for db
 import { useMutation, useQuery, useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -39,24 +42,14 @@ export default function ListOfMeetings({
       >
         Create Meeting
       </Button>
-
-      {meetings?.map((meeting) => {
-        return (
-          <div key={meeting._id} className="flex flex-col my-2">
-            <Button
-              onClick={() => onMeetingSelect(meeting._id)}
-              className="flex flex-col h-full text-left"
-              variant="outline"
-            >
-              <div className="flex flex-col gap-2">
-                <p>{meeting.title}</p>
-                <p>{meeting._id?.substring(0, 10)}...</p>
-                <p>Meeting Details</p>
-              </div>
-            </Button>
-          </div>
-        );
-      })}
+      <div>My Meetings</div>
+      <ul>
+        {meetings?.map((meeting) => (
+          <li key={meeting._id}>
+            <Link href={`/mymeetings/${meeting._id}`}>{meeting._id}</Link>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

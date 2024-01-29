@@ -1,6 +1,6 @@
 import { v } from "convex/values";
-
-import { mutation, query } from "./_generated/server";
+import { action, mutation, query } from "./_generated/server";
+import { api } from "./_generated/api";
 
 export const createMeeting = mutation({
   args: {
@@ -38,6 +38,26 @@ export const getMeetingsForUser = query({
     return await ctx.db
       .query("meetings")
       .filter((q) => q.eq(q.field("userId"), user.subject))
+      .collect();
+  },
+});
+
+export const getMeetingByID = query({
+  args: {
+    meetingID: v.id("meetings"),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.auth.getUserIdentity();
+
+    if (!user) {
+      return [];
+    }
+
+    return await ctx.db
+      .query("meetings")
+      .filter((q) => q.eq(q.field("userId"), user.subject))
+      .filter((q) => q.eq(q.field("_id"), args.meetingID)) // Add this line to filter by meetingID
+
       .collect();
   },
 });

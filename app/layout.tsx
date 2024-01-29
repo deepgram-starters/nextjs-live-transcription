@@ -40,26 +40,28 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       <body className={inter.className}>
         <Providers>
-          <nav className="flex justify-between items-center p-4 shadow-md">
-            <span className="text-xl font-bold">MeetingNotes-AI</span>
-            <div className="flex items-center space-x-4">
-              <SignedIn>
-                <UserButton afterSignOutUrl="/" />
-              </SignedIn>
-              <SignedOut>
-                <div className="flex items-center space-x-4">
-                  <Button variant="link">
-                    <SignInButton afterSignInUrl="/mymeetings" />
-                  </Button>
-                  <Button variant="default">
-                    <SignUpButton afterSignUpUrl="/mymeetings" />
-                  </Button>
-                </div>
-              </SignedOut>
-              <ModeToggle />
-            </div>
-          </nav>
-          {children}
+          <div className="h-screen w-screen">
+            <nav className="flex justify-between items-center h-16 shadow-md">
+              <span className="text-xl font-bold">MeetingNotes-AI</span>
+              <div className="flex items-center space-x-4">
+                <SignedIn>
+                  <UserButton afterSignOutUrl="/" />
+                </SignedIn>
+                <SignedOut>
+                  <div className="flex items-center space-x-4">
+                    <Button variant="link">
+                      <SignInButton afterSignInUrl="/mymeetings" />
+                    </Button>
+                    <Button variant="default">
+                      <SignUpButton afterSignUpUrl="/mymeetings" />
+                    </Button>
+                  </div>
+                </SignedOut>
+                <ModeToggle />
+              </div>
+            </nav>
+            {children}
+          </div>
         </Providers>
       </body>
     </html>

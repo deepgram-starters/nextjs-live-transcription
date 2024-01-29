@@ -128,7 +128,7 @@ export const updateAIResponse = mutation({
 //works for streaming=false
 export const getMessagesForUser = query({
   args: {
-    meetingID: v.id("meetings"), // Add meetingID as an argument
+    meetingID: v.id("meetings"),
   },
   handler: async (ctx, args) => {
     const user = await ctx.auth.getUserIdentity();
