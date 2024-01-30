@@ -24,6 +24,7 @@
     --input: 0 0% 89.8%;
     --ring: 0 0% 3.9%;
     --radius: 0.5rem;
+    --logo-filter: invert(100%);
   }
 
   .dark {
@@ -46,7 +47,12 @@
     --border: 0 0% 14.9%;
     --input: 0 0% 14.9%;
     --ring: 0 0% 83.1%;
+    --logo-filter: invert(100%);
   }
+}
+
+.openai-logo {
+  filter: var(--logo-filter);
 }
 
 @layer base {

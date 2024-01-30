@@ -8,6 +8,7 @@ export default defineSchema({
   }),
   messages: defineTable({
     aiResponse: v.string(),
+    aiModel: v.string(),
     completionTokens: v.float64(),
     meetingID: v.id("meetings"),
     promptTokens: v.float64(),

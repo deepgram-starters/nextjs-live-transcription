@@ -9,6 +9,7 @@ export const sendMessage = action({
   args: {
     message: v.string(),
     meetingID: v.string(),
+    aiModel: v.string(),
   },
   handler: async (ctx, args) => {
     const user = await ctx.auth.getUserIdentity();
@@ -17,10 +18,15 @@ export const sendMessage = action({
       throw new Error("Please login to create a meeting");
     }
 
+    // Choose the OpenAI model based on the user's selection
+    const aiModel =
+      args.aiModel === "4.0" ? "gpt-4-0125-preview" : "gpt-3.5-turbo";
+
     // Store the initial message and get its ID
     const messageId = await ctx.runMutation(api.chat.storeMessagesStreaming, {
       userMessage: args.message,
       meetingID: args.meetingID,
+      aiModel: aiModel,
     });
 
     if (Array.isArray(messageId)) {
@@ -29,7 +35,7 @@ export const sendMessage = action({
 
     const completion = await openai.chat.completions.create({
       messages: [{ role: "user", content: args.message }],
-      model: "gpt-3.5-turbo",
+      model: aiModel,
       stream: true,
     });
 
@@ -88,6 +94,7 @@ export const storeMessagesStreaming = mutation({
   args: {
     userMessage: v.string(),
     meetingID: v.string(),
+    aiModel: v.string(),
   },
   handler: async (ctx, args) => {
     const user = await ctx.auth.getUserIdentity();
@@ -101,6 +108,7 @@ export const storeMessagesStreaming = mutation({
       //@ts-ignore
       meetingID: args.meetingID,
       userMessage: args.userMessage,
+      aiModel: args.aiModel,
       aiResponse: "", // Initially empty, to be updated as the AI response streams in
       completionTokens: 0, // Default value, can be updated later
       promptTokens: 0, // Default value, can be updated later

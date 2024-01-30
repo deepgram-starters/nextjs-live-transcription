@@ -3,6 +3,13 @@
 //import react stuff
 import { useState } from "react";
 
+//import nextjs stuff
+import Link from "next/link";
+import Image from "next/image";
+
+//import clerk stuff
+import { useUser } from "@clerk/nextjs";
+
 //import convex stuff
 import { useMutation, useQuery, useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -15,6 +22,7 @@ import { User, Bot, CornerRightUp, Coins, Paperclip } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 //import custom stuff
 import { clsx } from "clsx";
@@ -29,6 +37,10 @@ export default function ChatCompletion({
   //   speakers: SpeakerData[];
   meetingID: Id<"meetings">;
 }) {
+  const { user } = useUser();
+  // Assuming the profile image URL is stored in `user.profileImageUrl`
+  const profileImageUrl = user?.imageUrl;
+
   const messages = useQuery(api.chat.getMessagesForUser, {
     meetingID: meetingID!,
   });
@@ -50,11 +62,39 @@ export default function ChatCompletion({
           {messages?.map((message) => {
             return (
               <div key={message._id} className="flex flex-col">
-                <div className="p-4 my-2 mx-4 rounded-lg border outline-gray-500">
-                  {message.userMessage}
+                <div className="flex flex-row my-2">
+                  <Avatar className="w-7 h-7">
+                    <AvatarImage src={profileImageUrl} />
+                    <AvatarFallback>
+                      <User />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="rounded-lg border mx-4 p-4 outline-gray-500">
+                    {message.userMessage}
+                  </div>
                 </div>
-                <div className="p-4 my-2 mx-4  rounded-lg border outline-gray-500">
-                  {message.aiResponse}
+                <div className="flex flex-row my-2">
+                  <Avatar className="w-7 h-7">
+                    <AvatarImage src="" />
+                    <AvatarFallback
+                      className={clsx({
+                        "bg-emerald-600": message.aiModel === "gpt-3.5-turbo",
+                        "bg-purple-500":
+                          message.aiModel === "gpt-4-0125-preview",
+                      })}
+                    >
+                      <Image
+                        src="/openai-logomark.svg"
+                        alt="Bot"
+                        width={20}
+                        height={20}
+                        className="openai-logo"
+                      />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="rounded-lg border mx-4 p-4 outline-gray-500">
+                    {message.aiResponse}
+                  </div>
                 </div>
               </div>
             );
@@ -69,7 +109,8 @@ export default function ChatCompletion({
             const formData = new FormData(form);
             const message = formData.get("message") as string;
             if (message.trim() !== "") {
-              await sendMessage({ message, meetingID });
+              // Include the selectedModel in the sendMessage call
+              await sendMessage({ message, meetingID, aiModel: selectedModel });
             }
             form.reset();
           }}

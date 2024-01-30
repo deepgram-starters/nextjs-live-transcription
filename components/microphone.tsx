@@ -1,21 +1,29 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Toggle } from "@/components/ui/toggle";
-import { Mic, Pause } from "lucide-react";
+//import react stuff
+import { useState, useEffect, useCallback } from "react";
+import { useQueue } from "@uidotdev/usehooks";
 
+//import nextjs stuff
+import Image from "next/image";
+
+//import deepgram stuff
 import {
   CreateProjectKeyResponse,
   LiveClient,
   LiveTranscriptionEvents,
   createClient,
 } from "@deepgram/sdk";
-import { useState, useEffect, useCallback } from "react";
-import { useQueue } from "@uidotdev/usehooks";
-import Dg from "@/app/dg.svg";
 
-import Image from "next/image";
+//import shadcnui stuff
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Toggle } from "@/components/ui/toggle";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+//import icon stuff
+import { Mic, Pause, User } from "lucide-react";
+import Dg from "@/app/dg.svg";
 
 interface WordDetail {
   word: string;
@@ -56,14 +64,14 @@ export default function Microphone() {
       setMicrophone(null);
 
       microphone.stop();
-      console.log("Finalized Sentences:", finalizedSentences); // Log the finalized sentences when stopping the recording
+      // console.log("Finalized Sentences:", finalizedSentences); // Log the finalized sentences when stopping the recording
     } else {
       const userMedia = await navigator.mediaDevices.getUserMedia({
         audio: true,
       });
 
       const microphone = new MediaRecorder(userMedia);
-      microphone.start(500);
+      microphone.start(200);
 
       microphone.onstart = () => {
         setMicOpen(true);
@@ -80,7 +88,7 @@ export default function Microphone() {
       setUserMedia(userMedia);
       setMicrophone(microphone);
     }
-  }, [add, microphone, userMedia, finalizedSentences]);
+  }, [add, microphone, userMedia]);
 
   useEffect(() => {
     if (!apiKey) {
@@ -246,22 +254,60 @@ export default function Microphone() {
           )}
         </Button>
         {/* display is_final responses */}
-        <div className="mt-4">
-          <h2 className="text-lg font-semibold">Finalized Sentences:</h2>
-          <ul>
-            {finalizedSentences.map((sentence, index) => (
-              <li key={index}>
-                {sentence.speaker}: {sentence.transcript} (Start:{" "}
-                {sentence.start.toFixed(2)}, End: {sentence.end.toFixed(2)})
-              </li>
-            ))}
-          </ul>
+        <div className="my-4 space-y-4">
+          {finalizedSentences.slice(0, -1).map((sentence, index) => (
+            <div key={index} className="flex flex-row">
+              <Avatar className="">
+                <AvatarImage src="" />
+                <AvatarFallback>
+                  <User />
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col ml-4 border rounded-lg p-4">
+                <div className="flex flex-row justify-between mb-3">
+                  <div className="font-bold">{sentence.speaker}</div>
+                  <div className="text-muted-foreground">
+                    {sentence.start.toFixed(2)} - {sentence.end.toFixed(2)}
+                  </div>
+                </div>
+                {sentence.transcript}
+              </div>
+            </div>
+          ))}
+          {finalizedSentences.length > 0 && (
+            <div key={finalizedSentences.length - 1} className="flex flex-row">
+              <Avatar className="">
+                <AvatarImage src="" />
+                <AvatarFallback>
+                  <User />
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col ml-4 border rounded-lg p-4">
+                <div className="flex flex-row justify-between mb-3">
+                  <div className="font-bold">
+                    {finalizedSentences[finalizedSentences.length - 1].speaker}
+                  </div>
+                  <div className="text-muted-foreground">
+                    {finalizedSentences[
+                      finalizedSentences.length - 1
+                    ].start.toFixed(2)}{" "}
+                    -{" "}
+                    {finalizedSentences[
+                      finalizedSentences.length - 1
+                    ].end.toFixed(2)}
+                  </div>
+                </div>
+                <div>
+                  {finalizedSentences[finalizedSentences.length - 1].transcript}{" "}
+                  <span className="text-blue-500">{caption} </span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-        {/* displaying current sentence */}
-        <div className="">{caption}</div>
       </div>
       {/* connection indicator for deepgram via socket and temp api key */}
-      <div
+      {/* <div
         className="z-20 flex shrink-0 grow-0 justify-around items-center 
                   fixed bottom-0 right-0 rounded-lg mr-1 mb-5 lg:mr-5 lg:mb-5 xl:mr-10 xl:mb-10 gap-5"
       >
@@ -279,7 +325,7 @@ export default function Microphone() {
             {isListening ? "connected" : "connecting"}
           </Label>
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 }
