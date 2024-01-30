@@ -7,6 +7,11 @@ import { useQueue } from "@uidotdev/usehooks";
 //import nextjs stuff
 import Image from "next/image";
 
+// import convex stuff for db
+import { useMutation, useQuery, useAction } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import type { Doc, Id } from "@/convex/_generated/dataModel";
+
 //import deepgram stuff
 import {
   CreateProjectKeyResponse,
@@ -39,9 +44,14 @@ interface FinalizedSentence {
   transcript: string;
   start: number;
   end: number;
+  meetingID: Id<"meetings">;
 }
 
-export default function Microphone() {
+export default function Microphone({
+  meetingID,
+}: {
+  meetingID: Id<"meetings">;
+}) {
   const { add, remove, first, size, queue } = useQueue<any>([]);
   const [apiKey, setApiKey] = useState<CreateProjectKeyResponse | null>();
   const [connection, setConnection] = useState<LiveClient | null>();
@@ -58,6 +68,27 @@ export default function Microphone() {
     FinalizedSentence[]
   >([]);
 
+  // Define the mutation hook at the top of your component
+  const storeFinalizedSentences = useMutation(
+    api.transcript.storeFinalizedSentence
+  );
+  // Fetch finalized sentences for the given meetingID when the component mounts
+  const finalizedSentencesFromDB = useQuery(
+    api.transcript.getFinalizedSentencesByMeeting,
+    { meetingID }
+  );
+
+  useEffect(() => {
+    // Check if there are any finalized sentences fetched from the database
+    if (finalizedSentencesFromDB && finalizedSentencesFromDB.length > 0) {
+      // Handle the fetched finalized sentences as needed
+      // For example, you might want to set them to your component's state
+      setFinalizedSentences(finalizedSentencesFromDB);
+    }
+  }, [finalizedSentencesFromDB]);
+
+  const createMeeting = useMutation(api.meetings.createMeeting);
+
   const toggleMicrophone = useCallback(async () => {
     if (microphone && userMedia) {
       setUserMedia(null);
@@ -65,6 +96,11 @@ export default function Microphone() {
 
       microphone.stop();
       // console.log("Finalized Sentences:", finalizedSentences); // Log the finalized sentences when stopping the recording
+
+      // Store finalized sentences in the database
+      await Promise.all(
+        finalizedSentences.map((sentence) => storeFinalizedSentences(sentence))
+      );
     } else {
       const userMedia = await navigator.mediaDevices.getUserMedia({
         audio: true,
@@ -88,7 +124,7 @@ export default function Microphone() {
       setUserMedia(userMedia);
       setMicrophone(microphone);
     }
-  }, [add, microphone, userMedia]);
+  }, [add, microphone, userMedia, finalizedSentences]);
 
   useEffect(() => {
     if (!apiKey) {
@@ -183,19 +219,19 @@ export default function Microphone() {
   }, [connection, queue, remove, first, size, isProcessing, isListening]);
 
   // Function to process final captions and construct finalized sentences
-  const processFinalCaptions = (finalCaptions: WordDetail[]) => {
+  const processFinalCaptions = async (finalCaptions: WordDetail[]) => {
     const sentences: FinalizedSentence[] = [];
     let currentSpeaker = finalCaptions[0]?.speaker;
     let currentText = "";
     let startTime = finalCaptions[0]?.start;
     let endTime = finalCaptions[0]?.end;
 
-    finalCaptions.forEach((wordDetail, index) => {
+    for (const wordDetail of finalCaptions) {
       if (
         wordDetail.speaker !== currentSpeaker ||
-        index === finalCaptions.length - 1
+        wordDetail === finalCaptions[finalCaptions.length - 1]
       ) {
-        if (index === finalCaptions.length - 1) {
+        if (wordDetail === finalCaptions[finalCaptions.length - 1]) {
           currentText += wordDetail.punctuated_word + " ";
           endTime = wordDetail.end;
         }
@@ -205,6 +241,7 @@ export default function Microphone() {
           transcript: currentText.trim(),
           start: startTime,
           end: endTime,
+          meetingID: meetingID,
         });
 
         currentSpeaker = wordDetail.speaker;
@@ -215,8 +252,9 @@ export default function Microphone() {
         currentText += wordDetail.punctuated_word + " ";
         endTime = wordDetail.end;
       }
-    });
+    }
 
+    console.log("Finalized Sentences:", sentences);
     setFinalizedSentences(sentences);
   };
 

@@ -40,7 +40,7 @@ export default function Page({
       </Breadcrumbs>
       <div className="flex-grow flex flex-row">
         <div className="border flex-grow">
-          <Microphone />
+          <Microphone meetingID={params.meetingID} />
         </div>
         <Separator orientation="vertical" className="mx-4 h-full"></Separator>
         <div className="border max-w-md">

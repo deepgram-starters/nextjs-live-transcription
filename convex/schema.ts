@@ -15,4 +15,11 @@ export default defineSchema({
     userId: v.string(),
     userMessage: v.string(),
   }),
+  finalizedSentences: defineTable({
+    meetingID: v.id("meetings"),
+    speaker: v.string(),
+    transcript: v.string(),
+    start: v.float64(),
+    end: v.float64(),
+  }),
 });
