@@ -25,6 +25,13 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Toggle } from "@/components/ui/toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
 
 //import icon stuff
 import { Mic, Pause, User } from "lucide-react";
@@ -40,10 +47,17 @@ interface WordDetail {
 }
 
 interface FinalizedSentence {
-  speaker: string;
+  speaker: number;
   transcript: string;
   start: number;
   end: number;
+  meetingID: Id<"meetings">;
+}
+
+interface SpeakerDetail {
+  speakerNumber: number;
+  firstName: string;
+  lastName: string;
   meetingID: Id<"meetings">;
 }
 
@@ -67,6 +81,62 @@ export default function Microphone({
   const [finalizedSentences, setFinalizedSentences] = useState<
     FinalizedSentence[]
   >([]);
+  // Assuming you have a way to input and store speaker details, for example:
+  const [speakerDetails, setSpeakerDetails] = useState<SpeakerDetail[]>([]);
+
+  const addSpeakerToDB = useMutation(api.meetings.addSpeaker);
+
+  // Function to handle new speakers
+  const handleNewSpeaker = useCallback(
+    (speakerNumber: number) => {
+      // Check if the speaker already exists
+      if (
+        !speakerDetails.some((detail) => detail.speakerNumber === speakerNumber)
+      ) {
+        // Add new speaker with default names
+        const newSpeaker: SpeakerDetail = {
+          speakerNumber,
+          firstName: "Speaker " + speakerNumber,
+          lastName: "",
+          meetingID,
+        };
+        console.log("New Speaker:", newSpeaker);
+        setSpeakerDetails((prevDetails) => [...prevDetails, newSpeaker]);
+      }
+    },
+    [speakerDetails, meetingID]
+  );
+
+  const handleFirstNameChange = (id: number, newFirstName: string) => {
+    setSpeakerDetails((prevSpeakers) =>
+      prevSpeakers.map((speaker) =>
+        speaker.speakerNumber === id
+          ? { ...speaker, firstName: newFirstName }
+          : speaker
+      )
+    );
+  };
+
+  const handleLastNameChange = (id: number, newLastName: string) => {
+    setSpeakerDetails((prevSpeakers) =>
+      prevSpeakers.map((speaker) =>
+        speaker.speakerNumber === id
+          ? { ...speaker, lastName: newLastName }
+          : speaker
+      )
+    );
+  };
+
+  //this helper function handles the mapping of the speaker number in the sentences to the speaker names in the speaker table
+  //this helper function handles the mapping of the speaker number in the sentences to the speaker names in the speaker table
+  const getSpeakerName = (speakerNumber: number) => {
+    const speaker = speakerDetails.find(
+      (s) => s.speakerNumber === speakerNumber
+    );
+    return speaker
+      ? `${speaker.firstName} ${speaker.lastName}`.trim()
+      : `Speaker ${speakerNumber}`;
+  };
 
   // Define the mutation hook at the top of your component
   const storeFinalizedSentences = useMutation(
@@ -100,6 +170,10 @@ export default function Microphone({
       // Store finalized sentences in the database
       await Promise.all(
         finalizedSentences.map((sentence) => storeFinalizedSentences(sentence))
+      );
+      // Push speaker details to the database
+      await Promise.all(
+        speakerDetails.map((speaker) => addSpeakerToDB(speaker))
       );
     } else {
       const userMedia = await navigator.mediaDevices.getUserMedia({
@@ -226,6 +300,9 @@ export default function Microphone({
     let startTime = finalCaptions[0]?.start;
     let endTime = finalCaptions[0]?.end;
 
+    // Track if we have already handled the current speaker
+    let handledSpeakers: number[] = [];
+
     for (const wordDetail of finalCaptions) {
       if (
         wordDetail.speaker !== currentSpeaker ||
@@ -237,12 +314,18 @@ export default function Microphone({
         }
 
         sentences.push({
-          speaker: `Speaker ${currentSpeaker}`,
+          speaker: currentSpeaker,
           transcript: currentText.trim(),
           start: startTime,
           end: endTime,
           meetingID: meetingID,
         });
+
+        // If we haven't handled this speaker yet, do so now
+        if (!handledSpeakers.includes(currentSpeaker)) {
+          handleNewSpeaker(currentSpeaker);
+          handledSpeakers.push(currentSpeaker);
+        }
 
         currentSpeaker = wordDetail.speaker;
         currentText = wordDetail.punctuated_word + " ";
@@ -265,9 +348,9 @@ export default function Microphone({
     }
   }, [finalCaptions]);
 
-  if (isLoadingKey)
-    return <span className="">Loading temporary API key...</span>;
-  if (isLoading) return <span className="">Loading the app...</span>;
+  // if (isLoadingKey)
+  //   return <span className="">Loading temporary API key...</span>;
+  // if (isLoading) return <span className="">Loading the app...</span>;
 
   return (
     <div className="flex flex-col">
@@ -279,6 +362,7 @@ export default function Microphone({
           }
           size="icon"
           onClick={() => toggleMicrophone()}
+          disabled={isLoadingKey} // Button is disabled if isLoadingKey is true
           className={
             !!userMedia && !!microphone && micOpen
               ? "" // recording enabled
@@ -291,6 +375,68 @@ export default function Microphone({
             <Mic className="w-6 h-6" />
           )}
         </Button>
+        {/* Display Speakers */}
+        <div className="flex flex-wrap gap-2">
+          {speakerDetails.map((speaker, index) => (
+            <div key={index} className="flex flex-row gap-3">
+              <Popover>
+                <PopoverTrigger>
+                  <Badge variant="outline" className="h-8">
+                    {speaker.firstName} {speaker.lastName}
+                  </Badge>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                  {/* Speaker details can be added here */}
+                  {/* Additional details and actions can be added here */}
+                  <div className="grid gap-4">
+                    <div className="space-y-2">
+                      <h4 className="font-medium leading-none">
+                        Speaker Details
+                      </h4>
+                      <p className="text-sm text-muted-foreground">
+                        Update speaker details below:
+                      </p>
+                    </div>
+                    <div className="grid gap-4">
+                      <div className="grid grid-cols-3 items-center gap-4">
+                        <Label htmlFor={`firstName-${speaker.speakerNumber}`}>
+                          First Name
+                        </Label>
+                        <Input
+                          id={`firstName-${speaker.speakerNumber}`}
+                          value={speaker.firstName}
+                          onChange={(e) =>
+                            handleFirstNameChange(
+                              speaker.speakerNumber,
+                              e.target.value
+                            )
+                          }
+                          className="col-span-2 h-8"
+                        />
+                      </div>
+                      <div className="grid grid-cols-3 items-center gap-4">
+                        <Label htmlFor={`lastName-${speaker.speakerNumber}`}>
+                          Last Name
+                        </Label>
+                        <Input
+                          id={`lastName-${speaker.speakerNumber}`}
+                          value={speaker.lastName}
+                          onChange={(e) =>
+                            handleLastNameChange(
+                              speaker.speakerNumber,
+                              e.target.value
+                            )
+                          }
+                          className="col-span-2 h-8"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
+          ))}
+        </div>
         {/* display is_final responses */}
         <div className="my-4 space-y-4">
           {finalizedSentences.slice(0, -1).map((sentence, index) => (
@@ -303,7 +449,9 @@ export default function Microphone({
               </Avatar>
               <div className="flex flex-col ml-4 border rounded-lg p-4">
                 <div className="flex flex-row justify-between mb-3">
-                  <div className="font-bold">{sentence.speaker}</div>
+                  <div className="font-bold">
+                    {getSpeakerName(sentence.speaker)}
+                  </div>
                   <div className="text-muted-foreground">
                     {sentence.start.toFixed(2)} - {sentence.end.toFixed(2)}
                   </div>
@@ -323,7 +471,9 @@ export default function Microphone({
               <div className="flex flex-col ml-4 border rounded-lg p-4">
                 <div className="flex flex-row justify-between mb-3">
                   <div className="font-bold">
-                    {finalizedSentences[finalizedSentences.length - 1].speaker}
+                    {getSpeakerName(
+                      finalizedSentences[finalizedSentences.length - 1].speaker
+                    )}
                   </div>
                   <div className="text-muted-foreground">
                     {finalizedSentences[

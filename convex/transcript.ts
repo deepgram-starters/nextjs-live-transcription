@@ -5,7 +5,7 @@ import { api } from "./_generated/api";
 export const storeFinalizedSentence = mutation({
   args: {
     meetingID: v.id("meetings"),
-    speaker: v.string(),
+    speaker: v.number(),
     transcript: v.string(),
     start: v.float64(),
     end: v.float64(),

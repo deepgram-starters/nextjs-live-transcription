@@ -61,3 +61,26 @@ export const getMeetingByID = query({
       .collect();
   },
 });
+
+export const addSpeaker = mutation({
+  args: {
+    meetingID: v.id("meetings"),
+    speakerNumber: v.number(),
+    firstName: v.string(),
+    lastName: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.auth.getUserIdentity();
+
+    if (!user) {
+      throw new Error("Please login to create a meeting");
+    }
+
+    await ctx.db.insert("speakers", {
+      meetingID: args.meetingID,
+      speakerNumber: args.speakerNumber,
+      firstName: args.firstName,
+      lastName: args.lastName,
+    });
+  },
+});
