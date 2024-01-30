@@ -10,18 +10,18 @@ export const sendMessage = action({
     message: v.string(),
     meetingID: v.string(),
     aiModel: v.string(),
+    chatHistory: v.array(v.object({ role: v.string(), content: v.string() })),
   },
   handler: async (ctx, args) => {
     const user = await ctx.auth.getUserIdentity();
 
     if (!user) {
-      throw new Error("Please login to create a meeting");
+      throw new Error("Please login to create send a message");
     }
 
     // Choose the OpenAI model based on the user's selection
     const aiModel =
       args.aiModel === "4.0" ? "gpt-4-0125-preview" : "gpt-3.5-turbo";
-
     // Store the initial message and get its ID
     const messageId = await ctx.runMutation(api.chat.storeMessagesStreaming, {
       userMessage: args.message,
@@ -33,9 +33,20 @@ export const sendMessage = action({
       throw new Error("Message ID should not be an array");
     }
 
+    // Append the new message to the chat history
+    const fullChatHistory = args.chatHistory
+      .map((entry) => ({
+        role: entry.role as "user" | "assistant", // Adjust this casting as necessary
+        content: entry.content,
+      }))
+      .concat({
+        role: "user", // Assuming the new message is always from the user
+        content: args.message,
+      });
+
     const completion = await openai.chat.completions.create({
-      messages: [{ role: "user", content: args.message }],
       model: aiModel,
+      messages: fullChatHistory, // This now should match the expected type
       stream: true,
     });
 
@@ -43,7 +54,7 @@ export const sendMessage = action({
     let completionTokens = 0; // Initialize chunk count
     for await (const chunk of completion) {
       const part = chunk.choices[0].delta.content; // Note the change here to delta.content
-      console.log(chunk);
+      // console.log(chunk);
       if (part) {
         aiResponse += part;
         completionTokens++;

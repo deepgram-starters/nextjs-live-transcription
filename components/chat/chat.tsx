@@ -1,7 +1,7 @@
 "use client";
 
 //import react stuff
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 //import nextjs stuff
 import Link from "next/link";
@@ -23,10 +23,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 
 //import custom stuff
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+
+interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
 
 export default function ChatCompletion({
   //   finalizedSentences,
@@ -45,6 +56,32 @@ export default function ChatCompletion({
     meetingID: meetingID!,
   });
 
+  // Define chatHistory state and its setter function here
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+
+  // Maintain chat history in state
+  useEffect(() => {
+    if (messages) {
+      const history: ChatMessage[] = messages.flatMap((message) => {
+        const entries: ChatMessage[] = [];
+        if (message.userMessage) {
+          entries.push({
+            role: "user",
+            content: message.userMessage,
+          });
+        }
+        if (message.aiResponse) {
+          entries.push({
+            role: "assistant",
+            content: message.aiResponse,
+          });
+        }
+        return entries;
+      });
+      setChatHistory(history);
+    }
+  }, [messages]);
+
   const sendMessage = useAction(api.chat.sendMessage);
 
   // State to track the selected OpenAI model
@@ -53,6 +90,11 @@ export default function ChatCompletion({
   // Handler to toggle the OpenAI model
   const toggleModel = () => {
     setSelectedModel(selectedModel === "3.5" ? "4.0" : "3.5");
+  };
+
+  const [includeTranscript, setIncludeTranscript] = useState(true);
+  const toggleTranscriptInclusion = () => {
+    setIncludeTranscript((currentValue) => !currentValue);
   };
 
   return (
@@ -109,8 +151,13 @@ export default function ChatCompletion({
             const formData = new FormData(form);
             const message = formData.get("message") as string;
             if (message.trim() !== "") {
-              // Include the selectedModel in the sendMessage call
-              await sendMessage({ message, meetingID, aiModel: selectedModel });
+              // Include the updatedChatHistory in the sendMessage call
+              await sendMessage({
+                message,
+                meetingID,
+                aiModel: selectedModel,
+                chatHistory,
+              });
             }
             form.reset();
           }}
@@ -118,6 +165,7 @@ export default function ChatCompletion({
           <Button
             variant="default"
             onClick={toggleModel}
+            type="button"
             className={twMerge(
               clsx(
                 "absolute bottom-[16px] left-4 h-7 p-2 rounded-full text-xs transition-colors duration-500 ease-in-out",
@@ -147,9 +195,6 @@ export default function ChatCompletion({
                 md:pr-12"
             placeholder="Ask a question..."
           />
-          {/* <Button type="submit" className="">
-          send
-        </Button> */}
           <Button
             variant="secondary"
             size="icon"
@@ -162,6 +207,55 @@ export default function ChatCompletion({
           >
             <CornerRightUp size={16} />
           </Button>
+          <div className="absolute bottom-[3.5rem] left-2 space-x-3 text-muted-foreground items-center flex flex-row">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={includeTranscript ? "default" : "secondary"}
+                    className="rounded-full h-7 w-40 text-xs"
+                    onClick={toggleTranscriptInclusion}
+                  >
+                    <Paperclip size={15} className="mr-1" />
+                    {includeTranscript
+                      ? "Transcript Included"
+                      : "Transcript Excluded"}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <div className="max-w-[350px] m-2">
+                    <div className="grid grid-cols-2 text-left">
+                      {/* Column Headers */}
+                      <div className="font-bold col-span-1 mb-2 mx-2">
+                        Include Transcript
+                      </div>
+                      <div className="font-bold col-span-1 mb-2 mx-2">
+                        Exclude Transcript
+                      </div>
+                      {/* Full-width Separator */}
+                      <div className="col-span-2">
+                        <hr className="w-full" /> {/* This is your separator */}
+                      </div>
+                      {/* Pro Row */}
+                      <div className="col-span-1 my-4 mx-2">
+                        Higher cost per question.
+                      </div>
+                      <div className="col-span-1 my-4 mx-2">
+                        Less cost per question.
+                      </div>
+                      {/* Con Row */}
+                      <div className="col-span-1 my-4 mx-2">
+                        AI can answer specific questions about the meeting.
+                      </div>
+                      <div className="col-span-1 my-4 mx-2">
+                        AI has less context, may affect relevance of answer.
+                      </div>
+                    </div>
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         </form>
       </div>
     </div>

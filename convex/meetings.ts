@@ -84,3 +84,13 @@ export const addSpeaker = mutation({
     });
   },
 });
+
+export const getSpeakersByMeeting = query({
+  args: { meetingID: v.id("meetings") },
+  async handler({ db }, { meetingID }) {
+    return await db
+      .query("speakers")
+      .filter((q) => q.eq(q.field("meetingID"), meetingID))
+      .collect();
+  },
+});

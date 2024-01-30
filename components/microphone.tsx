@@ -128,7 +128,6 @@ export default function Microphone({
   };
 
   //this helper function handles the mapping of the speaker number in the sentences to the speaker names in the speaker table
-  //this helper function handles the mapping of the speaker number in the sentences to the speaker names in the speaker table
   const getSpeakerName = (speakerNumber: number) => {
     const speaker = speakerDetails.find(
       (s) => s.speakerNumber === speakerNumber
@@ -156,6 +155,18 @@ export default function Microphone({
       setFinalizedSentences(finalizedSentencesFromDB);
     }
   }, [finalizedSentencesFromDB]);
+
+  const speakersFromDB = useQuery(api.meetings.getSpeakersByMeeting, {
+    meetingID,
+  });
+
+  useEffect(() => {
+    // Check if there are any speakers fetched from the database
+    if (speakersFromDB && speakersFromDB.length > 0) {
+      // Set the fetched speakers to your component's state
+      setSpeakerDetails(speakersFromDB);
+    }
+  }, [speakersFromDB]);
 
   const createMeeting = useMutation(api.meetings.createMeeting);
 
