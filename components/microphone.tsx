@@ -1,7 +1,13 @@
 "use client";
 
 //import react stuff
-import { useState, useEffect, useCallback } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { useQueue } from "@uidotdev/usehooks";
 
 //import nextjs stuff
@@ -61,11 +67,21 @@ interface SpeakerDetail {
   meetingID: Id<"meetings">;
 }
 
+interface MicrophoneProps {
+  meetingID: Id<"meetings">;
+  finalizedSentences: FinalizedSentence[];
+  setFinalizedSentences: Dispatch<SetStateAction<FinalizedSentence[]>>;
+  speakerDetails: SpeakerDetail[];
+  setSpeakerDetails: Dispatch<SetStateAction<SpeakerDetail[]>>;
+}
+
 export default function Microphone({
   meetingID,
-}: {
-  meetingID: Id<"meetings">;
-}) {
+  finalizedSentences,
+  setFinalizedSentences,
+  speakerDetails,
+  setSpeakerDetails,
+}: MicrophoneProps) {
   const { add, remove, first, size, queue } = useQueue<any>([]);
   const [apiKey, setApiKey] = useState<CreateProjectKeyResponse | null>();
   const [connection, setConnection] = useState<LiveClient | null>();
@@ -78,11 +94,6 @@ export default function Microphone({
   const [userMedia, setUserMedia] = useState<MediaStream | null>();
   const [caption, setCaption] = useState<string | null>();
   const [finalCaptions, setFinalCaptions] = useState<WordDetail[]>([]);
-  const [finalizedSentences, setFinalizedSentences] = useState<
-    FinalizedSentence[]
-  >([]);
-  // Assuming you have a way to input and store speaker details, for example:
-  const [speakerDetails, setSpeakerDetails] = useState<SpeakerDetail[]>([]);
 
   const addSpeakerToDB = useMutation(api.meetings.addSpeaker);
 

@@ -39,14 +39,29 @@ interface ChatMessage {
   content: string;
 }
 
-export default function ChatCompletion({
-  //   finalizedSentences,
-  //   speakers,
-  meetingID,
-}: {
-  //   finalizedSentences: SentenceData[];
-  //   speakers: SpeakerData[];
+export interface FinalizedSentence {
+  speaker: number;
+  transcript: string;
+  start: number;
+  end: number;
   meetingID: Id<"meetings">;
+}
+
+export interface SpeakerDetail {
+  speakerNumber: number;
+  firstName: string;
+  lastName: string;
+  meetingID: Id<"meetings">;
+}
+
+export default function ChatCompletion({
+  meetingID,
+  finalizedSentences,
+  speakerDetails,
+}: {
+  meetingID: Id<"meetings">;
+  finalizedSentences: FinalizedSentence[];
+  speakerDetails: SpeakerDetail[];
 }) {
   const { user } = useUser();
   // Assuming the profile image URL is stored in `user.profileImageUrl`
@@ -151,12 +166,24 @@ export default function ChatCompletion({
             const formData = new FormData(form);
             const message = formData.get("message") as string;
             if (message.trim() !== "") {
+              // Trim unnecessary attributes from speakerDetails
+              const trimmedSpeakerDetails = speakerDetails.map(
+                ({ speakerNumber, firstName, lastName }) => ({
+                  speakerNumber,
+                  firstName,
+                  lastName,
+                })
+              );
               // Include the updatedChatHistory in the sendMessage call
               await sendMessage({
                 message,
                 meetingID,
                 aiModel: selectedModel,
                 chatHistory,
+                ...(includeTranscript && {
+                  finalizedSentences,
+                  speakerDetails: trimmedSpeakerDetails,
+                }),
               });
             }
             form.reset();

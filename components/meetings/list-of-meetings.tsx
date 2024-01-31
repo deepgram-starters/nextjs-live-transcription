@@ -13,14 +13,6 @@ import type { Doc, Id } from "@/convex/_generated/dataModel";
 
 // import shadcnui stuff
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
 //import custom stuff
 import MeetingCard from "@/components/meetings/meeting-card";
@@ -35,18 +27,28 @@ export default function ListOfMeetings({
 
   return (
     <div className="flex flex-col h-full">
-      <Button
-        onClick={async () => {
-          const response = await createMeeting({ title: "My Meeting" });
-        }}
-      >
-        Create Meeting
-      </Button>
-      <div>My Meetings</div>
-      <ul>
+      <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {/* Placeholder card for creating a new meeting */}
+        <li
+          className="cursor-pointer"
+          onClick={async () => {
+            const response = await createMeeting({ title: "My Meeting" });
+            // Optionally handle the response, e.g., select the new meeting
+          }}
+        >
+          {/* Adjust the div below to match the size of MeetingCard */}
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 flex justify-center items-center h-full">
+            <span>Create a New Meeting</span>
+          </div>
+        </li>
         {meetings?.map((meeting) => (
           <li key={meeting._id}>
-            <Link href={`/mymeetings/${meeting._id}`}>{meeting._id}</Link>
+            <div
+              className="cursor-pointer"
+              onClick={() => onMeetingSelect(meeting._id)}
+            >
+              <MeetingCard meeting={meeting} />
+            </div>
           </li>
         ))}
       </ul>

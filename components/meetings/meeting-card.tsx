@@ -1,6 +1,11 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Dot, CalendarIcon, Timer } from "lucide-react";
+//import react stuff
+import React from "react";
 
+//import nextjs stuff
+import Link from "next/link";
+
+//import shadcnui stuff
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -8,13 +13,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+
+//import icon stuff
+import { Dot, CalendarIcon, Timer } from "lucide-react";
 
 // DATA TO WORK WITH:
 const meetings = [
@@ -90,91 +97,94 @@ const meetings = [
   },
 ];
 
-export default function MeetingCard() {
+//@ts-ignore
+export default function MeetingCard({ meeting }) {
   return (
-    <div>
-      {meetings.map((meeting) => (
-        <button
-          key={meeting.id}
-          className="flex flex-col gap-4 w-full items-start rounded-lg border border-border/80 p-3 text-left text-sm transition-all hover:primary"
-        >
-          <div className="flex w-full flex-col gap-4">
-            <div className="flex items-center">
+    <Link href={`/mymeetings/${meeting._id}`} passHref>
+      <div>
+        {meetings.map((meeting) => (
+          <button
+            key={meeting.id}
+            className="flex flex-col gap-4 w-full items-start rounded-lg border border-border/80 p-3 text-left text-sm transition-all hover:primary"
+          >
+            <div className="flex w-full flex-col gap-4">
               <div className="flex items-center">
-                <div className="font-semibold text-lg">{meeting.title}</div>
+                <div className="flex items-center">
+                  <div className="font-semibold text-lg">{meeting.title}</div>
+                </div>
+                <div className="ml-auto text-xs text-muted-foreground">
+                  {meeting.aging}
+                </div>
               </div>
-              <div className="ml-auto text-xs text-muted-foreground">
-                {meeting.aging}
+              <div className="flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6 justify-between">
+                <div className=" flex items-center font-medium text-xs ">
+                  <CalendarIcon
+                    className="mr-1.5 h-5 w-5 flex-shrink-0"
+                    aria-hidden="true"
+                    size={16}
+                    strokeWidth={1}
+                  />
+                  {meeting.dateAndTime}
+                </div>
+                <div className=" flex items-center font-medium text-xs ">
+                  <Timer
+                    className="mr-1.5 h-5 w-5 flex-shrink-0 "
+                    aria-hidden="true"
+                    size={16}
+                    strokeWidth={1}
+                  />
+                  {meeting.duration}
+                </div>
               </div>
             </div>
-            <div className="flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6 justify-between">
-              <div className=" flex items-center font-medium text-xs ">
-                <CalendarIcon
-                  className="mr-1.5 h-5 w-5 flex-shrink-0"
-                  aria-hidden="true"
-                  size={16}
-                  strokeWidth={1}
-                />
-                {meeting.dateAndTime}
-              </div>
-              <div className=" flex items-center font-medium text-xs ">
-                <Timer
-                  className="mr-1.5 h-5 w-5 flex-shrink-0 "
-                  aria-hidden="true"
-                  size={16}
-                  strokeWidth={1}
-                />
-                {meeting.duration}
-              </div>
+            <div className="flex items-center gap-1">
+              {meeting.primarySpeakers.map((speaker) => (
+                <div key={speaker.id} className="flex flex-row">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Avatar>
+                          <AvatarImage src="" />
+                          <AvatarFallback>{speaker.initials}</AvatarFallback>
+                        </Avatar>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <div className="flex flex-col lg:flex-row ml-4 items-center">
+                          <p className="">{speaker.firstName}</p>
+                          <p className="">{speaker.lastName}</p>
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              ))}
+              <Avatar>
+                <AvatarImage src="" />
+                <AvatarFallback>{`+${meeting.sectondarySpeakersCount}`}</AvatarFallback>
+              </Avatar>
             </div>
-          </div>
-          <div className="flex items-center gap-1">
-            {meeting.primarySpeakers.map((speaker) => (
-              <div key={speaker.id} className="flex flex-row">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Avatar>
-                        <AvatarImage src="" />
-                        <AvatarFallback>{speaker.initials}</AvatarFallback>
-                      </Avatar>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <div className="flex flex-col lg:flex-row ml-4 items-center">
-                        <p className="">{speaker.firstName}</p>
-                        <p className="">{speaker.lastName}</p>
+            <Accordion type="single" collapsible>
+              <AccordionItem value="item-1">
+                <AccordionTrigger className="text-xs">
+                  More Details
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="line-clamp-2 text-sm text-muted-foreground">
+                    {meeting.summary}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {meeting.primaryTopics.map((topic) => (
+                      <div key={topic.id} className="flex items-center">
+                        <Dot className="mr-2" /> {topic.topic}
                       </div>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-            ))}
-            <Avatar>
-              <AvatarImage src="" />
-              <AvatarFallback>{`+${meeting.sectondarySpeakersCount}`}</AvatarFallback>
-            </Avatar>
-          </div>
-          <Accordion type="single" collapsible>
-            <AccordionItem value="item-1">
-              <AccordionTrigger className="text-xs">
-                More Details
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="line-clamp-2 text-sm text-muted-foreground">
-                  {meeting.summary}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {meeting.primaryTopics.map((topic) => (
-                    <div key={topic.id} className="flex items-center">
-                      <Dot className="mr-2" /> {topic.topic}
-                    </div>
-                  ))}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </button>
-      ))}
-    </div>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </button>
+        ))}
+      </div>
+    </Link>
   );
 }

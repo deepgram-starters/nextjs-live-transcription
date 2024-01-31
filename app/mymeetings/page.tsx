@@ -18,6 +18,7 @@ import { Separator } from "@/components/ui/separator";
 import Microphone from "@/components/microphone";
 import Chat from "@/components/chat/chat";
 import ListOfMeetings from "@/components/meetings/list-of-meetings";
+import { Breadcrumbs, BreadcrumbItem } from "@/components/ui/breadcrumbs";
 
 export default function MyMeetings() {
   // Hardcoded meeting ID for testing, cast to the expected type
@@ -25,9 +26,12 @@ export default function MyMeetings() {
     useState<Id<"meetings"> | null>(null);
 
   return (
-    <main className="flex flex-col h-full w-full">
+    <main className="flex flex-col h-full w-full mx-10">
+      <Breadcrumbs className="mb-4">
+        <BreadcrumbItem href="/mymeetings">My Meetings</BreadcrumbItem>
+      </Breadcrumbs>
       <div className="flex flex-row h-full w-full">
-        <div className="flex flex-col w-1/2">
+        <div className="flex flex-col">
           <ListOfMeetings onMeetingSelect={setSelectedMeetingID} />
         </div>
       </div>
