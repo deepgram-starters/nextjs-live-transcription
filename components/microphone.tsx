@@ -43,7 +43,10 @@ import { Input } from "@/components/ui/input";
 import { Mic, Pause, User } from "lucide-react";
 import Dg from "@/app/dg.svg";
 
-interface WordDetail {
+//import custom stuff
+import TranscriptDisplay from "@/components/microphone/transcript";
+
+export interface WordDetail {
   word: string;
   start: number;
   end: number;
@@ -52,7 +55,7 @@ interface WordDetail {
   punctuated_word: string;
 }
 
-interface FinalizedSentence {
+export interface FinalizedSentence {
   speaker: number;
   transcript: string;
   start: number;
@@ -60,7 +63,7 @@ interface FinalizedSentence {
   meetingID: Id<"meetings">;
 }
 
-interface SpeakerDetail {
+export interface SpeakerDetail {
   speakerNumber: number;
   firstName: string;
   lastName: string;
@@ -73,6 +76,7 @@ interface MicrophoneProps {
   setFinalizedSentences: Dispatch<SetStateAction<FinalizedSentence[]>>;
   speakerDetails: SpeakerDetail[];
   setSpeakerDetails: Dispatch<SetStateAction<SpeakerDetail[]>>;
+  setCaption: Dispatch<SetStateAction<string | null>>;
 }
 
 export default function Microphone({
@@ -94,6 +98,7 @@ export default function Microphone({
   const [userMedia, setUserMedia] = useState<MediaStream | null>();
   const [caption, setCaption] = useState<string | null>();
   const [finalCaptions, setFinalCaptions] = useState<WordDetail[]>([]);
+  const safeCaption = caption ?? null; // This ensures caption is not undefined
 
   const addSpeakerToDB = useMutation(api.meetings.addSpeaker);
 
@@ -397,124 +402,14 @@ export default function Microphone({
             <Mic className="w-6 h-6" />
           )}
         </Button>
-        {/* Display Speakers */}
-        <div className="flex flex-wrap gap-2">
-          {speakerDetails.map((speaker, index) => (
-            <div key={index} className="flex flex-row gap-3">
-              <Popover>
-                <PopoverTrigger>
-                  <Badge variant="outline" className="h-8">
-                    {speaker.firstName} {speaker.lastName}
-                  </Badge>
-                </PopoverTrigger>
-                <PopoverContent className="w-80">
-                  {/* Speaker details can be added here */}
-                  {/* Additional details and actions can be added here */}
-                  <div className="grid gap-4">
-                    <div className="space-y-2">
-                      <h4 className="font-medium leading-none">
-                        Speaker Details
-                      </h4>
-                      <p className="text-sm text-muted-foreground">
-                        Update speaker details below:
-                      </p>
-                    </div>
-                    <div className="grid gap-4">
-                      <div className="grid grid-cols-3 items-center gap-4">
-                        <Label htmlFor={`firstName-${speaker.speakerNumber}`}>
-                          First Name
-                        </Label>
-                        <Input
-                          id={`firstName-${speaker.speakerNumber}`}
-                          value={speaker.firstName}
-                          onChange={(e) =>
-                            handleFirstNameChange(
-                              speaker.speakerNumber,
-                              e.target.value
-                            )
-                          }
-                          className="col-span-2 h-8"
-                        />
-                      </div>
-                      <div className="grid grid-cols-3 items-center gap-4">
-                        <Label htmlFor={`lastName-${speaker.speakerNumber}`}>
-                          Last Name
-                        </Label>
-                        <Input
-                          id={`lastName-${speaker.speakerNumber}`}
-                          value={speaker.lastName}
-                          onChange={(e) =>
-                            handleLastNameChange(
-                              speaker.speakerNumber,
-                              e.target.value
-                            )
-                          }
-                          className="col-span-2 h-8"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </div>
-          ))}
-        </div>
-        {/* display is_final responses */}
-        <div className="my-4 space-y-4">
-          {finalizedSentences.slice(0, -1).map((sentence, index) => (
-            <div key={index} className="flex flex-row">
-              <Avatar className="">
-                <AvatarImage src="" />
-                <AvatarFallback>
-                  <User />
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col ml-4 border rounded-lg p-4">
-                <div className="flex flex-row justify-between mb-3">
-                  <div className="font-bold">
-                    {getSpeakerName(sentence.speaker)}
-                  </div>
-                  <div className="text-muted-foreground">
-                    {sentence.start.toFixed(2)} - {sentence.end.toFixed(2)}
-                  </div>
-                </div>
-                {sentence.transcript}
-              </div>
-            </div>
-          ))}
-          {finalizedSentences.length > 0 && (
-            <div key={finalizedSentences.length - 1} className="flex flex-row">
-              <Avatar className="">
-                <AvatarImage src="" />
-                <AvatarFallback>
-                  <User />
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col ml-4 border rounded-lg p-4">
-                <div className="flex flex-row justify-between mb-3">
-                  <div className="font-bold">
-                    {getSpeakerName(
-                      finalizedSentences[finalizedSentences.length - 1].speaker
-                    )}
-                  </div>
-                  <div className="text-muted-foreground">
-                    {finalizedSentences[
-                      finalizedSentences.length - 1
-                    ].start.toFixed(2)}{" "}
-                    -{" "}
-                    {finalizedSentences[
-                      finalizedSentences.length - 1
-                    ].end.toFixed(2)}
-                  </div>
-                </div>
-                <div>
-                  {finalizedSentences[finalizedSentences.length - 1].transcript}{" "}
-                  <span className="text-blue-500">{caption} </span>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+        {/* <TranscriptDisplay
+          speakerDetails={speakerDetails}
+          finalizedSentences={finalizedSentences}
+          caption={safeCaption}
+          handleFirstNameChange={handleFirstNameChange}
+          handleLastNameChange={handleLastNameChange}
+          getSpeakerName={getSpeakerName}
+        /> */}
       </div>
       {/* connection indicator for deepgram via socket and temp api key */}
       {/* <div

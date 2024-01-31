@@ -31,6 +31,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // import custom stuff
 import Microphone from "@/components/microphone";
+import TranscriptDisplay from "@/components/microphone/transcript";
 import Chat from "@/components/chat/chat";
 import { Breadcrumbs, BreadcrumbItem } from "@/components/ui/breadcrumbs";
 
@@ -72,6 +73,8 @@ export default function Page({
     FinalizedSentence[]
   >([]);
   const [speakerDetails, setSpeakerDetails] = useState<SpeakerDetail[]>([]);
+  // Inside the component
+  const [caption, setCaption] = useState<string | null>(null);
 
   const [date, setDate] = useState<Date>(new Date());
   const handleDateSelect = (selectedDate: Date | undefined) => {
@@ -85,10 +88,6 @@ export default function Page({
   // Function to handle tab change
   const handleTabChange = (value: string) => {
     setSelectedTab(value);
-    //if value not chat set selectedContentLargeScreen to value
-    if (value !== "Chat") {
-      setSelectedContentLargeScreen(value);
-    }
   };
 
   // New state for managing selected content on larger screens
@@ -109,6 +108,14 @@ export default function Page({
           className="text-3xl font-bold leading-none border-none focus:ring-0"
         />
         <PenLine className="ml-2 hidden group-hover:block" />
+        <Microphone
+          meetingID={params.meetingID}
+          finalizedSentences={finalizedSentences}
+          setFinalizedSentences={setFinalizedSentences}
+          speakerDetails={speakerDetails}
+          setSpeakerDetails={setSpeakerDetails}
+          setCaption={setCaption}
+        />
       </div>
       <div className="flex justify-between items-center text-sm sm:mt-2">
         <Popover>
@@ -153,17 +160,16 @@ export default function Page({
             className="hidden sm:block"
             // onValueChange=
           >
-            <TabsList className="absolute right-0">
+            <TabsList id="tabs-list-large-screen" className="absolute right-0">
               <TabsTrigger value="Transcript">Transcript</TabsTrigger>
               <TabsTrigger value="Notes">Notes</TabsTrigger>
             </TabsList>
             <TabsContent value="Transcript" className="mt-12">
-              <Microphone
-                meetingID={params.meetingID}
-                finalizedSentences={finalizedSentences}
-                setFinalizedSentences={setFinalizedSentences}
+              <TranscriptDisplay
                 speakerDetails={speakerDetails}
-                setSpeakerDetails={setSpeakerDetails}
+                setSpeakerDetails={setSpeakerDetails} // Pass this prop to update the state
+                finalizedSentences={finalizedSentences}
+                caption={caption}
               />
             </TabsContent>
             <TabsContent value="Notes" className="mt-12">
@@ -177,12 +183,11 @@ export default function Page({
               selectedTab === "Transcript" ? "sm:hidden" : "hidden"
             }`}
           >
-            <Microphone
-              meetingID={params.meetingID}
-              finalizedSentences={finalizedSentences}
-              setFinalizedSentences={setFinalizedSentences}
+            <TranscriptDisplay
               speakerDetails={speakerDetails}
-              setSpeakerDetails={setSpeakerDetails}
+              setSpeakerDetails={setSpeakerDetails} // Pass this prop to update the state
+              finalizedSentences={finalizedSentences}
+              caption={caption}
             />
           </div>
           <div
