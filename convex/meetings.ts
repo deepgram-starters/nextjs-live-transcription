@@ -85,6 +85,25 @@ export const addSpeaker = mutation({
   },
 });
 
+export const updateMeetingTitle = mutation({
+  args: {
+    meetingID: v.id("meetings"),
+    newTitle: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.auth.getUserIdentity();
+
+    if (!user) {
+      throw new Error("Please login to update the meeting");
+    }
+
+    // Use db.patch to update the meeting title
+    await ctx.db.patch(args.meetingID, {
+      title: args.newTitle,
+    });
+  },
+});
+
 export const getSpeakersByMeeting = query({
   args: { meetingID: v.id("meetings") },
   async handler({ db }, { meetingID }) {
