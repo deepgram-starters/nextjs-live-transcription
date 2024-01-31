@@ -1,7 +1,15 @@
 "use client"; // this registers <Editor> as a Client Component
 
+//import react stuff
 import { useState, useEffect } from "react";
+
+//import next stuff
 import { useTheme } from "next-themes";
+
+//import convex stuff
+import type { Id } from "@/convex/_generated/dataModel";
+
+//import BlockNote stuff
 import { BlockNoteEditor, Block } from "@blocknote/core";
 import { BlockNoteView, useBlockNote } from "@blocknote/react";
 
@@ -20,17 +28,30 @@ type SentenceData = {
 };
 
 type MeetingSummary = {
-  id: string; // or number, depending on how you want to identify summaries
-  message: string;
-  tokens: number;
-  model: string;
-  promptCost: number;
-  completionCost: number;
-  totalCost: number;
+  _id: string; // or number, depending on how you want to identify summaries
+  aiSummary: string;
+  aiModel: string;
+  promptTokens: number;
+  completionTokens: number;
 };
 
+interface FinalizedSentence {
+  speaker: number;
+  transcript: string;
+  start: number;
+  end: number;
+  meetingID: Id<"meetings">;
+}
+
+interface SpeakerDetail {
+  speakerNumber: number;
+  firstName: string;
+  lastName: string;
+  meetingID: Id<"meetings">;
+}
+
 type NotePadProps = {
-  finalizedSentences: SentenceData[];
+  finalizedSentences: FinalizedSentence[];
   meetingSummaries: MeetingSummary[];
 };
 
@@ -38,7 +59,7 @@ export default function Page({
   finalizedSentences,
   meetingSummaries,
 }: {
-  finalizedSentences: SentenceData[];
+  finalizedSentences: FinalizedSentence[];
   meetingSummaries: MeetingSummary[];
 }) {
   const { resolvedTheme } = useTheme();
@@ -58,7 +79,7 @@ export default function Page({
   useEffect(() => {
     // Convert meeting summaries to Markdown and update the state
     const summariesMarkdown = meetingSummaries
-      .map((summary) => summary.message)
+      .map((summary) => summary.aiSummary)
       .join("\n\n");
     setMarkdown(summariesMarkdown);
   }, [meetingSummaries]);
@@ -82,7 +103,7 @@ export default function Page({
     const partialBlocks: PartialBlock[] = meetingSummaries.map(
       //@ts-ignore
       (meetingSummary): PartialBlock => ({
-        id: meetingSummary.id, // Generate an ID if not available
+        id: meetingSummary._id, // Generate an ID if not available
         type: "paragraph",
         props: {
           backgroundColor: "default", // Set your default styles here
@@ -92,7 +113,7 @@ export default function Page({
         content: [
           {
             type: "text",
-            text: meetingSummary.message,
+            text: meetingSummary.aiSummary,
             styles: {}, // Add any styles if necessary
           },
         ],

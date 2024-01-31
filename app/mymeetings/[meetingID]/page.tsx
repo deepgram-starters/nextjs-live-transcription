@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
 
 //import convex stuff
-import { useQuery, useMutation } from "convex/react";
+import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 
@@ -35,6 +35,7 @@ import { PenLine, CalendarIcon, SparklesIcon } from "lucide-react";
 import Microphone from "@/components/microphone";
 import TranscriptDisplay from "@/components/microphone/transcript";
 import Chat from "@/components/chat/chat";
+import NoteContainer from "@/components/wysiwyg/noteContainer";
 import { Breadcrumbs, BreadcrumbItem } from "@/components/ui/breadcrumbs";
 
 //import custom stuff
@@ -119,6 +120,55 @@ export default function Page({
     setSelectedModel(selectedModel === "3.5" ? "4.0" : "3.5");
   };
 
+  const retrieveSummary = useAction(api.meetingSummary.retrieveMeetingSummary);
+  const summaries = useQuery(api.meetingSummary.getMeetingSummaryForUser, {
+    meetingID: params.meetingID,
+  });
+
+  // Use useEffect to log when summaries are fetched
+  useEffect(() => {
+    if (summaries) {
+      console.log("Meeting Summaries (client):", summaries);
+    }
+  }, [summaries]);
+
+  const handleGenerateSummary = async () => {
+    try {
+      // Clean finalizedSentences as before
+      const cleanedFinalizedSentences = finalizedSentences.map(
+        ({ speaker, transcript, start, end, meetingID }) => ({
+          speaker,
+          transcript,
+          start,
+          end,
+          meetingID,
+        })
+      );
+
+      // Now also clean speakerDetails to remove any fields not expected by the validator
+      const cleanedSpeakerDetails = speakerDetails.map(
+        ({ firstName, lastName, speakerNumber }) => ({
+          firstName,
+          lastName,
+          speakerNumber,
+        })
+      );
+
+      // Call the action with the necessary arguments, including the cleaned data
+      const summary = await retrieveSummary({
+        message: "Please generate a summary for this meeting.",
+        meetingID: params.meetingID,
+        aiModel: selectedModel,
+        finalizedSentences: cleanedFinalizedSentences,
+        speakerDetails: cleanedSpeakerDetails,
+      });
+      // Handle the summary here, e.g., display it in the UI or store it in state
+    } catch (error) {
+      console.error("Failed to generate meeting summary:", error);
+      // Optionally, show an error message
+    }
+  };
+
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] mx-5">
       <Breadcrumbs className="mt-2">
@@ -200,35 +250,12 @@ export default function Page({
               />
             </TabsContent>
             <TabsContent value="Notes" className="mt-12">
-              <div className="absolute top-[0px] left-0 items-center">
-                <div className="flex justify-center items-center space-x-2">
-                  <Button
-                    variant="default"
-                    onClick={toggleModel}
-                    type="button"
-                    className={twMerge(
-                      clsx(
-                        "h-7 p-2 rounded-full text-xs transition-colors duration-500 ease-in-out",
-                        {
-                          "bg-emerald-600 hover:bg-emerald-500 text-white":
-                            selectedModel === "3.5",
-                          "bg-purple-600 hover:bg-purple-500 text-white":
-                            selectedModel === "4.0",
-                        }
-                      )
-                    )}
-                  >
-                    @{`GPT-${selectedModel}`}
-                  </Button>
-                  <Button variant="outline" className="">
-                    Generate Summary
-                    <SparklesIcon className="w-5 h-5 ml-3" />
-                  </Button>
-                </div>
-              </div>
-              <Separator orientation="horizontal" className="mt-4 mb-4" />
               <Suspense fallback={<div>Loading...</div>}>
-                <BNEditor />
+                <NoteContainer
+                  meetingID={params.meetingID}
+                  finalizedSentences={finalizedSentences}
+                  speakerDetails={speakerDetails}
+                />
               </Suspense>
             </TabsContent>
           </Tabs>
@@ -247,35 +274,12 @@ export default function Page({
           <div
             className={` ${selectedTab === "Notes" ? "sm:hidden" : "hidden"}`}
           >
-            <div className="absolute top-[0px] left-0 items-center">
-              <div className="flex justify-center items-center space-x-2">
-                <Button
-                  variant="default"
-                  onClick={toggleModel}
-                  type="button"
-                  className={twMerge(
-                    clsx(
-                      "h-7 p-2 rounded-full text-xs transition-colors duration-500 ease-in-out",
-                      {
-                        "bg-emerald-600 hover:bg-emerald-500 text-white":
-                          selectedModel === "3.5",
-                        "bg-purple-600 hover:bg-purple-500 text-white":
-                          selectedModel === "4.0",
-                      }
-                    )
-                  )}
-                >
-                  @{`GPT-${selectedModel}`}
-                </Button>
-                <Button variant="outline" className="">
-                  Generate Summary
-                  <SparklesIcon className="w-5 h-5 ml-3" />
-                </Button>
-              </div>
-            </div>
-            <Separator orientation="horizontal" className="mt-14 mb-4" />
             <Suspense fallback={<div>Loading...</div>}>
-              <BNEditor />
+              <NoteContainer
+                meetingID={params.meetingID}
+                finalizedSentences={finalizedSentences}
+                speakerDetails={speakerDetails}
+              />
             </Suspense>
           </div>
         </div>

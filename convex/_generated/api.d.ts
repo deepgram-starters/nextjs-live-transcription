@@ -15,6 +15,7 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as chat from "../chat.js";
+import type * as meetingSummary from "../meetingSummary.js";
 import type * as meetings from "../meetings.js";
 import type * as transcript from "../transcript.js";
 
@@ -28,6 +29,7 @@ import type * as transcript from "../transcript.js";
  */
 declare const fullApi: ApiFromModules<{
   chat: typeof chat;
+  meetingSummary: typeof meetingSummary;
   meetings: typeof meetings;
   transcript: typeof transcript;
 }>;

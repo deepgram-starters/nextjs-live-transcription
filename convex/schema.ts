@@ -28,4 +28,12 @@ export default defineSchema({
     firstName: v.string(),
     lastName: v.string(),
   }),
+  meetingSummaries: defineTable({
+    aiModel: v.string(),
+    userId: v.string(),
+    meetingID: v.id("meetings"),
+    aiSummary: v.string(),
+    completionTokens: v.float64(),
+    promptTokens: v.float64(),
+  }),
 });
