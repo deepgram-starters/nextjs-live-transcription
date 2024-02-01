@@ -42,9 +42,12 @@ import { Breadcrumbs, BreadcrumbItem } from "@/components/ui/breadcrumbs";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
-const BNEditor = dynamic(() => import("@/components/wysiwyg/BNEditor"), {
-  ssr: false,
-});
+const NoteContainerNoSSR = dynamic(
+  () => import("@/components/wysiwyg/noteContainer"),
+  {
+    ssr: false,
+  }
+);
 
 type Meeting = {
   title: string;
@@ -128,7 +131,7 @@ export default function Page({
   // Use useEffect to log when summaries are fetched
   useEffect(() => {
     if (summaries) {
-      console.log("Meeting Summaries (client):", summaries);
+      // console.log("Meeting Summaries (client):", summaries);
     }
   }, [summaries]);
 
@@ -229,7 +232,7 @@ export default function Page({
         </Tabs>
       </div>
       <Separator orientation="horizontal" className="mt-2 " />
-      <div className=" flex-grow flex flex-row mt-3">
+      <div className=" flex-grow flex flex-row mt-3 h-[calc(100vh-255px)]">
         {/* Conditional rendering based on the selectedTab */}
         <div className="relative flex flex-col flex-grow">
           <Tabs
@@ -250,13 +253,13 @@ export default function Page({
               />
             </TabsContent>
             <TabsContent value="Notes" className="flex flex-col">
-              {/* <Suspense fallback={<div>Loading...</div>}>
-                <NoteContainer
+              <Suspense fallback={<div>Loading...</div>}>
+                <NoteContainerNoSSR
                   meetingID={params.meetingID}
                   finalizedSentences={finalizedSentences}
                   speakerDetails={speakerDetails}
                 />
-              </Suspense> */}
+              </Suspense>
             </TabsContent>
           </Tabs>
           <div
@@ -274,13 +277,13 @@ export default function Page({
           <div
             className={` ${selectedTab === "Notes" ? "md:hidden" : "hidden"}`}
           >
-            {/* <Suspense fallback={<div>Loading...</div>}>
-              <NoteContainer
+            <Suspense fallback={<div>Loading...</div>}>
+              <NoteContainerNoSSR
                 meetingID={params.meetingID}
                 finalizedSentences={finalizedSentences}
                 speakerDetails={speakerDetails}
               />
-            </Suspense> */}
+            </Suspense>
           </div>
         </div>
         <Separator
@@ -288,7 +291,7 @@ export default function Page({
           className="mx-4 h-full hidden md:block"
         ></Separator>
         <div
-          className={`md:w-1/2 md:max-w-[448px] ${
+          className={`md:w-1/2 md:max-w-[448px] min-w-[448px] ${
             selectedTab === "Chat" ? "" : "hidden md:block"
           }`}
         >

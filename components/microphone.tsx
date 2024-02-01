@@ -116,7 +116,7 @@ export default function Microphone({
           lastName: "",
           meetingID,
         };
-        console.log("New Speaker:", newSpeaker);
+        // console.log("New Speaker:", newSpeaker);
         setSpeakerDetails((prevDetails) => [...prevDetails, newSpeaker]);
       }
     },
@@ -364,7 +364,7 @@ export default function Microphone({
       }
     }
 
-    console.log("Finalized Sentences:", sentences);
+    // console.log("Finalized Sentences:", sentences);
     setFinalizedSentences(sentences);
   };
 

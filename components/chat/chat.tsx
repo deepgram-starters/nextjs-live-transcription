@@ -115,7 +115,7 @@ export default function ChatCompletion({
   return (
     // <div className="flex flex-col h-full w-[448px]">
     <div className="flex h-full">
-      <ScrollArea className="h-[calc(100vh-125px)]">
+      <ScrollArea className="h-[calc(100vh-305px)]">
         <div className="">
           {messages?.map((message) => {
             return (
@@ -159,7 +159,7 @@ export default function ChatCompletion({
           })}
         </div>
       </ScrollArea>
-      <div className="absolute bottom-0 p-2 w-[calc(100%-40px)] md:w-[calc(50%-20px)] md:max-w-[448px]">
+      <div className="absolute bottom-0 p-2 w-[calc(100%-40px)] md:w-[calc(50%-20px)] md:max-w-[448px] min-w-[448px]">
         <form
           onSubmit={async (e) => {
             e.preventDefault();

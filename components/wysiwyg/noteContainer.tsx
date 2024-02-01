@@ -20,12 +20,14 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@radix-ui/react-tooltip";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 //import icon stuff
 import { Sparkles, ListEnd, ListRestart } from "lucide-react";
 
 //import custom stuff
 import NotePad from "@/components/wysiwyg/notePad";
+// import "@blocknote/react/style.css";
 
 type ChatMessageData = {
   //   id: string;
@@ -115,43 +117,6 @@ export default function NoteContainer({
     setSelectedModel(selectedModel === "3.5" ? "4.0" : "3.5");
   };
 
-  // const handleSubmitSummary = async () => {
-  //   // Prepare the body content with the finalized sentences
-  //   const bodyContent: BodyContent = {
-  //     message: [], // Assuming no other messages are needed for the summary
-  //     selectedModel: selectedModel,
-  //     finalizedSentences: finalizedSentences,
-  //     speakerDetails: speakersDetails,
-  //   };
-
-  //   try {
-  //     // Send the request to the new summary route
-  //     const response = await fetch("/api/meeting-summary", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(bodyContent),
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error(`Error: ${response.status}`);
-  //     }
-
-  //     const summaryData: MeetingSummary = await response.json();
-  //     // Add a unique identifier to the summaryData, e.g., a timestamp or UUID
-  //     summaryData.id = new Date().toISOString();
-
-  //     setMeetingSummaries((prevSummaries) => {
-  //       // If replace mode is active, replace the summaries, otherwise append
-  //       return isReplaceMode ? [summaryData] : [...prevSummaries, summaryData];
-  //     });
-  //   } catch (error) {
-  //     console.error("Failed to send summary request: ", error);
-  //     // Handle any errors here
-  //   }
-  // };
-
   const retrieveSummary = useAction(api.meetingSummary.retrieveMeetingSummary);
   const summaries = useQuery(api.meetingSummary.getMeetingSummaryForUser, {
     meetingID: meetingID!,
@@ -196,7 +161,7 @@ export default function NoteContainer({
         speakerDetails: cleanedSpeakerDetails,
       });
 
-      console.log("Summary:", summary);
+      // console.log("Summary:", summary);
     } catch (error) {
       console.error("Failed to generate meeting summary:", error);
       // Optionally, show an error message
@@ -259,14 +224,16 @@ export default function NoteContainer({
           </TooltipProvider>
         </div>
       </div>
-      <NotePad
-        finalizedSentences={finalizedSentences}
-        meetingSummaries={
-          meetingSummaries.length > 0
-            ? [meetingSummaries[meetingSummaries.length - 1]]
-            : []
-        }
-      />
+      <ScrollArea className="h-[calc(100vh-260px)] md:h-[calc(100vh-305px)]">
+        <NotePad
+          finalizedSentences={finalizedSentences}
+          meetingSummaries={
+            meetingSummaries.length > 0
+              ? [meetingSummaries[meetingSummaries.length - 1]]
+              : []
+          }
+        />
+      </ScrollArea>
     </div>
   );
 }

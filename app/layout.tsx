@@ -40,7 +40,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       <body className={inter.className}>
         <Providers>
-          <div className="h-screen w-screen">
+          <div className="h-screen w-screen max-w-7xl mx-auto">
             <nav className="flex justify-between items-center h-16 shadow-md">
               <span className="text-xl font-bold">MeetingNotes-AI</span>
               <div className="flex items-center space-x-4">

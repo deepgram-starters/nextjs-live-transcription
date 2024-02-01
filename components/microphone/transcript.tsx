@@ -12,6 +12,7 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 //import icon stuff
 import { User } from "lucide-react";
@@ -122,33 +123,35 @@ const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({
           </div>
         ))}
       </div>
-      {/* Display is_final responses */}
-      <div className="my-4 space-y-4">
-        {finalizedSentences.map((sentence, index) => (
-          <div key={index} className="flex flex-row">
-            <Avatar className="">
-              <AvatarImage src="" />
-              <AvatarFallback>
-                <User />
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col ml-4 border rounded-lg p-4">
-              <div className="flex flex-row justify-between mb-3">
-                <div className="font-bold">
-                  {getSpeakerName(sentence.speaker)}
+      <ScrollArea className="h-[calc(100vh-260px)] md:h-[calc(100vh-305px)]">
+        {/* Display is_final responses */}
+        <div className="my-4 space-y-4">
+          {finalizedSentences.map((sentence, index) => (
+            <div key={index} className="flex flex-row">
+              <Avatar className="">
+                <AvatarImage src="" />
+                <AvatarFallback>
+                  <User />
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col ml-4 border rounded-lg p-4">
+                <div className="flex flex-row justify-between mb-3">
+                  <div className="font-bold">
+                    {getSpeakerName(sentence.speaker)}
+                  </div>
+                  <div className="text-muted-foreground">
+                    {sentence.start.toFixed(2)} - {sentence.end.toFixed(2)}
+                  </div>
                 </div>
-                <div className="text-muted-foreground">
-                  {sentence.start.toFixed(2)} - {sentence.end.toFixed(2)}
+                <div>
+                  {sentence.transcript}{" "}
+                  <span className="text-blue-500">{caption} </span>
                 </div>
-              </div>
-              <div>
-                {sentence.transcript}{" "}
-                <span className="text-blue-500">{caption} </span>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </ScrollArea>
     </div>
   );
 };
