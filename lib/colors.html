@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Color Showcase</title>
+    <style>
+      :root {
+        --background: hsl(0, 0%, 100%);
+        --foreground: hsl(0, 0%, 3.9%);
+        --card: hsl(0, 0%, 100%);
+        --card-foreground: hsl(0, 0%, 3.9%);
+        --popover: hsl(0, 0%, 100%);
+        --popover-foreground: hsl(0, 0%, 3.9%);
+        --primary: hsl(0, 0%, 9%);
+        --primary-foreground: hsl(0, 0%, 98%);
+        --secondary: hsl(0, 0%, 96.1%);
+        --secondary-foreground: hsl(0, 0%, 9%);
+        --muted: hsl(0, 0%, 96.1%);
+        --muted-foreground: hsl(0, 0%, 45.1%);
+        --accent: hsl(0, 0%, 96.1%);
+        --accent-foreground: hsl(0, 0%, 9%);
+        --destructive: hsl(0, 84.2%, 60.2%);
+        --destructive-foreground: hsl(0, 0%, 98%);
+        --border: hsl(0, 0%, 89.8%);
+        --input: hsl(0, 0%, 89.8%);
+        --ring: hsl(0, 0%, 3.9%);
+        --radius: 0.5rem;
+        --logo-filter: invert(100%);
+      }
+
+      .color-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+
+      .color-name,
+      .color-box {
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .color-box {
+        color: var(--foreground);
+        border: 1px solid var(--border);
+      }
+
+      .dark-mode .color-box {
+        --background: hsl(0, 0%, 3.9%);
+        --foreground: hsl(0, 0%, 98%);
+        --card: hsl(0, 0%, 3.9%);
+        --card-foreground: hsl(0, 0%, 98%);
+        --popover: hsl(0, 0%, 3.9%);
+        --popover-foreground: hsl(0, 0%, 98%);
+        --primary: hsl(0, 0%, 98%);
+        --primary-foreground: hsl(0, 0%, 9%);
+        --secondary: hsl(0, 0%, 14.9%);
+        --secondary-foreground: hsl(0, 0%, 98%);
+        --muted: hsl(0, 0%, 14.9%);
+        --muted-foreground: hsl(0, 0%, 63.9%);
+        --accent: hsl(0, 0%, 14.9%);
+        --accent-foreground: hsl(0, 0%, 98%);
+        --destructive: hsl(0, 62.8%, 30.6%);
+        --destructive-foreground: hsl(0, 0%, 98%);
+        --border: hsl(0, 0%, 14.9%);
+        --input: hsl(0, 0%, 14.9%);
+        --ring: hsl(0, 0%, 83.1%);
+        --logo-filter: invert(100%);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="color-grid">
+      <div class="color-name">Background</div>
+      <div class="color-box" style="background-color: var(--background)">
+        Light
+      </div>
+      <div
+        class="color-box dark-mode"
+        style="background-color: var(--background)"
+      >
+        Dark
+      </div>
+
+      <div class="color-name">Card</div>
+      <div class="color-box" style="background-color: var(--card)">Light</div>
+      <div class="color-box dark-mode" style="background-color: var(--card)">
+        Dark
+      </div>
+
+      <div class="color-name">Popover</div>
+      <div class="color-box" style="background-color: var(--popover)">
+        Light
+      </div>
+      <div class="color-box dark-mode" style="background-color: var(--popover)">
+        Dark
+      </div>
+
+      <div class="color-name">Primary</div>
+      <div class="color-box" style="background-color: var(--primary)">
+        Light
+      </div>
+      <div class="color-box dark-mode" style="background-color: var(--primary)">
+        Dark
+      </div>
+
+      <div class="color-name">Secondary</div>
+      <div class="color-box" style="background-color: var(--secondary)">
+        Light
+      </div>
+      <div
+        class="color-box dark-mode"
+        style="background-color: var(--secondary)"
+      >
+        Dark
+      </div>
+
+      <div class="color-name">Muted</div>
+      <div class="color-box" style="background-color: var(--muted)">Light</div>
+      <div class="color-box dark-mode" style="background-color: var(--muted)">
+        Dark
+      </div>
+
+      <div class="color-name">Accent</div>
+      <div class="color-box" style="background-color: var(--accent)">Light</div>
+      <div class="color-box dark-mode" style="background-color: var(--accent)">
+        Dark
+      </div>
+
+      <div class="color-name">Destructive</div>
+      <div class="color-box" style="background-color: var(--destructive)">
+        Light
+      </div>
+      <div
+        class="color-box dark-mode"
+        style="background-color: var(--destructive)"
+      >
+        Dark
+      </div>
+
+      <div class="color-name">Input</div>
+      <div class="color-box" style="background-color: var(--input)">Light</div>
+      <div class="color-box dark-mode" style="background-color: var(--input)">
+        Dark
+      </div>
+    </div>
+  </body>
+</html>

@@ -11,6 +11,9 @@ import { useMutation, useQuery, useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Doc, Id } from "@/convex/_generated/dataModel";
 
+// import additional librarys
+import { formatDistanceToNow } from "date-fns";
+
 // import shadcnui stuff
 import { Button } from "@/components/ui/button";
 
@@ -47,7 +50,7 @@ export default function ListOfMeetings({
               className="cursor-pointer"
               onClick={() => onMeetingSelect(meeting._id)}
             >
-              <MeetingCard meeting={meeting} />
+              {/* <MeetingCard meeting={meeting} /> */}
             </div>
           </li>
         ))}
