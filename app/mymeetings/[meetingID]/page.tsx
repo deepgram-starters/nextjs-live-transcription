@@ -193,7 +193,7 @@ export default function Page({
           setCaption={setCaption}
         />
       </div>
-      <div className="flex justify-between items-center text-sm sm:mt-2">
+      <div className="flex justify-between items-center text-sm md:mt-2">
         <Popover>
           <PopoverTrigger asChild>
             <Button
@@ -218,7 +218,7 @@ export default function Page({
         </Popover>
         <Tabs
           defaultValue="Transcript"
-          className="mt-2 sm:hidden"
+          className="mt-2 md:hidden"
           onValueChange={handleTabChange}
         >
           <TabsList>
@@ -234,7 +234,7 @@ export default function Page({
         <div className="relative flex flex-col flex-grow">
           <Tabs
             defaultValue="Transcript"
-            className="hidden sm:block"
+            className="hidden md:block"
             // onValueChange=
           >
             <TabsList id="tabs-list-large-screen" className="absolute right-0">
@@ -249,19 +249,19 @@ export default function Page({
                 caption={caption}
               />
             </TabsContent>
-            <TabsContent value="Notes" className="mt-12">
-              <Suspense fallback={<div>Loading...</div>}>
+            <TabsContent value="Notes" className="flex flex-col">
+              {/* <Suspense fallback={<div>Loading...</div>}>
                 <NoteContainer
                   meetingID={params.meetingID}
                   finalizedSentences={finalizedSentences}
                   speakerDetails={speakerDetails}
                 />
-              </Suspense>
+              </Suspense> */}
             </TabsContent>
           </Tabs>
           <div
             className={` ${
-              selectedTab === "Transcript" ? "sm:hidden" : "hidden"
+              selectedTab === "Transcript" ? "md:hidden" : "hidden"
             }`}
           >
             <TranscriptDisplay
@@ -272,24 +272,24 @@ export default function Page({
             />
           </div>
           <div
-            className={` ${selectedTab === "Notes" ? "sm:hidden" : "hidden"}`}
+            className={` ${selectedTab === "Notes" ? "md:hidden" : "hidden"}`}
           >
-            <Suspense fallback={<div>Loading...</div>}>
+            {/* <Suspense fallback={<div>Loading...</div>}>
               <NoteContainer
                 meetingID={params.meetingID}
                 finalizedSentences={finalizedSentences}
                 speakerDetails={speakerDetails}
               />
-            </Suspense>
+            </Suspense> */}
           </div>
         </div>
         <Separator
           orientation="vertical"
-          className="mx-4 h-full hidden sm:block"
+          className="mx-4 h-full hidden md:block"
         ></Separator>
         <div
-          className={`max-w-md md:w-1/2 ${
-            selectedTab === "Chat" ? "" : "hidden sm:block"
+          className={`md:w-1/2 md:max-w-[448px] ${
+            selectedTab === "Chat" ? "" : "hidden md:block"
           }`}
         >
           <Chat
