@@ -1,7 +1,7 @@
 "use client";
 
 //import react stuff
-import { useState, Suspense, useEffect } from "react"; // Import useEffect
+import { useState, Suspense, useEffect, useCallback } from "react"; // Import useEffect
 
 import { format } from "date-fns";
 
@@ -52,6 +52,7 @@ const NoteContainerNoSSR = dynamic(
 type Meeting = {
   title: string;
   userId: string;
+  _creationTime: string;
 };
 
 interface FinalizedSentence {
@@ -78,6 +79,14 @@ export default function Page({
     meetingID: params.meetingID!,
   }) as Meeting[] | undefined;
 
+  // Convert _creationTime to Date object and set it
+  useEffect(() => {
+    if (meetingDetails && meetingDetails.length > 0) {
+      const creationDate = new Date(meetingDetails[0]._creationTime);
+      setDate(creationDate);
+    }
+  }, [meetingDetails]);
+
   // Lifted state
   const [finalizedSentences, setFinalizedSentences] = useState<
     FinalizedSentence[]
@@ -85,6 +94,9 @@ export default function Page({
   const [speakerDetails, setSpeakerDetails] = useState<SpeakerDetail[]>([]);
   // Inside the component
   const [caption, setCaption] = useState<string | null>(null);
+  useEffect(() => {
+    console.log(caption); // Add this to check if caption is being updated
+  }, [caption]);
 
   const [date, setDate] = useState<Date>(new Date());
   const handleDateSelect = (selectedDate: Date | undefined) => {
@@ -128,13 +140,6 @@ export default function Page({
     meetingID: params.meetingID,
   });
 
-  // Use useEffect to log when summaries are fetched
-  useEffect(() => {
-    if (summaries) {
-      // console.log("Meeting Summaries (client):", summaries);
-    }
-  }, [summaries]);
-
   const handleGenerateSummary = async () => {
     try {
       // Clean finalizedSentences as before
@@ -175,7 +180,7 @@ export default function Page({
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] mx-5">
       <Breadcrumbs className="mt-2">
-        <BreadcrumbItem href="/mymeetings">My Meetings</BreadcrumbItem>
+        <BreadcrumbItem href="/mymeetings">All Meetings</BreadcrumbItem>
         <BreadcrumbItem>{meetingDetails?.[0]?.title}</BreadcrumbItem>
       </Breadcrumbs>
       <div className="group flex flex-row items-center mt-2">
@@ -193,7 +198,7 @@ export default function Page({
           setFinalizedSentences={setFinalizedSentences}
           speakerDetails={speakerDetails}
           setSpeakerDetails={setSpeakerDetails}
-          setCaption={setCaption}
+          setCaption={(newCaption) => setCaption(newCaption)}
         />
       </div>
       <div className="flex justify-between items-center text-sm md:mt-2">
@@ -221,7 +226,7 @@ export default function Page({
         </Popover>
         <Tabs
           defaultValue="Transcript"
-          className="mt-2 md:hidden"
+          className="md:hidden mt-2"
           onValueChange={handleTabChange}
         >
           <TabsList>

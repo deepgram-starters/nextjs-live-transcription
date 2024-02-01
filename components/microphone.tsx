@@ -40,7 +40,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 //import icon stuff
-import { Mic, Pause, User } from "lucide-react";
+import { Mic, Pause, Timer } from "lucide-react";
 import Dg from "@/app/dg.svg";
 
 //import custom stuff
@@ -99,6 +99,28 @@ export default function Microphone({
   const [caption, setCaption] = useState<string | null>();
   const [finalCaptions, setFinalCaptions] = useState<WordDetail[]>([]);
   const safeCaption = caption ?? null; // This ensures caption is not undefined
+  // State for the timer
+  const [timer, setTimer] = useState(0);
+  const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(
+    null
+  );
+
+  // Function to start the timer
+  const startTimer = useCallback(() => {
+    setTimer(0); // Reset timer
+    const interval = setInterval(() => {
+      setTimer((prevTimer) => prevTimer + 1);
+    }, 1000); // Update timer every second
+    setTimerInterval(interval);
+  }, [setTimerInterval]); // Add dependencies if any
+
+  // Function to stop the timer
+  const stopTimer = useCallback(() => {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      setTimerInterval(null);
+    }
+  }, [timerInterval, setTimerInterval]);
 
   const addSpeakerToDB = useMutation(api.meetings.addSpeaker);
 
@@ -120,7 +142,7 @@ export default function Microphone({
         setSpeakerDetails((prevDetails) => [...prevDetails, newSpeaker]);
       }
     },
-    [speakerDetails, meetingID]
+    [speakerDetails, meetingID, setSpeakerDetails]
   );
 
   const handleFirstNameChange = (id: number, newFirstName: string) => {
@@ -170,7 +192,7 @@ export default function Microphone({
       // For example, you might want to set them to your component's state
       setFinalizedSentences(finalizedSentencesFromDB);
     }
-  }, [finalizedSentencesFromDB]);
+  }, [finalizedSentencesFromDB, setFinalizedSentences]);
 
   const speakersFromDB = useQuery(api.meetings.getSpeakersByMeeting, {
     meetingID,
@@ -182,9 +204,10 @@ export default function Microphone({
       // Set the fetched speakers to your component's state
       setSpeakerDetails(speakersFromDB);
     }
-  }, [speakersFromDB]);
+  }, [speakersFromDB, setSpeakerDetails]);
 
   const createMeeting = useMutation(api.meetings.createMeeting);
+  const updateMeeting = useMutation(api.meetings.updateMeetingDetails);
 
   const toggleMicrophone = useCallback(async () => {
     if (microphone && userMedia) {
@@ -193,6 +216,8 @@ export default function Microphone({
 
       microphone.stop();
       // console.log("Finalized Sentences:", finalizedSentences); // Log the finalized sentences when stopping the recording
+      stopTimer(); // Stop the timer
+      await updateMeeting({ meetingID, updates: { duration: timer } });
 
       // Store finalized sentences in the database
       await Promise.all(
@@ -210,6 +235,8 @@ export default function Microphone({
       const microphone = new MediaRecorder(userMedia);
       microphone.start(200);
 
+      startTimer(); // Start the timer
+
       microphone.onstart = () => {
         setMicOpen(true);
       };
@@ -225,7 +252,38 @@ export default function Microphone({
       setUserMedia(userMedia);
       setMicrophone(microphone);
     }
-  }, [add, microphone, userMedia, finalizedSentences]);
+  }, [
+    add,
+    microphone,
+    userMedia,
+    finalizedSentences,
+    startTimer,
+    stopTimer,
+    addSpeakerToDB,
+    meetingID,
+    speakerDetails,
+    storeFinalizedSentences,
+    timer,
+    updateMeeting,
+  ]);
+
+  // Clear the interval when the component unmounts to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+    };
+  }, [timerInterval]);
+
+  // Function to format the timer
+  const formatTimer = () => {
+    const minutes = Math.floor(timer / 60);
+    const seconds = timer % 60;
+    return `${minutes.toString().padStart(2, "0")}:${seconds
+      .toString()
+      .padStart(2, "0")}`;
+  };
 
   useEffect(() => {
     if (!apiKey) {
@@ -275,6 +333,7 @@ export default function Microphone({
           .join(" ");
         if (caption !== "") {
           setCaption(caption);
+          // console.log(caption);
           // Check if the transcript is final
           if (data.is_final) {
             // Update the finalCaptions array with word details
@@ -320,60 +379,63 @@ export default function Microphone({
   }, [connection, queue, remove, first, size, isProcessing, isListening]);
 
   // Function to process final captions and construct finalized sentences
-  const processFinalCaptions = async (finalCaptions: WordDetail[]) => {
-    const sentences: FinalizedSentence[] = [];
-    let currentSpeaker = finalCaptions[0]?.speaker;
-    let currentText = "";
-    let startTime = finalCaptions[0]?.start;
-    let endTime = finalCaptions[0]?.end;
+  const processFinalCaptions = useCallback(
+    async (finalCaptions: WordDetail[]) => {
+      const sentences: FinalizedSentence[] = [];
+      let currentSpeaker = finalCaptions[0]?.speaker;
+      let currentText = "";
+      let startTime = finalCaptions[0]?.start;
+      let endTime = finalCaptions[0]?.end;
 
-    // Track if we have already handled the current speaker
-    let handledSpeakers: number[] = [];
+      // Track if we have already handled the current speaker
+      let handledSpeakers: number[] = [];
 
-    for (const wordDetail of finalCaptions) {
-      if (
-        wordDetail.speaker !== currentSpeaker ||
-        wordDetail === finalCaptions[finalCaptions.length - 1]
-      ) {
-        if (wordDetail === finalCaptions[finalCaptions.length - 1]) {
+      for (const wordDetail of finalCaptions) {
+        if (
+          wordDetail.speaker !== currentSpeaker ||
+          wordDetail === finalCaptions[finalCaptions.length - 1]
+        ) {
+          if (wordDetail === finalCaptions[finalCaptions.length - 1]) {
+            currentText += wordDetail.punctuated_word + " ";
+            endTime = wordDetail.end;
+          }
+
+          sentences.push({
+            speaker: currentSpeaker,
+            transcript: currentText.trim(),
+            start: startTime,
+            end: endTime,
+            meetingID: meetingID,
+          });
+
+          // If we haven't handled this speaker yet, do so now
+          if (!handledSpeakers.includes(currentSpeaker)) {
+            handleNewSpeaker(currentSpeaker);
+            handledSpeakers.push(currentSpeaker);
+          }
+
+          currentSpeaker = wordDetail.speaker;
+          currentText = wordDetail.punctuated_word + " ";
+          startTime = wordDetail.start;
+          endTime = wordDetail.end;
+        } else {
           currentText += wordDetail.punctuated_word + " ";
           endTime = wordDetail.end;
         }
-
-        sentences.push({
-          speaker: currentSpeaker,
-          transcript: currentText.trim(),
-          start: startTime,
-          end: endTime,
-          meetingID: meetingID,
-        });
-
-        // If we haven't handled this speaker yet, do so now
-        if (!handledSpeakers.includes(currentSpeaker)) {
-          handleNewSpeaker(currentSpeaker);
-          handledSpeakers.push(currentSpeaker);
-        }
-
-        currentSpeaker = wordDetail.speaker;
-        currentText = wordDetail.punctuated_word + " ";
-        startTime = wordDetail.start;
-        endTime = wordDetail.end;
-      } else {
-        currentText += wordDetail.punctuated_word + " ";
-        endTime = wordDetail.end;
       }
-    }
 
-    // console.log("Finalized Sentences:", sentences);
-    setFinalizedSentences(sentences);
-  };
+      // console.log("Finalized Sentences:", sentences);
+      setFinalizedSentences(sentences);
+    },
+    [meetingID, handleNewSpeaker, setFinalizedSentences]
+  );
 
   // Call processFinalCaptions whenever finalCaptions is updated
   useEffect(() => {
     if (finalCaptions.length > 0) {
       processFinalCaptions(finalCaptions);
     }
-  }, [finalCaptions]);
+  }, [finalCaptions, processFinalCaptions]);
 
   // if (isLoadingKey)
   //   return <span className="">Loading temporary API key...</span>;
@@ -381,7 +443,11 @@ export default function Microphone({
 
   return (
     <div className="flex flex-col">
-      <div className="flex flex-col">
+      <div className="flex flex-row">
+        <div className="flex flex-row items-center space-x-2 mr-4">
+          <Timer className="w-6 h-6" />
+          <span>{formatTimer()}</span>
+        </div>
         {/* toggle microphone */}
         <Button
           variant={
@@ -402,14 +468,6 @@ export default function Microphone({
             <Mic className="w-6 h-6" />
           )}
         </Button>
-        {/* <TranscriptDisplay
-          speakerDetails={speakerDetails}
-          finalizedSentences={finalizedSentences}
-          caption={safeCaption}
-          handleFirstNameChange={handleFirstNameChange}
-          handleLastNameChange={handleLastNameChange}
-          getSpeakerName={getSpeakerName}
-        /> */}
       </div>
       {/* connection indicator for deepgram via socket and temp api key */}
       {/* <div

@@ -12,6 +12,7 @@ export default defineSchema({
   meetings: defineTable({
     title: v.string(),
     userId: v.string(),
+    duration: v.float64(),
   }),
   messages: defineTable({
     aiModel: v.string(),

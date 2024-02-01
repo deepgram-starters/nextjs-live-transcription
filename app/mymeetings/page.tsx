@@ -28,7 +28,7 @@ export default function MyMeetings() {
   return (
     <main className="flex flex-col h-full w-full mx-10">
       <Breadcrumbs className="mb-4">
-        <BreadcrumbItem href="/mymeetings">My Meetings</BreadcrumbItem>
+        <BreadcrumbItem href="/mymeetings">All Meetings</BreadcrumbItem>
       </Breadcrumbs>
       <div className="flex flex-row h-full w-full">
         <div className="flex flex-col">

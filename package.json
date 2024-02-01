@@ -13,6 +13,7 @@
     "@blocknote/react": "^0.11.1",
     "@clerk/nextjs": "^4.29.5",
     "@deepgram/sdk": "^3.0.0-beta.2",
+    "@nanostores/react": "github:ai/react",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-avatar": "^1.0.4",
     "@radix-ui/react-collapsible": "^1.0.3",
