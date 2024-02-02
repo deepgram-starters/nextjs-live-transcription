@@ -27,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 
 //import icone stuff
 import {
@@ -36,6 +37,8 @@ import {
   Trash2,
   RotateCcw,
   AlertOctagon,
+  CalendarPlus,
+  Circle,
 } from "lucide-react";
 
 //import custom stuff
@@ -149,6 +152,24 @@ export default function ListOfMeetings({} // onMeetingSelect, //   PageProps,
     // If you're keeping a local copy of meetings, you might want to update it here
   };
 
+  // Function to toggle the selection of all meetings
+  const toggleSelectAllMeetings = () => {
+    // Check if all meetings are currently selected
+    const areAllMeetingsSelected = sortedAndFilteredMeetings?.every((meeting) =>
+      selectedMeetings.includes(meeting._id)
+    );
+
+    if (areAllMeetingsSelected) {
+      // If all meetings are selected, clear the selection
+      setSelectedMeetings([]);
+    } else {
+      // Otherwise, select all meetings
+      const allMeetingIds =
+        sortedAndFilteredMeetings?.map((meeting) => meeting._id) || [];
+      setSelectedMeetings(allMeetingIds);
+    }
+  };
+
   return (
     <div className="relative flex flex-col h-full">
       <div className="flex flex-col">
@@ -221,8 +242,23 @@ export default function ListOfMeetings({} // onMeetingSelect, //   PageProps,
             </Button>
           </div>
         </div>
+        <Separator className="mb-4" />
         <div className="flex flex-row justify-end space-x-2">
           {/* Conditionally render the delete button */}
+          {selectedMeetings.length > 0 && (
+            <Toggle
+              variant="default"
+              className="mb-2"
+              pressed={sortedAndFilteredMeetings?.every((meeting) =>
+                selectedMeetings.includes(meeting._id)
+              )}
+              onPressedChange={toggleSelectAllMeetings}
+              aria-label="Select all meetings"
+            >
+              Select All
+            </Toggle>
+          )}
+
           {selectedMeetings.length > 0 && !showDeleted && (
             <Button
               variant="destructive"
@@ -275,7 +311,10 @@ export default function ListOfMeetings({} // onMeetingSelect, //   PageProps,
         >
           {/* Adjust the div below to match the size of MeetingCard */}
           <div className="border border-muted-foreground bg-white bg-opacity-5 rounded-lg p-4 flex justify-center items-center h-full">
-            <span>Create a New Meeting</span>
+            <div className="flex flex-col items-center space-y-5">
+              <CalendarPlus className="h-10 w-10" />
+              <h1>New Meeting</h1>
+            </div>
           </div>
         </li>
         {sortedAndFilteredMeetings?.map((meeting) => (

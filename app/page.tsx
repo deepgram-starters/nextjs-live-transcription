@@ -21,7 +21,10 @@ import {
 } from "@clerk/nextjs";
 
 import Link from "next/link";
+
+//import shadcnui stuff
 import { Button } from "@/components/ui/button";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 export default function Home() {
   return (
@@ -42,6 +45,13 @@ export default function Home() {
             height={32}
             className="hidden dark:block"
           />
+          {/* <Image
+            src="/deepgram-logo.svg"
+            alt="Powered by Deepgram"
+            width={84.5}
+            height={19.5}
+            className="border border-foreground rounded-md p-2 ml-4"
+          /> */}
         </div>
         <h1 className="mt-5 font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-center">
           Anyone taking notes?

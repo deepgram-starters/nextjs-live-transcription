@@ -140,13 +140,15 @@ const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({
                     <div className="font-bold">
                       {getSpeakerName(sentence.speaker)}
                     </div>
-                    <div className="text-muted-foreground">
+                    <div className="text-sm text-muted-foreground">
                       {sentence.start.toFixed(2)} - {sentence.end.toFixed(2)}
                     </div>
                   </div>
                   <div>
                     {sentence.transcript}{" "}
-                    <span className="text-blue-500">{caption} </span>
+                    {index === finalizedSentences.length - 1 && (
+                      <span className="text-blue-500">{caption} </span>
+                    )}
                   </div>
                 </div>
               </div>

@@ -35,7 +35,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className={inter.className}>
         <Providers>
           <div className="h-screen w-screen max-w-7xl mx-auto">
-            <nav className="flex justify-between items-center h-16 shadow-md">
+            <nav className="flex justify-between items-center h-16 shadow-md mx-4">
               <span className="text-xl font-bold">MeetingNotes-AI</span>
               <div className="flex items-center space-x-4">
                 <SignedIn>

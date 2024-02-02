@@ -52,13 +52,13 @@ export default function MyMeetings() {
   // Hardcoded meeting ID for testing, cast to the expected type
 
   return (
-    <main className="flex flex-col h-full w-full mx-10 space-y-2">
+    <main className="flex flex-col h-full mx-10 space-y-2">
       <Breadcrumbs className="">
         <BreadcrumbItem href="/mymeetings">All Meetings</BreadcrumbItem>
       </Breadcrumbs>
 
-      <div className="flex flex-row h-full w-full">
-        <div className="flex flex-col">
+      <div className="flex flex-row h-full">
+        <div className="flex flex-col w-full">
           <ListOfMeetings />
         </div>
       </div>
