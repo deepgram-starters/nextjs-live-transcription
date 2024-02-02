@@ -1,90 +1,56 @@
-# Welcome to your Convex functions directory!
+# AI Notetaker Project
 
-Write your Convex functions here. See
-https://docs.convex.dev/using/writing-convex-functions for more.
+## Overview
 
-A query function that takes two arguments looks like:
+AI Notetaker is a cutting-edge application designed to enhance meeting productivity by generating notes using the latest in AI technology. Powered by Deepgram for speech recognition and OpenAI for text generation, this application offers a seamless experience for capturing and summarizing meeting discussions.
 
-```ts
-// functions.js
-import { query } from "./_generated/server";
-import { v } from "convex/values";
+## Features
 
-export const myQueryFunction = query({
-  // Validators for arguments.
-  args: {
-    first: v.number(),
-    second: v.string(),
-  },
+- **Real-time Transcription**: Utilizes Deepgram's speech-to-text capabilities to provide real-time transcription of meetings.
+- **AI-Powered Summaries**: Leverages OpenAI's GPT models to generate concise summaries of meeting transcripts, making it easier to capture the essence of discussions.
+- **Interactive UI**: Built with Next.js and Tailwind CSS for a responsive and intuitive user interface.
+- **Speaker Identification**: Diarization support to identify and differentiate speakers throughout the meeting.
+- **Meeting Management**: Users can create, view, and manage their meetings with ease.
+- **Chat Interface**: A chat feature that allows users to interact with the AI for quick summaries or answers to specific questions about the meeting content.
+- **Customizable Experience**: Users can toggle the inclusion of transcripts in AI interactions and choose between different AI models for summaries.
 
-  // Function implementation.
-  handler: async (ctx, args) => {
-    // Read the database as many times as you need here.
-    // See https://docs.convex.dev/database/reading-data.
-    const documents = await ctx.db.query("tablename").collect();
+## Technologies Used
 
-    // Arguments passed from the client are properties of the args object.
-    console.log(args.first, args.second);
+- **Next.js**: A React framework for building server-side rendering and static web applications.
+- **Tailwind CSS**: A utility-first CSS framework for rapidly building custom designs.
+- **Deepgram**: Provides real-time speech recognition and transcription services.
+- **OpenAI**: Offers powerful AI models like GPT-3.5 and GPT-4 for generating text-based content.
+- **Shadcn/UI**: A component library used for building the UI elements in the application.
+- **Lucide Icons**: A beautifully crafted icon library for use in web projects.
 
-    // Write arbitrary JavaScript here: filter, aggregate, build derived data,
-    // remove non-public properties, or create new objects.
-    return documents;
-  },
-});
-```
+## Getting Started
 
-Using this query function in a React component looks like:
+To get started with AI Notetaker, follow these steps:
 
-```ts
-const data = useQuery(api.functions.myQueryFunction, {
-  first: 10,
-  second: "hello",
-});
-```
+1. **Clone the repository**:
 
-A mutation function looks like:
+   ```bash
+   git clone https://github.com/your-repository/ai-notetaker.git
+   ```
 
-```ts
-// functions.js
-import { mutation } from "./_generated/server";
-import { v } from "convex/values";
+2. **Set up environment variables**:
+   Create a `.env.local` file at the root of your project and add your Deepgram API key and OpenAI API key:
 
-export const myMutationFunction = mutation({
-  // Validators for arguments.
-  args: {
-    first: v.string(),
-    second: v.string(),
-  },
+   ```plaintext
+   NEXT_PUBLIC_DEEPGRAM_API_KEY=your_deepgram_api_key
+   NEXT_PUBLIC_OPENAI_API_KEY=your_openai_api_key
+   ```
 
-  // Function implementation.
-  handler: async (ctx, args) => {
-    // Insert or modify documents in the database here.
-    // Mutations can also read from the database like queries.
-    // See https://docs.convex.dev/database/writing-data.
-    const message = { body: args.first, author: args.second };
-    const id = await ctx.db.insert("messages", message);
+3. **Run the development server**:
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-    // Optionally, return a value from your mutation.
-    return await ctx.db.get(id);
-  },
-});
-```
+## Contributing
 
-Using this mutation function in a React component looks like:
+Contributions are welcome! If you have a feature request or bug report, please open an issue to discuss it. Pull requests should be made against the `main` branch.
 
-```ts
-const mutation = useMutation(api.functions.myMutationFunction);
-function handleButtonPress() {
-  // fire and forget, the most common way to use mutations
-  mutation({ first: "Hello!", second: "me" });
-  // OR
-  // use the result once the mutation has completed
-  mutation({ first: "Hello!", second: "me" }).then((result) =>
-    console.log(result)
-  );
-}
-```
+## License
 
-Use the Convex CLI to push your functions to a deployment. See everything
-the Convex CLI can do by running `npx convex -h` in your project root
-directory. To learn more, launch the docs with `npx convex docs`.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
