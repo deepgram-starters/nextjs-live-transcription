@@ -1,3 +1,6 @@
+//import react stuff
+import React, { useState } from "react";
+
 import { format, formatDistanceToNow, isValid } from "date-fns";
 
 //import convex stuff
@@ -8,6 +11,7 @@ import type { Doc, Id } from "@/convex/_generated/dataModel";
 //import shadcnui stuff
 import { Badge } from "@/components/ui/badge";
 import { Toggle } from "@/components/ui/toggle";
+import { Button } from "@/components/ui/button";
 
 //import icone stuff
 import {
@@ -24,14 +28,21 @@ interface MeetingCardProps {
   meeting: {
     _id: Id<"meetings">;
     title: string;
-    _creationTime: number; // Using _creationTime as the timestamp
-    duration: number; // Duration in seconds
-    isFavorite: boolean; // Assuming this is a boolean
-    isDeleted: boolean; // Assuming this is a boolean
+    _creationTime: number;
+    duration: number;
+    isFavorite: boolean;
+    isDeleted: boolean;
+    isSelected?: boolean;
   };
+  isSelected: boolean;
+  onToggleSelected: () => void;
 }
 
-const MeetingCard: React.FC<MeetingCardProps> = ({ meeting }) => {
+const MeetingCard: React.FC<MeetingCardProps> = ({
+  meeting,
+  isSelected,
+  onToggleSelected,
+}) => {
   const { _id, title, _creationTime, duration, isFavorite, isDeleted } =
     meeting;
 
@@ -66,8 +77,21 @@ const MeetingCard: React.FC<MeetingCardProps> = ({ meeting }) => {
 
   return (
     <div className="group relative rounded-xl border bg-card text-card-foreground p-6 pb-8">
-      <Toggle size="sm" className="absolute top-2 right-2">
-        <Circle size={16} className="hidden group-hover:block" />
+      <Toggle
+        size="sm"
+        className="absolute top-2 right-2"
+        pressed={isSelected}
+        aria-label="Toggle selected"
+        onClick={(event) => {
+          event.stopPropagation(); // Prevent click from bubbling up to parent elements
+          onToggleSelected();
+        }}
+      >
+        {isSelected ? (
+          <Circle size={20} fill="white" strokeWidth={0} />
+        ) : (
+          <Circle size={20} className="hidden group-hover:block" />
+        )}
       </Toggle>
 
       <div className="flex flex-col space-y-3">

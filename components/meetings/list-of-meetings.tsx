@@ -29,7 +29,14 @@ import {
 } from "@/components/ui/select";
 
 //import icone stuff
-import { ArrowDownAZ, ArrowUpZA, Star, Trash2 } from "lucide-react";
+import {
+  ArrowDownAZ,
+  ArrowUpZA,
+  Star,
+  Trash2,
+  RotateCcw,
+  AlertOctagon,
+} from "lucide-react";
 
 //import custom stuff
 import MeetingCard from "@/components/meetings/meeting-card";
@@ -60,6 +67,20 @@ export default function ListOfMeetings({} // onMeetingSelect, //   PageProps,
     setSortOrder((prevOrder) => (prevOrder === "ASC" ? "DESC" : "ASC"));
   };
 
+  const toggleDelete = useMutation(api.meetings.updateMeetingDetails);
+  const handleDeleteSelected = async () => {
+    // Iterate over all selected meetings
+    for (const meetingId of selectedMeetings) {
+      await toggleDelete({
+        meetingID: meetingId,
+        updates: { isDeleted: true },
+      });
+    }
+    // Optionally, clear the selection or fetch updated meetings list after deletion
+    setSelectedMeetings([]);
+    // If you're keeping a local copy of meetings, you might want to update it here
+  };
+
   // Sort meetings based on sortOrder state
   const sortedMeetings = meetings?.sort((a: Meeting, b: Meeting) => {
     switch (sortBy) {
@@ -86,75 +107,146 @@ export default function ListOfMeetings({} // onMeetingSelect, //   PageProps,
       (showDeleted ? meeting.isDeleted : !meeting.isDeleted) // Adjusted delete filter logic
   );
 
+  const [selectedMeetings, setSelectedMeetings] = useState<Id<"meetings">[]>(
+    []
+  );
+  const toggleMeetingSelection = (meetingId: Id<"meetings">) => {
+    setSelectedMeetings((currentSelected) => {
+      if (currentSelected.includes(meetingId)) {
+        // If already selected, remove it
+        return currentSelected.filter((id) => id !== meetingId);
+      } else {
+        // Otherwise, add it to the selection
+        return [...currentSelected, meetingId];
+      }
+    });
+  };
+
+  const handleRecoverSelected = async () => {
+    for (const meetingId of selectedMeetings) {
+      await toggleDelete({
+        meetingID: meetingId,
+        updates: { isDeleted: false },
+      });
+    }
+    // Optionally, clear the selection or fetch updated meetings list after recovery
+    // setSelectedMeetings([]);
+    // If you're keeping a local copy of meetings, you might want to update it here
+  };
+
   return (
     <div className="relative flex flex-col h-full">
-      <div className="flex flex-row justify-between mb-2">
-        <div className="flex flex-row items-center space-x-2">
-          <Toggle
-            className="space-x-2"
-            pressed={showFavorites}
-            onPressedChange={setShowFavorites}
-            aria-label="Toggle favorites"
-          >
-            {showFavorites ? (
-              <Star className="h-4 w-4" fill="white" />
-            ) : (
-              <Star className="h-4 w-4" />
-            )}
-            <span className="text-sm">Favorites</span>
-          </Toggle>
-          <Toggle
-            className="space-x-2" // Add your styling here
-            pressed={showDeleted}
-            onPressedChange={setShowDeleted}
-            aria-label="Toggle deleted"
-          >
-            {showDeleted ? (
-              <Trash2 className="h-4 w-4" fill="white" />
-            ) : (
-              <Trash2 className="h-4 w-4" />
-            )}
-            <span className="text-sm">
-              {showDeleted ? "Hide Deleted" : "Show Deleted"}
-            </span>
-          </Toggle>
-        </div>
-        <div className="flex flex-row items-center space-x-2">
-          <Select
-            defaultValue={sortBy}
-            onValueChange={(value) =>
-              setSortBy(value as "CreatedDate" | "Duration" | "Title")
-            }
-          >
-            {" "}
-            <SelectTrigger className="">
-              <SelectValue placeholder="Sort by..." />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="CreatedDate">
-                Sort by{" "}
-                <Badge variant="default" className="mx-2">
-                  Created Date
-                </Badge>
-              </SelectItem>
-              <SelectItem value="Duration">
-                Sort by{" "}
-                <Badge variant="default" className="mx-2">
-                  Duration
-                </Badge>
-              </SelectItem>
-              <SelectItem value="Title">
-                Sort by{" "}
-                <Badge variant="default" className="mx-2">
-                  Title
-                </Badge>
-              </SelectItem>
-            </SelectContent>
-          </Select>
+      <div className="flex flex-col">
+        <div className="flex flex-row justify-between mb-2">
+          <div className="flex flex-row items-center space-x-2">
+            <Toggle
+              className="space-x-2"
+              pressed={showFavorites}
+              onPressedChange={setShowFavorites}
+              aria-label="Toggle favorites"
+            >
+              {showFavorites ? (
+                <Star className="h-4 w-4" fill="white" />
+              ) : (
+                <Star className="h-4 w-4" />
+              )}
+              <span className="text-sm">Favorites</span>
+            </Toggle>
+            <Toggle
+              className="space-x-2" // Add your styling here
+              pressed={showDeleted}
+              onPressedChange={setShowDeleted}
+              aria-label="Toggle deleted"
+            >
+              {showDeleted ? (
+                <Trash2 className="h-4 w-4" fill="white" />
+              ) : (
+                <Trash2 className="h-4 w-4" />
+              )}
+              <span className="text-sm">
+                {showDeleted ? "Hide Deleted" : "Show Deleted"}
+              </span>
+            </Toggle>
+          </div>
+          <div className="flex flex-row items-center space-x-2">
+            <Select
+              defaultValue={sortBy}
+              onValueChange={(value) =>
+                setSortBy(value as "CreatedDate" | "Duration" | "Title")
+              }
+            >
+              {" "}
+              <SelectTrigger className="">
+                <SelectValue placeholder="Sort by..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="CreatedDate">
+                  Sort by{" "}
+                  <Badge variant="default" className="mx-2">
+                    Created Date
+                  </Badge>
+                </SelectItem>
+                <SelectItem value="Duration">
+                  Sort by{" "}
+                  <Badge variant="default" className="mx-2">
+                    Duration
+                  </Badge>
+                </SelectItem>
+                <SelectItem value="Title">
+                  Sort by{" "}
+                  <Badge variant="default" className="mx-2">
+                    Title
+                  </Badge>
+                </SelectItem>
+              </SelectContent>
+            </Select>
 
-          <Button variant="outline" size="sm" onClick={toggleSortOrder}>
-            {sortOrder === "DESC" ? <ArrowUpZA /> : <ArrowDownAZ />}
-          </Button>
+            <Button variant="outline" size="sm" onClick={toggleSortOrder}>
+              {sortOrder === "DESC" ? <ArrowUpZA /> : <ArrowDownAZ />}
+            </Button>
+          </div>
+        </div>
+        <div className="flex flex-row justify-end space-x-2">
+          {/* Conditionally render the delete button */}
+          {selectedMeetings.length > 0 && !showDeleted && (
+            <Button
+              variant="destructive"
+              size="sm"
+              className="mb-2 w-fit"
+              onClick={handleDeleteSelected}
+            >
+              <div className="flex flex-row space-x-2 items-center">
+                <Trash2 className="h-4 w-4" /> <p className="text-sm">Delete</p>
+              </div>
+            </Button>
+          )}
+          {/* Conditionally render the delete forever and recover button */}
+          {selectedMeetings.length > 0 && showDeleted && (
+            <div className="flex flex-row space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="mb-2 w-fit"
+                onClick={handleRecoverSelected}
+              >
+                <div className="flex flex-row space-x-2 items-center">
+                  <p className="text-sm">Recover</p>
+                  <RotateCcw className="h-4 w-4" />{" "}
+                </div>
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                className="mb-2 w-fit"
+                // onClick={handleDeleteForverSelected}
+              >
+                <div className="flex flex-row space-x-2 items-center">
+                  <p className="text-sm">Delete Forever</p>
+                  <AlertOctagon className="h-4 w-4" />{" "}
+                </div>
+              </Button>
+            </div>
+          )}
         </div>
       </div>
       <ul className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -177,7 +269,11 @@ export default function ListOfMeetings({} // onMeetingSelect, //   PageProps,
               className="cursor-pointer"
               onClick={() => onMeetingSelect(meeting._id)}
             >
-              <MeetingCard meeting={meeting} />
+              <MeetingCard
+                meeting={meeting}
+                isSelected={selectedMeetings.includes(meeting._id)}
+                onToggleSelected={() => toggleMeetingSelection(meeting._id)}
+              />
             </div>
           </li>
         ))}
