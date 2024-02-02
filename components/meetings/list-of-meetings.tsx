@@ -134,6 +134,21 @@ export default function ListOfMeetings({} // onMeetingSelect, //   PageProps,
     // If you're keeping a local copy of meetings, you might want to update it here
   };
 
+  // At the top where other hooks are imported
+  const deleteMeetingAndRelatedRecords = useMutation(
+    api.meetings.deleteMeetingAndRelatedRecords
+  );
+
+  // Function to handle "Delete Forever" action
+  const handleDeleteForeverSelected = async () => {
+    for (const meetingId of selectedMeetings) {
+      await deleteMeetingAndRelatedRecords({ meetingId });
+    }
+    // Optionally, clear the selection or fetch updated meetings list after deletion
+    setSelectedMeetings([]);
+    // If you're keeping a local copy of meetings, you might want to update it here
+  };
+
   return (
     <div className="relative flex flex-col h-full">
       <div className="flex flex-col">
@@ -238,7 +253,7 @@ export default function ListOfMeetings({} // onMeetingSelect, //   PageProps,
                 variant="destructive"
                 size="sm"
                 className="mb-2 w-fit"
-                // onClick={handleDeleteForverSelected}
+                onClick={handleDeleteForeverSelected} // Attach the handler here
               >
                 <div className="flex flex-row space-x-2 items-center">
                   <p className="text-sm">Delete Forever</p>

@@ -157,3 +157,47 @@ export const updateMeetingDetails = mutation({
     await ctx.db.patch(args.meetingID, updates);
   },
 });
+
+export const deleteMeetingAndRelatedRecords = mutation({
+  args: { meetingId: v.id("meetings") },
+  handler: async (ctx, { meetingId }) => {
+    // Example for finalizedSentences, repeat for other related collections
+    const finalizedSentences = await ctx.db
+      .query("finalizedSentences")
+      .filter((q) => q.eq(q.field("meetingID"), meetingId))
+      .collect();
+    for (const record of finalizedSentences) {
+      await ctx.db.delete(record._id); // Correct usage: delete by _id
+    }
+
+    // Correctly delete related records from messages
+    const messages = await ctx.db
+      .query("messages")
+      .filter((q) => q.eq(q.field("meetingID"), meetingId))
+      .collect();
+    for (const record of messages) {
+      await ctx.db.delete(record._id);
+    }
+
+    // Correctly delete related records from speakers
+    const speakers = await ctx.db
+      .query("speakers")
+      .filter((q) => q.eq(q.field("meetingID"), meetingId))
+      .collect();
+    for (const record of speakers) {
+      await ctx.db.delete(record._id);
+    }
+
+    // Correctly delete related records from meetingSummaries
+    const meetingSummaries = await ctx.db
+      .query("meetingSummaries")
+      .filter((q) => q.eq(q.field("meetingID"), meetingId))
+      .collect();
+    for (const record of meetingSummaries) {
+      await ctx.db.delete(record._id);
+    }
+
+    // Finally, delete the meeting itself
+    await ctx.db.delete(meetingId);
+  },
+});
