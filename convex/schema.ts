@@ -13,6 +13,8 @@ export default defineSchema({
     title: v.string(),
     userId: v.string(),
     duration: v.float64(),
+    isFavorite: v.boolean(),
+    isDeleted: v.boolean(),
   }),
   messages: defineTable({
     aiModel: v.string(),

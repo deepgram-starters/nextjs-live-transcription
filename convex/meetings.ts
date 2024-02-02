@@ -20,6 +20,8 @@ export const createMeeting = mutation({
       title: args.title,
       userId: user.subject,
       duration: 0,
+      isFavorite: false,
+      isDeleted: false,
       //   description: args.description,
       //   date: args.date,
       //   time: args.time,
@@ -122,6 +124,8 @@ export const updateMeetingDetails = mutation({
     updates: v.object({
       newTitle: v.optional(v.string()),
       duration: v.optional(v.float64()),
+      isFavorite: v.optional(v.boolean()),
+      isDeleted: v.optional(v.boolean()),
     }),
   },
   handler: async (ctx, args) => {
@@ -131,12 +135,23 @@ export const updateMeetingDetails = mutation({
       throw new Error("Please login to update the meeting");
     }
 
-    const updates: { title?: string; duration?: number } = {};
+    const updates: {
+      title?: string;
+      duration?: number;
+      isFavorite?: boolean;
+      isDeleted?: boolean;
+    } = {};
     if (args.updates.newTitle !== undefined) {
       updates.title = args.updates.newTitle;
     }
     if (args.updates.duration !== undefined) {
       updates.duration = args.updates.duration;
+    }
+    if (args.updates.isFavorite !== undefined) {
+      updates.isFavorite = args.updates.isFavorite;
+    }
+    if (args.updates.isDeleted !== undefined) {
+      updates.isDeleted = args.updates.isDeleted;
     }
 
     await ctx.db.patch(args.meetingID, updates);
