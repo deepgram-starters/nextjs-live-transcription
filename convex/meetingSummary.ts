@@ -104,7 +104,7 @@ export const retrieveMeetingSummary = action({
       );
     }
 
-    console.log("fullChatHistory:", fullChatHistory);
+    // console.log("fullChatHistory:", fullChatHistory);
 
     const completion = await openai.chat.completions.create({
       model: aiModel,

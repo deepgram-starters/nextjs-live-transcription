@@ -22,8 +22,6 @@ import { Breadcrumbs, BreadcrumbItem } from "@/components/ui/breadcrumbs";
 
 export default function MyMeetings() {
   // Hardcoded meeting ID for testing, cast to the expected type
-  const [selectedMeetingID, setSelectedMeetingID] =
-    useState<Id<"meetings"> | null>(null);
 
   return (
     <main className="flex flex-col h-full w-full mx-10">
@@ -32,7 +30,7 @@ export default function MyMeetings() {
       </Breadcrumbs>
       <div className="flex flex-row h-full w-full">
         <div className="flex flex-col">
-          <ListOfMeetings onMeetingSelect={setSelectedMeetingID} />
+          <ListOfMeetings />
         </div>
       </div>
     </main>
