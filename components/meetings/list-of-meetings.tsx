@@ -28,6 +28,8 @@ export default function ListOfMeetings({
   const createMeeting = useMutation(api.meetings.createMeeting);
   const meetings = useQuery(api.meetings.getMeetingsForUser);
 
+  console.log(meetings);
+
   return (
     <div className="flex flex-col h-full">
       <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -50,7 +52,7 @@ export default function ListOfMeetings({
               className="cursor-pointer"
               onClick={() => onMeetingSelect(meeting._id)}
             >
-              {/* <MeetingCard meeting={meeting} /> */}
+              <MeetingCard meeting={meeting} />
             </div>
           </li>
         ))}

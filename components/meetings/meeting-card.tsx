@@ -32,20 +32,23 @@ const MeetingCard: React.FC<MeetingCardProps> = ({ meeting }) => {
     .substr(11, 8);
 
   return (
-    <div className="bg-muted-foreground text-white p-4 rounded-lg space-y-2">
-      <div className="flex flex-row justify-between">
-        <h3 className="text-lg font-semibold">{title}</h3>
-        <p className="text-sm">{timeAgo}</p>
+    <div className="relative rounded-xl border bg-card text-card-foreground shadow p-6">
+      <div className="flex flex-col space-y-3">
+        <div className="flex flex-row justify-between">
+          <h2 className="text-lg font-semibold">{title}</h2>
+        </div>
+        <div className="flex flex-row items-center space-x-2">
+          <CalendarIcon size={16} />
+          <p className="text-sm">{formattedDate}</p>
+        </div>
+        <div className="flex flex-row space-x-2 items-center">
+          <Timer size={16} />
+          <p className="text-sm">{formattedDuration}</p>
+        </div>
+        <p className="absolute bottom-2 right-2 text-sm text-muted-foreground">
+          {timeAgo}
+        </p>
       </div>
-      <div className="flex flex-row space-y-2 items-center">
-        <CalendarIcon size={16} />
-        <p className="text-sm">{formattedDate}</p>
-      </div>
-      <div className="flex flex-row space-y-2 items-center">
-        <Timer size={16} />
-        <p className="text-sm">{formattedDuration}</p>
-      </div>
-
       {/* Add more details here as needed */}
     </div>
   );

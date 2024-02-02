@@ -12,6 +12,8 @@ export const createMeeting = mutation({
   handler: async (ctx, args) => {
     const user = await ctx.auth.getUserIdentity();
 
+    console.log("user", user);
+
     if (!user) {
       throw new Error("Please login to create a meeting");
     }
@@ -31,6 +33,8 @@ export const getMeetingsForUser = query({
   args: {},
   handler: async (ctx, args) => {
     const user = await ctx.auth.getUserIdentity();
+
+    console.log("user", user);
 
     if (!user) {
       return [];
