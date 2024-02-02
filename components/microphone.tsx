@@ -73,10 +73,13 @@ export interface SpeakerDetail {
 interface MicrophoneProps {
   meetingID: Id<"meetings">;
   finalizedSentences: FinalizedSentence[];
-  setFinalizedSentences: Dispatch<SetStateAction<FinalizedSentence[]>>;
+  setFinalizedSentences: React.Dispatch<
+    React.SetStateAction<FinalizedSentence[]>
+  >;
   speakerDetails: SpeakerDetail[];
-  setSpeakerDetails: Dispatch<SetStateAction<SpeakerDetail[]>>;
-  setCaption: Dispatch<SetStateAction<string | null>>;
+  setSpeakerDetails: React.Dispatch<React.SetStateAction<SpeakerDetail[]>>;
+  setCaption: React.Dispatch<React.SetStateAction<string | null>>;
+  caption: string | null; // Adjusted type here
 }
 
 export default function Microphone({
@@ -85,6 +88,8 @@ export default function Microphone({
   setFinalizedSentences,
   speakerDetails,
   setSpeakerDetails,
+  caption,
+  setCaption,
 }: MicrophoneProps) {
   const { add, remove, first, size, queue } = useQueue<any>([]);
   const [apiKey, setApiKey] = useState<CreateProjectKeyResponse | null>();
@@ -96,7 +101,7 @@ export default function Microphone({
   const [micOpen, setMicOpen] = useState(false);
   const [microphone, setMicrophone] = useState<MediaRecorder | null>();
   const [userMedia, setUserMedia] = useState<MediaStream | null>();
-  const [caption, setCaption] = useState<string | null>();
+  // const [caption, setCaption] = useState<string | null>();
   const [finalCaptions, setFinalCaptions] = useState<WordDetail[]>([]);
   const safeCaption = caption ?? null; // This ensures caption is not undefined
   // State for the timer

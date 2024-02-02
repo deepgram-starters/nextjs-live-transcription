@@ -94,9 +94,14 @@ export default function Page({
   const [speakerDetails, setSpeakerDetails] = useState<SpeakerDetail[]>([]);
   // Inside the component
   const [caption, setCaption] = useState<string | null>(null);
+
   useEffect(() => {
     console.log(caption); // Add this to check if caption is being updated
   }, [caption]);
+
+  useEffect(() => {
+    console.log(finalizedSentences); // Add this to check if caption is being updated
+  }, [finalizedSentences]);
 
   const [date, setDate] = useState<Date>(new Date());
   const handleDateSelect = (selectedDate: Date | undefined) => {
@@ -198,7 +203,8 @@ export default function Page({
           setFinalizedSentences={setFinalizedSentences}
           speakerDetails={speakerDetails}
           setSpeakerDetails={setSpeakerDetails}
-          setCaption={(newCaption) => setCaption(newCaption)}
+          setCaption={setCaption}
+          caption={caption} // Add this line
         />
       </div>
       <div className="flex justify-between items-center text-sm md:mt-2">
