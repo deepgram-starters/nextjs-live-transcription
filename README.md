@@ -1,78 +1,56 @@
-# Live Audio Next.js Starter
+# AI Notetaker Project
 
-[![Discord](https://dcbadge.vercel.app/api/server/xWRaCDBtW4?style=flat)](https://discord.gg/xWRaCDBtW4)
+## Overview
 
-This sample demonstrates interacting with Deepgram from Next.js to transcribe your microphone audio. It uses the Deepgram JavaScript SDK. This was originally a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+AI Notetaker is a cutting-edge application designed to enhance meeting productivity by generating notes using the latest in AI technology. Powered by Deepgram for speech recognition and OpenAI for text generation, this application offers a seamless experience for capturing and summarizing meeting discussions.
 
-## Demo features
+## Features
 
-- Persistent connection to Deepgram
-  - This demo will automatically reconnect in the event the websocket disconnects.
-- Microphone audio buffer
-  - The microphone audio is buffered and instantly sent to Deepgram. In the event the socket disconnects, the audio continues to buffer and then catches up once the connection is re-established.
-- Uses temporary API keys
-  - This demo mints it's own temporary short-lived (a few seconds), limited scope API keys in a server route, to protect your main API key.
-- Browser-side transcription
-  - The connection to Deepgram is established directly from the client, and does not use a server-side component to transcribe the audio.
+- **Real-time Transcription**: Utilizes Deepgram's speech-to-text capabilities to provide real-time transcription of meetings.
+- **AI-Powered Summaries**: Leverages OpenAI's GPT models to generate concise summaries of meeting transcripts, making it easier to capture the essence of discussions.
+- **Interactive UI**: Built with Next.js and Tailwind CSS for a responsive and intuitive user interface.
+- **Speaker Identification**: Diarization support to identify and differentiate speakers throughout the meeting.
+- **Meeting Management**: Users can create, view, and manage their meetings with ease.
+- **Chat Interface**: A chat feature that allows users to interact with the AI for quick summaries or answers to specific questions about the meeting content.
+- **Customizable Experience**: Users can toggle the inclusion of transcripts in AI interactions and choose between different AI models for summaries.
 
-## What is Deepgram?
+## Technologies Used
 
-[Deepgram](https://deepgram.com/) is a foundational AI company providing speech-to-text and language understanding capabilities to make data readable and actionable by human or machines.
+- **Next.js**: A React framework for building server-side rendering and static web applications.
+- **Tailwind CSS**: A utility-first CSS framework for rapidly building custom designs.
+- **Deepgram**: Provides real-time speech recognition and transcription services.
+- **OpenAI**: Offers powerful AI models like GPT-3.5 and GPT-4 for generating text-based content.
+- **Shadcn/UI**: A component library used for building the UI elements in the application.
+- **Lucide Icons**: A beautifully crafted icon library for use in web projects.
 
-## Sign-up to Deepgram
+## Getting Started
 
-Before you start, it's essential to generate a Deepgram API key to use in this project. [Sign-up now for Deepgram and create an API key](https://console.deepgram.com/signup?jump=keys).
+To get started with AI Notetaker, follow these steps:
 
-## Quickstart
+1. **Clone the repository**:
 
-### Manual
+   ```bash
+   git clone https://github.com/your-repository/ai-notetaker.git
+   ```
 
-Follow these steps to get started with this starter application.
+2. **Set up environment variables**:
+   Create a `.env.local` file at the root of your project and add your Deepgram API key and OpenAI API key:
 
-#### Clone the repository
+   ```plaintext
+   NEXT_PUBLIC_DEEPGRAM_API_KEY=your_deepgram_api_key
+   NEXT_PUBLIC_OPENAI_API_KEY=your_openai_api_key
+   ```
 
-Go to GitHub and [clone the repository](https://github.com/deepgram-starters/live-nextjs-starter).
+3. **Run the development server**:
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-#### Install dependencies
+## Contributing
 
-Install the project dependencies.
-
-```bash
-npm install
-```
-
-#### Edit the config file
-
-Copy the code from `sample.env.local` and create a new file called `.env.local`. Paste in the code and enter your API key you generated in the [Deepgram console](https://console.deepgram.com/).
-
-```bash
-DEEPGRAM_API_KEY=%api_key%
-```
-
-#### Run the application
-
-Once running, you can [access the application in your browser](http://localhost:3000).
-
-```bash
-npm run dev
-```
-
-## Issue Reporting
-
-If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Security Policy](./SECURITY.md) details the procedure for contacting Deepgram.
-
-## Getting Help
-
-We love to hear from you so if you have questions, comments or find a bug in the project, let us know! You can either:
-
-- [Open an issue in this repository](https://github.com/deepgram-starters/live-nextjs-starter/issues/new)
-- [Join the Deepgram Github Discussions Community](https://github.com/orgs/deepgram/discussions)
-- [Join the Deepgram Discord Community](https://discord.gg/xWRaCDBtW4)
-
-## Author
-
-[Deepgram](https://deepgram.com)
+Contributions are welcome! If you have a feature request or bug report, please open an issue to discuss it. Pull requests should be made against the `main` branch.
 
 ## License
 
-This project is licensed under the MIT license. See the [LICENSE](./LICENSE) file for more info.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
