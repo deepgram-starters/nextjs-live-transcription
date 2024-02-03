@@ -22,6 +22,7 @@ import {
   CheckCircle,
   CalendarIcon,
   Timer,
+  Clock,
 } from "lucide-react";
 
 interface MeetingCardProps {
@@ -51,16 +52,21 @@ const MeetingCard: React.FC<MeetingCardProps> = ({
 
   // Check if the date is valid before formatting
   const formattedDate = isValid(date)
-    ? format(date, "EEE MM/dd/yyyy '@' h:mm a")
+    ? format(date, "MMMM do, yyyy")
+    : "Invalid date";
+  const formattedDateSmall = isValid(date)
+    ? format(date, "MM/dd/yy")
     : "Invalid date";
   const timeAgo = isValid(date)
     ? formatDistanceToNow(date, { addSuffix: true })
     : "Invalid date";
-
   // Format the duration to a readable format, e.g., "27:10"
   const formattedDuration = new Date(duration * 1000)
     .toISOString()
     .substr(11, 8);
+  const formattedTime = isValid(date)
+    ? format(date, "hh:mm a")
+    : "Invalid time";
 
   const toggleFavorite = useMutation(api.meetings.updateMeetingDetails);
 
@@ -94,7 +100,7 @@ const MeetingCard: React.FC<MeetingCardProps> = ({
         )}
       </Toggle>
 
-      <div className="flex flex-col space-y-3">
+      <div className="flex flex-col space-y-3 mb-5 sm:mb-0">
         <div className="flex flex-row items-center space-x-2">
           <h2 className="text-lg font-semibold">{title}</h2>
           <Toggle
@@ -112,9 +118,17 @@ const MeetingCard: React.FC<MeetingCardProps> = ({
             )}
           </Toggle>
         </div>
-        <div className="flex flex-row items-center space-x-2">
+        <div className="hidden flex-row sm:flex space-x-2 items-center">
           <CalendarIcon size={16} />
           <p className="text-sm">{formattedDate}</p>
+        </div>
+        <div className="sm:hidden flex flex-row space-x-2 items-center">
+          <CalendarIcon size={16} />
+          <p className="text-sm">{formattedDateSmall}</p>
+        </div>
+        <div className="flex flex-row space-x-2 items-center">
+          <Clock size={16} />
+          <p className="text-sm">{formattedTime}</p>
         </div>
         <div className="flex flex-row space-x-2 items-center">
           <Timer size={16} />

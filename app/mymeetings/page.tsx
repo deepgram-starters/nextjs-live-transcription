@@ -6,6 +6,7 @@ import { useState } from "react";
 
 //import nextjs stuff
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 //import convex stuff
 import { api } from "@/convex/_generated/api";
@@ -52,7 +53,7 @@ export default function MyMeetings() {
   // Hardcoded meeting ID for testing, cast to the expected type
 
   return (
-    <main className="flex flex-col h-full mx-10 space-y-2">
+    <main className="flex flex-col h-full mx-2 sm:mx-10 space-y-2">
       <Breadcrumbs className="">
         <BreadcrumbItem href="/mymeetings">All Meetings</BreadcrumbItem>
       </Breadcrumbs>

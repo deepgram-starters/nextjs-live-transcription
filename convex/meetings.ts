@@ -5,9 +5,7 @@ import { api } from "./_generated/api";
 export const createMeeting = mutation({
   args: {
     title: v.string(),
-    // description: v.string(),
-    // date: v.string(),
-    // time: v.string(),
+    // Additional arguments can be added here
   },
   handler: async (ctx, args) => {
     const user = await ctx.auth.getUserIdentity();
@@ -16,16 +14,18 @@ export const createMeeting = mutation({
       throw new Error("Please login to create a meeting");
     }
 
-    await ctx.db.insert("meetings", {
+    // Insert the new meeting and capture the returned ID
+    const meetingId = await ctx.db.insert("meetings", {
       title: args.title,
       userId: user.subject,
       duration: 0,
       isFavorite: false,
       isDeleted: false,
-      //   description: args.description,
-      //   date: args.date,
-      //   time: args.time,
+      // Additional fields can be added here
     });
+
+    // Return the meeting ID so it can be used by the client
+    return { meetingId };
   },
 });
 

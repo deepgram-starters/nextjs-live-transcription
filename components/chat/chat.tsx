@@ -159,7 +159,7 @@ export default function ChatCompletion({
           })}
         </div>
       </ScrollArea>
-      <div className="absolute bottom-0 p-2 w-[calc(100%-40px)] md:w-[calc(50%-20px)] md:max-w-[448px] min-w-[448px]">
+      <div className="absolute bottom-0 p-2 w-[calc(100%-40px)] md:w-[calc(50%-20px)] md:max-w-[448px] sm:min-w-[448px]">
         <form
           onSubmit={async (e) => {
             e.preventDefault();

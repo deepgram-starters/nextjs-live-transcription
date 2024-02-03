@@ -225,8 +225,8 @@ export default function Page({
           initialDuration={meetingDetails?.[0]?.duration || 0} // Pass the initial duration here
         />
       </div>
-      <div className="flex justify-between items-center text-sm md:mt-2 ml-2">
-        <div className="flex flex-row items-center">
+      <div className="flex justify-end sm:justify-between items-center text-sm md:mt-2 sm:ml-2">
+        <div className="hidden sm:flex flex-row items-center">
           <div className="flex flex-row items-center tracking-wide space-x-6">
             <div className="flex flex-row items-center space-x-2">
               <CalendarIcon className="h-4 w-4" />
@@ -256,7 +256,7 @@ export default function Page({
       <Separator orientation="horizontal" className="mt-2 " />
       <div className=" flex-grow flex flex-row mt-3 h-[calc(100vh-255px)]">
         {/* Conditional rendering based on the selectedTab */}
-        <div className="relative flex flex-col flex-grow">
+        <div className="relative flex flex-col sm:flex-grow">
           <Tabs
             defaultValue="Transcript"
             className="hidden md:block"
@@ -313,7 +313,7 @@ export default function Page({
           className="mx-4 h-full hidden md:block"
         ></Separator>
         <div
-          className={`md:w-1/2 md:max-w-[448px] min-w-[448px] ${
+          className={`md:w-1/2 md:max-w-[448px] sm:min-w-[448px] ${
             selectedTab === "Chat" ? "" : "hidden md:block"
           }`}
         >

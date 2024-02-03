@@ -5,7 +5,7 @@ import { useState } from "react"; // Import useState
 
 // import nextjs stuff
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // Import useRouter
+import { useRouter } from "next/navigation";
 
 // import convex stuff for db
 import { useMutation, useQuery, useAction } from "convex/react";
@@ -46,10 +46,7 @@ import MeetingCard from "@/components/meetings/meeting-card";
 
 type Meeting = Doc<"meetings">;
 
-export default function ListOfMeetings({} // onMeetingSelect, //   PageProps,
-: {
-  // onMeetingSelect: (meetingId: Id<"meetings">) => void;
-}) {
+export default function ListOfMeetings() {
   const createMeeting = useMutation(api.meetings.createMeeting);
   const meetings = useQuery(api.meetings.getMeetingsForUser);
   const router = useRouter();
@@ -59,6 +56,15 @@ export default function ListOfMeetings({} // onMeetingSelect, //   PageProps,
   );
   const [showFavorites, setShowFavorites] = useState(false);
   const [showDeleted, setShowDeleted] = useState(false);
+
+  // onClick handler for the "New Meeting" placeholder
+  const handleCreateNewMeeting = async () => {
+    const response = await createMeeting({ title: "Untitled Meeting" });
+    if (response && response.meetingId) {
+      // Use router.push to navigate to the new meeting's detail page
+      router.push(`/mymeetings/${response.meetingId}`);
+    }
+  };
 
   // Function to handle meeting selection
   const onMeetingSelect = (meetingId: Id<"meetings">) => {
@@ -182,11 +188,11 @@ export default function ListOfMeetings({} // onMeetingSelect, //   PageProps,
               aria-label="Toggle favorites"
             >
               {showFavorites ? (
-                <Star className="h-4 w-4" fill="white" />
+                <Star className="sm:h-4 sm:w-4" fill="white" />
               ) : (
-                <Star className="h-4 w-4" />
+                <Star className="sm:h-4 sm:w-4" />
               )}
-              <span className="text-sm">Favorites</span>
+              <span className="hidden small:block text-sm">Favorites</span>
             </Toggle>
             <Toggle
               className="space-x-2" // Add your styling here
@@ -195,16 +201,16 @@ export default function ListOfMeetings({} // onMeetingSelect, //   PageProps,
               aria-label="Toggle deleted"
             >
               {showDeleted ? (
-                <Trash2 className="h-4 w-4" fill="white" />
+                <Trash2 className="sm:h-4 sm:w-4" fill="white" />
               ) : (
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="sm:h-4 sm:w-4" />
               )}
-              <span className="text-sm">
+              <span className="hidden small:block text-sm">
                 {showDeleted ? "Hide Deleted" : "Show Deleted"}
               </span>
             </Toggle>
           </div>
-          <div className="flex flex-row items-center space-x-2">
+          <div className="flex flex-row items-center space-x-2 ml-2 sm:ml-0">
             <Select
               defaultValue={sortBy}
               onValueChange={(value) =>
@@ -213,11 +219,11 @@ export default function ListOfMeetings({} // onMeetingSelect, //   PageProps,
             >
               {" "}
               <SelectTrigger className="">
-                <SelectValue placeholder="Sort by..." />
+                <SelectValue placeholder="" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="CreatedDate">
-                  Sort by{" "}
+                  <span className="">Sort by</span>
                   <Badge variant="default" className="mx-2">
                     Created Date
                   </Badge>
@@ -304,10 +310,7 @@ export default function ListOfMeetings({} // onMeetingSelect, //   PageProps,
         {/* Placeholder card for creating a new meeting */}
         <li
           className="cursor-pointer"
-          onClick={async () => {
-            const response = await createMeeting({ title: "My Meeting" });
-            // Optionally handle the response, e.g., select the new meeting
-          }}
+          onClick={handleCreateNewMeeting} // Updated to use the new handler
         >
           {/* Adjust the div below to match the size of MeetingCard */}
           <div className="border border-muted-foreground bg-white bg-opacity-5 rounded-lg p-4 flex justify-center items-center h-full">
