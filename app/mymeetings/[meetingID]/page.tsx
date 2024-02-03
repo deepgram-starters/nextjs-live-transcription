@@ -77,6 +77,8 @@ export default function Page({
   params: { meetingID: Id<"meetings"> };
 }) {
   const [date, setDate] = useState<Date>(new Date());
+  // Add a new local state for the editable title
+  const [editableTitle, setEditableTitle] = useState("");
 
   const meetingDetails = useQuery(api.meetings.getMeetingByID, {
     meetingID: params.meetingID!,
@@ -87,6 +89,8 @@ export default function Page({
     if (meetingDetails && meetingDetails.length > 0) {
       const creationDate = new Date(meetingDetails[0]._creationTime);
       setDate(creationDate);
+      // Set the editable title from the fetched meeting details
+      setEditableTitle(meetingDetails[0].title);
     }
   }, [meetingDetails, setDate]);
 
@@ -113,20 +117,6 @@ export default function Page({
   // Inside the component
   const [caption, setCaption] = useState<string | null>(null);
 
-  // useEffect(() => {
-  //   console.log(caption); // Add this to check if caption is being updated
-  // }, [caption]);
-
-  // useEffect(() => {
-  //   console.log(finalizedSentences); // Add this to check if caption is being updated
-  // }, [finalizedSentences, setDate]);
-
-  const handleDateSelect = (selectedDate: Date | undefined) => {
-    if (selectedDate) {
-      setDate(selectedDate);
-    }
-  };
-
   // State for managing the selected tab for smaller screens to just 1 component
   const [selectedTab, setSelectedTab] = useState<string>("Transcript");
   // Function to handle tab change
@@ -139,62 +129,21 @@ export default function Page({
     useState<string>("Transcript");
 
   const updateMeetingTitle = useMutation(api.meetings.updateMeetingTitle);
-  const handleTitleChange = async (newTitle: string) => {
+  // Adjust handleTitleChange to update local state
+  const handleTitleChange = (newTitle: string) => {
+    setEditableTitle(newTitle);
+  };
+
+  // New function to handle updating the title in Convex on blur or enter key press
+  const updateTitleInConvex = async () => {
     try {
-      await updateMeetingTitle({ meetingID: params.meetingID, newTitle });
+      await updateMeetingTitle({
+        meetingID: params.meetingID,
+        newTitle: editableTitle,
+      });
       // Optionally, refresh the meeting details or show a success message
     } catch (error) {
       console.error("Failed to update meeting title:", error);
-      // Optionally, show an error message
-    }
-  };
-
-  // State to track the selected OpenAI model
-  const [selectedModel, setSelectedModel] = useState("3.5");
-
-  // Handler to toggle the OpenAI model
-  const toggleModel = () => {
-    setSelectedModel(selectedModel === "3.5" ? "4.0" : "3.5");
-  };
-
-  const retrieveSummary = useAction(api.meetingSummary.retrieveMeetingSummary);
-  const summaries = useQuery(api.meetingSummary.getMeetingSummaryForUser, {
-    meetingID: params.meetingID,
-  });
-
-  const handleGenerateSummary = async () => {
-    try {
-      // Clean finalizedSentences as before
-      const cleanedFinalizedSentences = finalizedSentences.map(
-        ({ speaker, transcript, start, end, meetingID }) => ({
-          speaker,
-          transcript,
-          start,
-          end,
-          meetingID,
-        })
-      );
-
-      // Now also clean speakerDetails to remove any fields not expected by the validator
-      const cleanedSpeakerDetails = speakerDetails.map(
-        ({ firstName, lastName, speakerNumber }) => ({
-          firstName,
-          lastName,
-          speakerNumber,
-        })
-      );
-
-      // Call the action with the necessary arguments, including the cleaned data
-      const summary = await retrieveSummary({
-        message: "Please generate a summary for this meeting.",
-        meetingID: params.meetingID,
-        aiModel: selectedModel,
-        finalizedSentences: cleanedFinalizedSentences,
-        speakerDetails: cleanedSpeakerDetails,
-      });
-      // Handle the summary here, e.g., display it in the UI or store it in state
-    } catch (error) {
-      console.error("Failed to generate meeting summary:", error);
       // Optionally, show an error message
     }
   };
@@ -209,8 +158,15 @@ export default function Page({
         <Input
           type="text"
           placeholder="Untitled Meeting"
-          value={meetingDetails?.[0]?.title}
+          value={editableTitle}
           onChange={(e) => handleTitleChange(e.target.value)}
+          onBlur={updateTitleInConvex} // Update Convex when the input loses focus
+          onKeyPress={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault(); // Prevent form submission if wrapped in a form
+              updateTitleInConvex(); // Update Convex when enter is pressed
+            }
+          }}
           className="text-3xl font-bold leading-none border-none focus:ring-0"
         />
         <div className="ml-4" />
