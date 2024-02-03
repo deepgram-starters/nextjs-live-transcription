@@ -38,6 +38,7 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 //import icon stuff
 import { Mic, Pause, Timer } from "lucide-react";
@@ -80,6 +81,7 @@ interface MicrophoneProps {
   setSpeakerDetails: React.Dispatch<React.SetStateAction<SpeakerDetail[]>>;
   setCaption: React.Dispatch<React.SetStateAction<string | null>>;
   caption: string | null; // Adjusted type here
+  initialDuration: number; // Add this line
 }
 
 export default function Microphone({
@@ -90,6 +92,7 @@ export default function Microphone({
   setSpeakerDetails,
   caption,
   setCaption,
+  initialDuration,
 }: MicrophoneProps) {
   const { add, remove, first, size, queue } = useQueue<any>([]);
   const [apiKey, setApiKey] = useState<CreateProjectKeyResponse | null>();
@@ -109,6 +112,17 @@ export default function Microphone({
   const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(
     null
   );
+
+  //disable re-recording until i fix the bug
+  const [disableRecording, setDisableRecording] = useState(false);
+  useEffect(() => {
+    // Set the timer to the initial duration
+    setTimer(initialDuration);
+    // Disable recording if there is an initial duration
+    if (initialDuration > 0) {
+      setDisableRecording(true);
+    }
+  }, [initialDuration]);
 
   // Function to start the timer
   const startTimer = useCallback(() => {
@@ -219,6 +233,8 @@ export default function Microphone({
       setUserMedia(null);
       setMicrophone(null);
 
+      setDisableRecording(true); //stop enabling the ability to record again until we fix the error/bug
+
       microphone.stop();
       // console.log("Finalized Sentences:", finalizedSentences); // Log the finalized sentences when stopping the recording
       stopTimer(); // Stop the timer
@@ -233,29 +249,40 @@ export default function Microphone({
         speakerDetails.map((speaker) => addSpeakerToDB(speaker))
       );
     } else {
-      const userMedia = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-      });
+      if (disableRecording) {
+        toast("Were working on it", {
+          description: "Woring on enabling ability to record again",
+          action: {
+            label: "Got it!",
+            onClick: () => console.log("client attempted to rerecord"),
+          },
+        });
+        return;
+      } else {
+        const userMedia = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
 
-      const microphone = new MediaRecorder(userMedia);
-      microphone.start(200);
+        const microphone = new MediaRecorder(userMedia);
+        microphone.start(200);
 
-      startTimer(); // Start the timer
+        startTimer(); // Start the timer
 
-      microphone.onstart = () => {
-        setMicOpen(true);
-      };
+        microphone.onstart = () => {
+          setMicOpen(true);
+        };
 
-      microphone.onstop = () => {
-        setMicOpen(false);
-      };
+        microphone.onstop = () => {
+          setMicOpen(false);
+        };
 
-      microphone.ondataavailable = (e) => {
-        add(e.data);
-      };
+        microphone.ondataavailable = (e) => {
+          add(e.data);
+        };
 
-      setUserMedia(userMedia);
-      setMicrophone(microphone);
+        setUserMedia(userMedia);
+        setMicrophone(microphone);
+      }
     }
   }, [
     add,
@@ -270,6 +297,7 @@ export default function Microphone({
     storeFinalizedSentences,
     timer,
     updateMeeting,
+    disableRecording,
   ]);
 
   // Clear the interval when the component unmounts to prevent memory leaks
@@ -360,7 +388,7 @@ export default function Microphone({
       setConnection(connection);
       setLoading(false);
     }
-  }, [apiKey]);
+  }, [apiKey, setCaption, setFinalCaptions]);
 
   useEffect(() => {
     const processQueue = async () => {

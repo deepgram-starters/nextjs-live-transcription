@@ -3,7 +3,7 @@
 //import react stuff
 import { useState, Suspense, useEffect, useCallback } from "react"; // Import useEffect
 
-import { format } from "date-fns";
+import { format, isValid, formatDistanceToNow } from "date-fns";
 
 //import nextjs stuff
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
@@ -29,7 +29,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 //import icon stuff
-import { PenLine, CalendarIcon, SparklesIcon } from "lucide-react";
+import { PenLine, CalendarIcon, SparklesIcon, Clock } from "lucide-react";
 
 // import custom stuff
 import Microphone from "@/components/microphone";
@@ -53,6 +53,7 @@ type Meeting = {
   title: string;
   userId: string;
   _creationTime: string;
+  duration: number;
 };
 
 interface FinalizedSentence {
@@ -75,17 +76,34 @@ export default function Page({
 }: {
   params: { meetingID: Id<"meetings"> };
 }) {
+  const [date, setDate] = useState<Date>(new Date());
+
   const meetingDetails = useQuery(api.meetings.getMeetingByID, {
     meetingID: params.meetingID!,
   }) as Meeting[] | undefined;
 
-  // Convert _creationTime to Date object and set it
+  // Now that date is declared, you can use it in useEffect or anywhere else
   useEffect(() => {
     if (meetingDetails && meetingDetails.length > 0) {
       const creationDate = new Date(meetingDetails[0]._creationTime);
       setDate(creationDate);
     }
-  }, [meetingDetails]);
+  }, [meetingDetails, setDate]);
+
+  const meetingDate =
+    meetingDetails && meetingDetails.length > 0
+      ? new Date(meetingDetails[0]._creationTime)
+      : new Date();
+  const isValidDate = isValid(meetingDate);
+  const formattedDate = isValidDate
+    ? format(meetingDate, "MMMM do, yyyy")
+    : "Invalid date";
+  const timeAgo = isValidDate
+    ? formatDistanceToNow(meetingDate, { addSuffix: true })
+    : "Invalid date";
+  const meetingTime = isValidDate
+    ? format(meetingDate, "hh:mm a")
+    : "Invalid time";
 
   // Lifted state
   const [finalizedSentences, setFinalizedSentences] = useState<
@@ -95,15 +113,14 @@ export default function Page({
   // Inside the component
   const [caption, setCaption] = useState<string | null>(null);
 
-  useEffect(() => {
-    console.log(caption); // Add this to check if caption is being updated
-  }, [caption]);
+  // useEffect(() => {
+  //   console.log(caption); // Add this to check if caption is being updated
+  // }, [caption]);
 
-  useEffect(() => {
-    console.log(finalizedSentences); // Add this to check if caption is being updated
-  }, [finalizedSentences]);
+  // useEffect(() => {
+  //   console.log(finalizedSentences); // Add this to check if caption is being updated
+  // }, [finalizedSentences, setDate]);
 
-  const [date, setDate] = useState<Date>(new Date());
   const handleDateSelect = (selectedDate: Date | undefined) => {
     if (selectedDate) {
       setDate(selectedDate);
@@ -188,7 +205,7 @@ export default function Page({
         <BreadcrumbItem href="/mymeetings">All Meetings</BreadcrumbItem>
         <BreadcrumbItem>{meetingDetails?.[0]?.title}</BreadcrumbItem>
       </Breadcrumbs>
-      <div className="group flex flex-row items-center mt-2">
+      <div className="group flex flex-row items-center my-2">
         <Input
           type="text"
           placeholder="Untitled Meeting"
@@ -205,34 +222,28 @@ export default function Page({
           setSpeakerDetails={setSpeakerDetails}
           setCaption={setCaption}
           caption={caption} // Add this line
+          initialDuration={meetingDetails?.[0]?.duration || 0} // Pass the initial duration here
         />
       </div>
-      <div className="flex justify-between items-center text-sm md:mt-2">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant={"outline"}
-              className={cn(
-                "justify-start text-left font-normal",
-                !date && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {date ? format(date, "PPP") : <span>Pick a date</span>}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0">
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={handleDateSelect}
-              initialFocus
-            />
-          </PopoverContent>
-        </Popover>
+      <div className="flex justify-between items-center text-sm md:mt-2 ml-2">
+        <div className="flex flex-row items-center">
+          <div className="flex flex-row items-center tracking-wide space-x-6">
+            <div className="flex flex-row items-center space-x-2">
+              <CalendarIcon className="h-4 w-4" />
+              <span>{formattedDate}</span>
+            </div>
+            <div className="flex flex-row items-center space-x-2">
+              <Clock className="h-4 w-4" />
+              <span>{meetingTime}</span>
+            </div>
+            <span className="text-muted-foreground hidden md:block">
+              ({timeAgo})
+            </span>
+          </div>
+        </div>
         <Tabs
           defaultValue="Transcript"
-          className="md:hidden mt-2"
+          className="md:hidden"
           onValueChange={handleTabChange}
         >
           <TabsList>

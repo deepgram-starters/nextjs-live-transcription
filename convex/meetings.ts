@@ -126,6 +126,7 @@ export const updateMeetingDetails = mutation({
       duration: v.optional(v.float64()),
       isFavorite: v.optional(v.boolean()),
       isDeleted: v.optional(v.boolean()),
+      date: v.optional(v.string()), // Add this line to include a date field
     }),
   },
   handler: async (ctx, args) => {
@@ -153,7 +154,6 @@ export const updateMeetingDetails = mutation({
     if (args.updates.isDeleted !== undefined) {
       updates.isDeleted = args.updates.isDeleted;
     }
-
     await ctx.db.patch(args.meetingID, updates);
   },
 });

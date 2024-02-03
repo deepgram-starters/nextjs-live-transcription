@@ -4,6 +4,7 @@ import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
+//import clerk stuff
 import {
   SignInButton,
   UserButton,
@@ -13,9 +14,12 @@ import {
 } from "@clerk/nextjs";
 import { ReactNode } from "react";
 
+//import shadcnui stuff
+import { Toaster } from "@/components/ui/sonner";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
 
+//import custom stuff
 import { Providers } from "@/components/providers";
 
 export const metadata: Metadata = {
@@ -56,6 +60,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </nav>
             {children}
           </div>
+          <Toaster />
         </Providers>
       </body>
     </html>

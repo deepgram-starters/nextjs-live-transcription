@@ -2,7 +2,7 @@ import Link from "next/link";
 import React from "react";
 
 //import ui stuff
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Folder } from "lucide-react";
 
 type BreadcrumbItemProps = {
   children: React.ReactNode;
@@ -39,6 +39,11 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
     <ol className="list-none p-0 inline-flex text-sm items-center">
       {React.Children.map(children, (child, index) => (
         <>
+          {index === 0 && (
+            <li className="mx-2 text-muted-foreground-50">
+              <Folder size={16} />
+            </li>
+          )}
           {index > 0 && (
             <li className="mx-2 text-muted-foreground-50">
               <ChevronRight size={16} />
