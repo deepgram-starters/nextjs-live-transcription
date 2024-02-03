@@ -30,3 +30,20 @@ export const getFinalizedSentencesByMeeting = query({
       .collect();
   },
 });
+
+export const storeQuestion = mutation({
+  args: {
+    meetingID: v.id("meetings"),
+    question: v.string(),
+    timestamp: v.float64(),
+    speaker: v.number(),
+  },
+  async handler({ db }, { meetingID, question, timestamp, speaker }) {
+    await db.insert("questions", {
+      meetingID,
+      question,
+      timestamp,
+      speaker,
+    });
+  },
+});

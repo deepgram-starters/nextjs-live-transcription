@@ -7,6 +7,7 @@ import {
   useCallback,
   Dispatch,
   SetStateAction,
+  useRef,
 } from "react";
 import { useQueue } from "@uidotdev/usehooks";
 
@@ -47,6 +48,11 @@ import Dg from "@/app/dg.svg";
 //import custom stuff
 import TranscriptDisplay from "@/components/microphone/transcript";
 
+interface CaptionDetail {
+  words: string;
+  isFinal: boolean;
+}
+
 export interface WordDetail {
   word: string;
   start: number;
@@ -71,6 +77,14 @@ export interface SpeakerDetail {
   meetingID: Id<"meetings">;
 }
 
+// Step 1: Define a QuestionDetail Interface
+export interface QuestionDetail {
+  question: string;
+  timestamp: number; // You can choose to track the time the question was asked
+  speaker: number; // Optional: track which speaker asked the question
+  meetingID: Id<"meetings">; // Optional: track the meeting ID
+}
+
 interface MicrophoneProps {
   meetingID: Id<"meetings">;
   finalizedSentences: FinalizedSentence[];
@@ -79,9 +93,12 @@ interface MicrophoneProps {
   >;
   speakerDetails: SpeakerDetail[];
   setSpeakerDetails: React.Dispatch<React.SetStateAction<SpeakerDetail[]>>;
-  setCaption: React.Dispatch<React.SetStateAction<string | null>>;
-  caption: string | null; // Adjusted type here
+  caption: CaptionDetail | null;
+  setCaption: Dispatch<SetStateAction<CaptionDetail | null>>;
+
   initialDuration: number; // Add this line
+  questions: QuestionDetail[]; // Add this line
+  setQuestions: React.Dispatch<React.SetStateAction<QuestionDetail[]>>; // Add this line
 }
 
 export default function Microphone({
@@ -104,14 +121,15 @@ export default function Microphone({
   const [micOpen, setMicOpen] = useState(false);
   const [microphone, setMicrophone] = useState<MediaRecorder | null>();
   const [userMedia, setUserMedia] = useState<MediaStream | null>();
-  // const [caption, setCaption] = useState<string | null>();
+  // const [caption, setCaption] = useState<CaptionDetail | null>(null);
   const [finalCaptions, setFinalCaptions] = useState<WordDetail[]>([]);
-  const safeCaption = caption ?? null; // This ensures caption is not undefined
+
   // State for the timer
   const [timer, setTimer] = useState(0);
   const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(
     null
   );
+  const storeQuestion = useMutation(api.transcript.storeQuestion);
 
   //disable re-recording until i fix the bug
   const [disableRecording, setDisableRecording] = useState(false);
@@ -360,19 +378,19 @@ export default function Microphone({
 
       connection.on(LiveTranscriptionEvents.Transcript, (data) => {
         // console.log(data);
-        const words = data.channel.alternatives[0].words;
-        const caption = words
+        const words = data.channel.alternatives[0].words
           .map((word: any) => word.punctuated_word ?? word.word)
           .join(" ");
-        if (caption !== "") {
-          setCaption(caption);
-          // console.log(caption);
+        const isFinal = data.is_final;
+        if (words !== "") {
+          setCaption({ words, isFinal });
+
           // Check if the transcript is final
           if (data.is_final) {
             // Update the finalCaptions array with word details
             setFinalCaptions((prevCaptions) => [
               ...prevCaptions,
-              ...words.map((word: any) => ({
+              ...data.channel.alternatives[0].words.map((word: any) => ({
                 word: word.word,
                 start: word.start,
                 end: word.end,
@@ -423,7 +441,30 @@ export default function Microphone({
       // Track if we have already handled the current speaker
       let handledSpeakers: number[] = [];
 
+      // New logic for capturing full questions
+      let currentSentence = ""; // Track the current sentence being formed
+      const detectedQuestions: QuestionDetail[] = []; // Array to hold detected questions
+
       for (const wordDetail of finalCaptions) {
+        // Append the current word to the sentence being formed
+        currentSentence += wordDetail.punctuated_word + " ";
+
+        // Check if the current word ends with a question mark
+        if (wordDetail.punctuated_word.endsWith("?")) {
+          // If so, capture the entire current sentence as a question
+
+          const currentQuestion: QuestionDetail = {
+            question: currentSentence.trim(),
+            timestamp: startTime,
+            speaker: currentSpeaker,
+            meetingID: meetingID,
+          };
+
+          detectedQuestions.push(currentQuestion);
+          // Reset currentSentence for the next sentence
+          currentSentence = "";
+        }
+
         if (
           wordDetail.speaker !== currentSpeaker ||
           wordDetail === finalCaptions[finalCaptions.length - 1]
@@ -457,11 +498,28 @@ export default function Microphone({
         }
       }
 
-      // console.log("Finalized Sentences:", sentences);
+      console.log("Finalized Sentences:", sentences);
+      console.log("Detected Questions:", detectedQuestions); // Log detected questions
       setFinalizedSentences(sentences);
+      setQuestions(detectedQuestions);
     },
     [meetingID, handleNewSpeaker, setFinalizedSentences]
   );
+
+  const [questions, setQuestions] = useState<QuestionDetail[]>([]);
+  // Inside your component
+  const prevQuestionsLengthRef = useRef(questions.length);
+  useEffect(() => {
+    // Check if the questions array has grown
+    if (questions.length > prevQuestionsLengthRef.current) {
+      // A new question was added, handle it here
+      const newQuestion = questions[questions.length - 1];
+      console.log("New question added:", newQuestion);
+      storeQuestion(newQuestion);
+    }
+    // Update the ref to the current length after handling
+    prevQuestionsLengthRef.current = questions.length;
+  }, [questions, storeQuestion]);
 
   // Call processFinalCaptions whenever finalCaptions is updated
   useEffect(() => {

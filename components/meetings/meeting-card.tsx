@@ -73,7 +73,7 @@ const MeetingCard: React.FC<MeetingCardProps> = ({
   const handleToggleFavorite = async (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
-    console.log("Toggling favorite:", isFavorite);
+    // console.log("Toggling favorite:", isFavorite);
     event.stopPropagation(); // Prevent click from bubbling up to parent elements
     await toggleFavorite({
       meetingID: _id as Id<"meetings">,

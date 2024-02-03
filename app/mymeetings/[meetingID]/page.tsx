@@ -64,10 +64,22 @@ interface FinalizedSentence {
   meetingID: Id<"meetings">;
 }
 
+interface CaptionDetail {
+  words: string;
+  isFinal: boolean;
+}
+
 interface SpeakerDetail {
   speakerNumber: number;
   firstName: string;
   lastName: string;
+  meetingID: Id<"meetings">;
+}
+
+export interface QuestionDetail {
+  question: string;
+  timestamp: number; // You can choose to track the time the question was asked
+  speaker: number; // Optional: track which speaker asked the question
   meetingID: Id<"meetings">;
 }
 
@@ -114,8 +126,8 @@ export default function Page({
     FinalizedSentence[]
   >([]);
   const [speakerDetails, setSpeakerDetails] = useState<SpeakerDetail[]>([]);
-  // Inside the component
-  const [caption, setCaption] = useState<string | null>(null);
+
+  const [caption, setCaption] = useState<CaptionDetail | null>(null);
 
   // State for managing the selected tab for smaller screens to just 1 component
   const [selectedTab, setSelectedTab] = useState<string>("Transcript");
@@ -148,6 +160,9 @@ export default function Page({
     }
   };
 
+  // New state for managing questions
+  const [questions, setQuestions] = useState<QuestionDetail[]>([]);
+
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] mx-5">
       <Breadcrumbs className="mt-2">
@@ -177,8 +192,10 @@ export default function Page({
           speakerDetails={speakerDetails}
           setSpeakerDetails={setSpeakerDetails}
           setCaption={setCaption}
-          caption={caption} // Add this line
-          initialDuration={meetingDetails?.[0]?.duration || 0} // Pass the initial duration here
+          caption={caption}
+          initialDuration={meetingDetails?.[0]?.duration || 0}
+          questions={questions} // Pass the questions state here
+          setQuestions={setQuestions} // Pass the setQuestions state here
         />
       </div>
       <div className="flex justify-end sm:justify-between items-center text-sm md:mt-2 sm:ml-2">

@@ -18,11 +18,17 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { User } from "lucide-react";
 import type { SpeakerDetail, FinalizedSentence } from "../microphone"; // Assuming these types are exported from microphone.tsx
 
+interface CaptionDetail {
+  words: string;
+  isFinal: boolean;
+}
+
 interface TranscriptDisplayProps {
   speakerDetails: SpeakerDetail[];
   setSpeakerDetails: Dispatch<SetStateAction<SpeakerDetail[]>>;
   finalizedSentences: FinalizedSentence[];
-  caption: string | null;
+  caption: CaptionDetail | null;
+  setCaption?: Dispatch<SetStateAction<CaptionDetail | null>>; // Make it optional if it's not always needed
 }
 
 const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({
@@ -147,7 +153,14 @@ const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({
                   <div>
                     {sentence.transcript}{" "}
                     {index === finalizedSentences.length - 1 && (
-                      <span className="text-blue-500">{caption} </span>
+                      <div>
+                        {caption && !caption.isFinal && (
+                          <div className="text-blue-500">
+                            {caption.words}{" "}
+                            {caption.isFinal ? "(Final)" : "(Interim)"}
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -162,7 +175,12 @@ const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({
                 </Avatar>
                 <div className="flex flex-col ml-4 border rounded-lg p-4">
                   <div>
-                    <span className="text-blue-500">{caption}</span>
+                    {caption && !caption.isFinal && (
+                      <div className="text-blue-500">
+                        {caption.words}{" "}
+                        {caption.isFinal ? "(Final)" : "(Interim)"}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
