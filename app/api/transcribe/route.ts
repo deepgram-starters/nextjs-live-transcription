@@ -1,16 +1,20 @@
 export async function POST(request: Request, response: Response) {
   try {
     const requestBody = await request.json();
-    console.log("POST request received", requestBody);
 
-    const runpodResponse = await fetch(process.env.RUNPOD_RUNSYNC_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.RUNPOD_API_KEY}`,
-      },
-      body: JSON.stringify(requestBody),
-    });
+    // console.log("Posting to runpod:", requestBody);
+
+    const runpodResponse = await fetch(
+      "https://api.runpod.ai/v2/0vlaxo2gomini4/runsync",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.RUNPOD_API_KEY}`,
+        },
+        body: JSON.stringify(requestBody),
+      }
+    );
 
     if (!runpodResponse.ok) {
       throw new Error(
@@ -18,8 +22,9 @@ export async function POST(request: Request, response: Response) {
       );
     }
 
+    console.log("Runpod response:", runpodResponse);
+
     const responseData = await runpodResponse.json();
-    console.log("RunPod response data:", responseData);
 
     // Correctly return JSON response to the client
     return new Response(JSON.stringify(responseData), {

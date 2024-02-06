@@ -1,0 +1,24 @@
+name = "runpod-meetingnotes-ai"
+
+[project]
+  base_image = "runpod/base:0.4.4-cuda11.8.0"
+  container_disk_size_gb = 10
+  gpu_count = 1
+  gpu_types = ["NVIDIA RTX A4000", "NVIDIA RTX A4500", "NVIDIA RTX A5000", "NVIDIA GeForce RTX 3090", "NVIDIA RTX A6000"]
+  ports = "8080/http, 22/tcp, 4040/http"
+  uuid = "9b7296cb"
+  volume_mount_path = "/runpod-volume"
+
+  [project.env_vars]
+    POD_INACTIVITY_TIMEOUT = "120"
+    RUNPOD_DEBUG_LEVEL = "debug"
+    UVICORN_LOG_LEVEL = "warning"
+
+[runtime]
+  handler_path = "src/handler.py"
+  python_version = "3.10"
+  requirements_path = "builder/requirements.txt"
+
+[template]
+  model_name = "None"
+  model_type = "default"

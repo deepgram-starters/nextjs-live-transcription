@@ -4,7 +4,7 @@ import { useState } from "react";
 
 type TranscriptResponse = {
   model: string;
-  transcription: string;
+  embedding: string;
   delayTime: number;
   executionTime: number;
   timestamp: string; // Add this line
@@ -16,12 +16,12 @@ const RunPodPage = () => {
 
   const models = [
     "tiny",
-    "base",
-    "small",
-    "medium",
-    "large-v1",
-    "large-v2",
-    "large-v3",
+    // "base",
+    // "small",
+    // "medium",
+    // "large-v1",
+    // "large-v2",
+    // "large-v3",
   ];
 
   const fetchTranscripts = async () => {
@@ -35,9 +35,9 @@ const RunPodPage = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             input: {
-              audio:
+              audio_file:
                 "https://github.com/runpod-workers/sample-inputs/raw/main/audio/gettysburg.wav",
-              model: model,
+              //   model: model,
             },
           }),
         });
@@ -47,7 +47,7 @@ const RunPodPage = () => {
           ...prevResponses,
           {
             model: model,
-            transcription: data.output.transcription,
+            embedding: data.output.embedding,
             delayTime: data.delayTime,
             executionTime: data.executionTime,
             timestamp: requestTimestamp, // Add this line
@@ -121,7 +121,7 @@ const RunPodPage = () => {
           <div>Delay Time</div>
           <div>Execution Time</div>
           <div>Total Time</div>
-          <div>Transcript</div>
+          <div>embedding</div>
           <div>Timestamp</div> {/* Add this column header */}
         </div>
         {responses.map((response, index) => (
@@ -132,7 +132,7 @@ const RunPodPage = () => {
             <div>{formatTime(response.delayTime)}</div>
             <div>{formatTime(response.executionTime)}</div>
             <div>{formatTime(response.delayTime + response.executionTime)}</div>
-            <div>{response.transcription.substring(0, 10)}</div>
+            <div>{response.embedding}</div>
             <div>{response.timestamp}</div> {/* Display the timestamp */}
           </div>
         ))}
