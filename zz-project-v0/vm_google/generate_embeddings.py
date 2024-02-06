@@ -21,7 +21,7 @@ device = torch.device(
 
 # Instantiate pretrained model
 model = Model.from_pretrained(
-    "pyannote/embedding", use_auth_token="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").to(device)
+    "pyannote/embedding", use_auth_token="").to(device)
 inference = Inference(model, window="whole")
 
 # Initialize last call time

@@ -47,11 +47,11 @@ const FormData = require("form-data");
 // Serve static files from the "public" directory to load meetings and return transctiprts for retrieving response.json
 app.use(express.static(path.join(__dirname, "public")));
 
-const apiKey = "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";
+const apiKey = "";
 const model = "gpt-3.5-turbo-1106"; //"gpt-3.5-turbo";
 
 // Your Deepgram API Key
-const deepgramApiKey = "3bc9b54af5a8d42b3b06e39266957639638189cd";
+const deepgramApiKey = "";
 // Initialize the Deepgram SDK
 const deepgram = new Deepgram(deepgramApiKey);
 
@@ -1028,7 +1028,12 @@ async function measureAndStoreTime(filePath, subtask, task, transaction) {
 }
 
 // Modify the processFile function to accept a second callback function
-async function processFile(filePath, model, transcriptCallback, embeddingCallback) {
+async function processFile(
+  filePath,
+  model,
+  transcriptCallback,
+  embeddingCallback
+) {
   // Start the timer
   console.log("\nProcessing file:", filePath);
   console.log("\nUsing:", model);
