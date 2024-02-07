@@ -12,8 +12,11 @@
     "@deepgram/sdk": "^3.0.0-beta.2",
     "@svgr/webpack": "^8.1.0",
     "@uidotdev/usehooks": "^2.4.1",
+    "ai": "^2.2.33",
     "next": "14.0.1",
+    "openai": "^4.26.1",
     "react": "^18",
+    "react-device-detect": "^2.2.3",
     "react-dom": "^18",
     "swr": "^2.2.4"
   },
