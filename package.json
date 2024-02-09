@@ -13,6 +13,8 @@
     "@blocknote/react": "^0.11.1",
     "@clerk/nextjs": "^4.29.5",
     "@deepgram/sdk": "^3.0.0-beta.2",
+    "@ffmpeg/core": "0.10.0",
+    "@ffmpeg/ffmpeg": "0.10.1",
     "@nanostores/react": "github:ai/react",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-aspect-ratio": "^1.0.3",
@@ -36,6 +38,7 @@
     "clsx": "^2.1.0",
     "convex": "^1.8.0",
     "date-fns": "^3.3.1",
+    "formidable": "^3.5.1",
     "lucide-react": "^0.316.0",
     "next": "14.0.1",
     "next-themes": "^0.2.1",
@@ -49,6 +52,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@types/formidable": "^3.4.5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

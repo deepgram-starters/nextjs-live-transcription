@@ -155,10 +155,7 @@ const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({
                     {index === finalizedSentences.length - 1 && (
                       <div>
                         {caption && !caption.isFinal && (
-                          <div className="text-blue-500">
-                            {caption.words}{" "}
-                            {caption.isFinal ? "(Final)" : "(Interim)"}
-                          </div>
+                          <div className="text-blue-500">{caption.words}</div>
                         )}
                       </div>
                     )}
@@ -176,10 +173,7 @@ const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({
                 <div className="flex flex-col ml-4 border rounded-lg p-4">
                   <div>
                     {caption && !caption.isFinal && (
-                      <div className="text-blue-500">
-                        {caption.words}{" "}
-                        {caption.isFinal ? "(Final)" : "(Interim)"}
-                      </div>
+                      <div className="text-blue-500">{caption.words}</div>
                     )}
                   </div>
                 </div>

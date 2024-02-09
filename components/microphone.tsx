@@ -13,6 +13,7 @@ import { useQueue } from "@uidotdev/usehooks";
 
 //import nextjs stuff
 import Image from "next/image";
+import Link from "next/link";
 
 // import convex stuff for db
 import { useMutation, useQuery, useAction } from "convex/react";
@@ -42,11 +43,12 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
 //import icon stuff
-import { Mic, Pause, Timer } from "lucide-react";
+import { Mic, Pause, Timer, Download } from "lucide-react";
 import Dg from "@/app/dg.svg";
 
 //import custom stuff
 import TranscriptDisplay from "@/components/microphone/transcript";
+import { extractSegment } from "@/lib/ffmpgUtils";
 
 interface CaptionDetail {
   words: string;
@@ -121,7 +123,9 @@ export default function Microphone({
   const [micOpen, setMicOpen] = useState(false);
   const [microphone, setMicrophone] = useState<MediaRecorder | null>();
   const [userMedia, setUserMedia] = useState<MediaStream | null>();
-  // const [caption, setCaption] = useState<CaptionDetail | null>(null);
+  const [audioBlobs, setAudioBlobs] = useState<Blob[]>([]);
+  const combinedAudioBlob = new Blob(audioBlobs, { type: "audio/webm" });
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [finalCaptions, setFinalCaptions] = useState<WordDetail[]>([]);
 
   // State for the timer
@@ -130,6 +134,47 @@ export default function Microphone({
     null
   );
   const storeQuestion = useMutation(api.transcript.storeQuestion);
+  const storeWordDetail = useMutation(api.transcript.storeWordDetail);
+
+  const generateUploadUrl = useMutation(api.transcript.generateAudioUploadUrl);
+  const sendAudio = useMutation(api.transcript.sendAudio);
+
+  const runProcessAudioEmbedding = useAction(
+    api.transcript.processAudioEmbedding
+  );
+
+  const uploadAudioBlob = useCallback(
+    async (audioBlob: Blob) => {
+      try {
+        // Step 1: Get a short-lived upload URL
+        const uploadUrl = await generateUploadUrl();
+
+        // Step 2: POST the file to the URL
+        const response = await fetch(uploadUrl, {
+          method: "POST",
+          headers: { "Content-Type": "audio/webm" },
+          body: audioBlob,
+        });
+        if (!response.ok) {
+          throw new Error("Failed to upload audio blob");
+        }
+        const { storageId } = await response.json();
+
+        // Step 3: Save the newly allocated storage id to the database
+        await sendAudio({ storageId, meetingID });
+        console.log("Audio uploaded successfully:", storageId);
+        // Example of calling the action with a file URL
+
+        // Call the doSomething action with the storageId
+        runProcessAudioEmbedding({ storageId }).then(() => {
+          console.log("doSomething action completed successfully");
+        });
+      } catch (error) {
+        console.error("Error uploading audio blob:", error);
+      }
+    },
+    [meetingID, generateUploadUrl, sendAudio, runProcessAudioEmbedding]
+  );
 
   //disable re-recording until i fix the bug
   const [disableRecording, setDisableRecording] = useState(false);
@@ -141,6 +186,17 @@ export default function Microphone({
       setDisableRecording(true);
     }
   }, [initialDuration]);
+
+  useEffect(() => {
+    // This useEffect hook will run when the component mounts and anytime downloadUrl changes.
+    // The cleanup function will run when the component unmounts or before the effect runs again due to a change in downloadUrl.
+    return () => {
+      if (downloadUrl) {
+        URL.revokeObjectURL(downloadUrl);
+        setDownloadUrl(null); // Optionally reset downloadUrl state here if needed
+      }
+    };
+  }, [downloadUrl]);
 
   // Function to start the timer
   const startTimer = useCallback(() => {
@@ -253,8 +309,30 @@ export default function Microphone({
 
       setDisableRecording(true); //stop enabling the ability to record again until we fix the error/bug
 
+      console.log("finalCaptions:", finalCaptions); // Log the finalized
+
       microphone.stop();
+
+      //save final words
       // console.log("Finalized Sentences:", finalizedSentences); // Log the finalized sentences when stopping the recording
+      finalCaptions.forEach(async (caption) => {
+        try {
+          const result = await storeWordDetail({
+            meetingID: meetingID,
+            word: caption.word,
+            start: caption.start,
+            end: caption.end,
+            confidence: caption.confidence,
+            speaker: caption.speaker,
+            punctuated_word: caption.punctuated_word,
+            // audio_embedding can be omitted if not available yet
+          });
+          console.log("Word detail stored:", result);
+        } catch (error) {
+          console.error("Failed to store word detail:", error);
+        }
+      });
+
       stopTimer(); // Stop the timer
       await updateMeeting({ meetingID, updates: { duration: timer } });
 
@@ -266,6 +344,28 @@ export default function Microphone({
       await Promise.all(
         speakerDetails.map((speaker) => addSpeakerToDB(speaker))
       );
+
+      // Combine audio blobs into a single Blob
+      const combinedAudioBlob = new Blob(audioBlobs, { type: "audio/webm" });
+      // Code to create a downloadable link for the combined audio
+      const audioURL = URL.createObjectURL(combinedAudioBlob);
+      setDownloadUrl(audioURL); // Set the URL for the download button to use
+
+      uploadAudioBlob(combinedAudioBlob);
+
+      //handle next steps to initiate audio embedding
+      // console.log("calling /api/embedding with audio blob:", combinedAudioBlob);
+      // const formData = new FormData();
+      // formData.append("audio_file", combinedAudioBlob, "audio.webm");
+
+      // const response = await fetch("/api/embedding", {
+      //   method: "POST",
+      //   body: formData, // Send the form data
+      // });
+      // console.log("response from /api/embedding:", response);
+
+      // Reset or handle state updates as necessary
+      setAudioBlobs([]);
     } else {
       if (disableRecording) {
         toast("Were working on it", {
@@ -277,12 +377,14 @@ export default function Microphone({
         });
         return;
       } else {
+        setAudioBlobs([]); // Reset audio blobs here
+
         const userMedia = await navigator.mediaDevices.getUserMedia({
           audio: true,
         });
 
         const microphone = new MediaRecorder(userMedia);
-        microphone.start(200);
+        microphone.start(500);
 
         startTimer(); // Start the timer
 
@@ -296,6 +398,7 @@ export default function Microphone({
 
         microphone.ondataavailable = (e) => {
           add(e.data);
+          setAudioBlobs((prevBlobs) => [...prevBlobs, e.data]);
         };
 
         setUserMedia(userMedia);
@@ -316,6 +419,12 @@ export default function Microphone({
     timer,
     updateMeeting,
     disableRecording,
+    audioBlobs,
+    storeWordDetail,
+    finalCaptions,
+    setAudioBlobs,
+    setDownloadUrl,
+    uploadAudioBlob,
   ]);
 
   // Clear the interval when the component unmounts to prevent memory leaks
@@ -324,6 +433,7 @@ export default function Microphone({
       if (timerInterval) {
         clearInterval(timerInterval);
       }
+      setAudioBlobs([]); // Reset audio blobs here
     };
   }, [timerInterval]);
 
@@ -540,25 +650,38 @@ export default function Microphone({
           <span>{formatTimer()}</span>
         </div>
         {/* toggle microphone */}
-        <Button
-          variant={
-            !!userMedia && !!microphone && micOpen ? "destructive" : "secondary"
-          }
-          size="icon"
-          onClick={() => toggleMicrophone()}
-          disabled={isLoadingKey} // Button is disabled if isLoadingKey is true
-          className={
-            !!userMedia && !!microphone && micOpen
-              ? "" // recording enabled
-              : "" // recording disabled
-          }
-        >
-          {!!userMedia && !!microphone && micOpen ? (
-            <Pause className="w-6 h-6" />
-          ) : (
-            <Mic className="w-6 h-6" />
-          )}
-        </Button>
+        {!downloadUrl && (
+          <Button
+            variant={
+              !!userMedia && !!microphone && micOpen
+                ? "destructive"
+                : "secondary"
+            }
+            size="icon"
+            onClick={() => toggleMicrophone()}
+            disabled={isLoadingKey} // Button is disabled if isLoadingKey is true
+            className={
+              !!userMedia && !!microphone && micOpen
+                ? "" // recording enabled
+                : "" // recording disabled
+            }
+          >
+            {!!userMedia && !!microphone && micOpen ? (
+              <Pause className="w-6 h-6" />
+            ) : (
+              <Mic className="w-6 h-6" />
+            )}
+          </Button>
+        )}
+        {/* toggle download */}
+
+        {downloadUrl && (
+          <Button size="icon" className="">
+            <Link href={downloadUrl} download="recorded_audio.webm">
+              <Download />
+            </Link>
+          </Button>
+        )}
       </div>
       {/* connection indicator for deepgram via socket and temp api key */}
       {/* <div
