@@ -164,9 +164,9 @@ export default function Microphone({
         await sendAudio({ storageId, meetingID });
 
         // Call the generateEmebedding action with the storageId
-        runProcessAudioEmbedding({ storageId }).then(() => {
-          // Handle the response as needed
-        });
+        // runProcessAudioEmbedding({ storageId }).then(() => {
+        //   // Handle the response as needed
+        // });
       } catch (error) {
         console.error("Error uploading audio blob:", error);
       }
