@@ -117,18 +117,20 @@ export default function NoteContainer({
     setSelectedModel(selectedModel === "3.5" ? "4.0" : "3.5");
   };
 
-  const retrieveSummary = useAction(api.meetingSummary.retrieveMeetingSummary);
-  const summaries = useQuery(api.meetingSummary.getMeetingSummaryForUser, {
-    meetingID: meetingID!,
-  });
+  // ALERT: Disabling this button since convex is saying we are at over a GB compared to other functions makes no sense
+  // const retrieveSummary = useAction(api.meetingSummary.retrieveMeetingSummary);
+  // const summaries = useQuery(api.meetingSummary.getMeetingSummaryForUser, {
+  //   meetingID: meetingID!,
+  // });
 
+  // ALERT: Dissabling since convex says we are running way over limits
   // Use useEffect to log when summaries are fetched
-  useEffect(() => {
-    if (summaries) {
-      // we need to setSummaries to the last index in the array
-      setMeetingSummaries(summaries);
-    }
-  }, [summaries]);
+  // useEffect(() => {
+  //   if (summaries) {
+  //     // we need to setSummaries to the last index in the array
+  //     setMeetingSummaries(summaries);
+  //   }
+  // }, [summaries]);
 
   const handleGenerateSummary = async () => {
     try {
@@ -152,14 +154,15 @@ export default function NoteContainer({
         })
       );
 
+      // ALERT: Disabling this button since convex is saying we are at over a GB compared to other functions makes no sense
       // Call the action with the necessary arguments, including the cleaned data
-      const summary = await retrieveSummary({
-        message: "Please generate a summary for this meeting.",
-        meetingID: meetingID,
-        aiModel: selectedModel,
-        finalizedSentences: cleanedFinalizedSentences,
-        speakerDetails: cleanedSpeakerDetails,
-      });
+      // const summary = await retrieveSummary({
+      //   message: "Please generate a summary for this meeting.",
+      //   meetingID: meetingID,
+      //   aiModel: selectedModel,
+      //   finalizedSentences: cleanedFinalizedSentences,
+      //   speakerDetails: cleanedSpeakerDetails,
+      // });
 
       // console.log("Summary:", summary);
     } catch (error) {
@@ -172,7 +175,8 @@ export default function NoteContainer({
     <div className="flex flex-col space-y-3 ">
       <div className="flex flex-row items-center">
         <div className="flex flex-row space-x-2 items-center">
-          <Button
+          {/* ALERT: Disabling this button since convex is saying we are at over a GB compared to other functions makes no sense */}
+          {/* <Button
             variant="default"
             onClick={toggleModel}
             className={twMerge(
@@ -187,7 +191,7 @@ export default function NoteContainer({
               )
             )} // Apply conditional classes inline
           >
-            @{`GPT-${selectedModel}`} {/* Display the selected model */}
+            @{`GPT-${selectedModel}`}
           </Button>
           <Button
             variant="outline"
@@ -221,7 +225,7 @@ export default function NoteContainer({
                 <p className="">Replace or Append Response</p>
               </TooltipContent>
             </Tooltip>
-          </TooltipProvider>
+          </TooltipProvider> */}
         </div>
       </div>
       <ScrollArea className="h-[calc(100vh-260px)] md:h-[calc(100vh-305px)]">

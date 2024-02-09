@@ -174,22 +174,23 @@ export const updateAIResponse = mutation({
   },
 });
 
-export const getMeetingSummaryForUser = query({
-  args: {
-    meetingID: v.id("meetings"),
-  },
-  handler: async (ctx, args) => {
-    const user = await ctx.auth.getUserIdentity();
+// ALERT: Dissabled for now convex says we are over a gb in client requests
+// export const getMeetingSummaryForUser = query({
+//   args: {
+//     meetingID: v.id("meetings"),
+//   },
+//   handler: async (ctx, args) => {
+//     const user = await ctx.auth.getUserIdentity();
 
-    if (!user) {
-      return [];
-    }
+//     if (!user) {
+//       return [];
+//     }
 
-    return await ctx.db
-      .query("meetingSummaries")
-      .filter((q) => q.eq(q.field("userId"), user.subject))
-      .filter((q) => q.eq(q.field("meetingID"), args.meetingID)) // Add this line to filter by meetingID
+//     return await ctx.db
+//       .query("meetingSummaries")
+//       .filter((q) => q.eq(q.field("userId"), user.subject))
+//       .filter((q) => q.eq(q.field("meetingID"), args.meetingID)) // Add this line to filter by meetingID
 
-      .collect();
-  },
-});
+//       .collect();
+//   },
+// });
