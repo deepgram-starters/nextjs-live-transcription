@@ -100,8 +100,6 @@ export const sendAudio = mutation({
       meetingID: args.meetingID,
       // Include any other fields you added to the args
     });
-
-    console.log("audio saved", url);
   },
 });
 
@@ -118,7 +116,7 @@ export const processAudioEmbedding = action({
   },
   handler: async (ctx, { storageId }) => {
     try {
-      const audioUrl = await getAudioUrl(ctx, storageId);
+      const audioUrl = (await ctx.storage.getUrl(storageId)) as string;
       const runpodResponse = await postToRunpod(audioUrl);
 
       console.log("Runpod response data:", runpodResponse);
@@ -131,18 +129,12 @@ export const processAudioEmbedding = action({
   },
 });
 
-async function getAudioUrl(ctx: any, storageId: string): Promise<string> {
-  return await ctx.storage.getUrl(storageId);
-}
-
 async function postToRunpod(audioUrl: string): Promise<any> {
   const requestBody = {
     input: {
       audio_file: audioUrl,
     },
   };
-
-  console.log("Posting to runpod:", requestBody);
 
   const response = await fetch(`${process.env.RUNPOD_RUNSYNC_URL}`, {
     method: "POST",

@@ -162,12 +162,10 @@ export default function Microphone({
 
         // Step 3: Save the newly allocated storage id to the database
         await sendAudio({ storageId, meetingID });
-        console.log("Audio uploaded successfully:", storageId);
-        // Example of calling the action with a file URL
 
-        // Call the doSomething action with the storageId
+        // Call the generateEmebedding action with the storageId
         runProcessAudioEmbedding({ storageId }).then(() => {
-          console.log("doSomething action completed successfully");
+          // Handle the response as needed
         });
       } catch (error) {
         console.error("Error uploading audio blob:", error);
