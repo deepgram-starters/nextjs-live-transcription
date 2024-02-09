@@ -35,7 +35,7 @@ export const getMeetingsForUser = query({
     const user = await ctx.auth.getUserIdentity();
 
     if (!user) {
-      return [];
+      throw new Error("Please login to retrieve list of meetings");
     }
 
     return await ctx.db
@@ -54,7 +54,7 @@ export const getMeetingByID = query({
     const user = await ctx.auth.getUserIdentity();
 
     if (!user) {
-      return [];
+      throw new Error("Please login to retrieve a meeting");
     }
 
     return await ctx.db

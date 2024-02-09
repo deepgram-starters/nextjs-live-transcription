@@ -10,7 +10,11 @@ export const storeFinalizedSentence = mutation({
     start: v.float64(),
     end: v.float64(),
   },
-  async handler({ db }, { meetingID, speaker, transcript, start, end }) {
+  async handler({ db, auth }, { meetingID, speaker, transcript, start, end }) {
+    const user = await auth.getUserIdentity();
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
     await db.insert("finalizedSentences", {
       meetingID,
       speaker,
@@ -23,10 +27,18 @@ export const storeFinalizedSentence = mutation({
 
 export const getFinalizedSentencesByMeeting = query({
   args: { meetingID: v.id("meetings") },
-  async handler({ db }, { meetingID }) {
-    return await db
+  handler: async (ctx, args) => {
+    const user = await ctx.auth.getUserIdentity();
+
+    if (!user) {
+      throw new Error(
+        "Please login to retrieve finalized sentences for a meeting"
+      );
+    }
+
+    return await ctx.db
       .query("finalizedSentences")
-      .filter((q) => q.eq(q.field("meetingID"), meetingID))
+      .filter((q) => q.eq(q.field("meetingID"), args.meetingID))
       .collect();
   },
 });
@@ -38,7 +50,11 @@ export const storeQuestion = mutation({
     timestamp: v.float64(),
     speaker: v.number(),
   },
-  async handler({ db }, { meetingID, question, timestamp, speaker }) {
+  async handler({ db, auth }, { meetingID, question, timestamp, speaker }) {
+    const user = await auth.getUserIdentity();
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
     await db.insert("questions", {
       meetingID,
       question,
@@ -60,7 +76,7 @@ export const storeWordDetail = mutation({
     audio_embedding: v.optional(v.array(v.float64())),
   },
   async handler(
-    { db },
+    { db, auth },
     {
       meetingID,
       word,
@@ -72,6 +88,10 @@ export const storeWordDetail = mutation({
       audio_embedding,
     }
   ) {
+    const user = await auth.getUserIdentity();
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
     await db.insert("wordDetails", {
       meetingID,
       word,
@@ -80,7 +100,7 @@ export const storeWordDetail = mutation({
       confidence,
       speaker,
       punctuated_word,
-      audio_embedding, // This can be null initially if you plan to update it later
+      audio_embedding,
     });
   },
 });
@@ -94,11 +114,14 @@ export const sendAudio = mutation({
     storageId: v.id("_storage"), // The ID of the uploaded file in Convex storage
     meetingID: v.id("meetings"), // Assuming you want to associate the audio with a meeting
   },
-  handler: async (ctx, args) => {
-    const url = await ctx.db.insert("audioFiles", {
+  handler: async ({ db, auth }, args) => {
+    const user = await auth.getUserIdentity();
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
+    const url = await db.insert("audioFiles", {
       storageId: args.storageId,
       meetingID: args.meetingID,
-      // Include any other fields you added to the args
     });
   },
 });
@@ -114,17 +137,17 @@ export const processAudioEmbedding = action({
   args: {
     storageId: v.id("_storage"), // The ID of the uploaded file in Convex storage
   },
-  handler: async (ctx, { storageId }) => {
+  handler: async ({ storage, auth }, { storageId }) => {
+    const user = await auth.getUserIdentity();
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
     try {
-      const audioUrl = (await ctx.storage.getUrl(storageId)) as string;
+      const audioUrl = (await storage.getUrl(storageId)) as string;
       const runpodResponse = await postToRunpod(audioUrl);
-
       console.log("Runpod response data:", runpodResponse);
-
-      // Process the response as needed
     } catch (error) {
       console.error("Failed to fetch transcript:", error);
-      // Handle the error appropriately
     }
   },
 });
