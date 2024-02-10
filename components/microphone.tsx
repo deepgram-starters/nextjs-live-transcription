@@ -128,6 +128,8 @@ export default function Microphone({
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [finalCaptions, setFinalCaptions] = useState<WordDetail[]>([]);
 
+  const retrieveSummary = useAction(api.meetingSummary.retrieveMeetingSummary);
+
   // State for the timer
   const [timer, setTimer] = useState(0);
   const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(
@@ -300,12 +302,53 @@ export default function Microphone({
   const createMeeting = useMutation(api.meetings.createMeeting);
   const updateMeeting = useMutation(api.meetings.updateMeetingDetails);
 
+  const handleGenerateSummary = async () => {
+    try {
+      // Clean finalizedSentences as before
+      const cleanedFinalizedSentences = finalizedSentences.map(
+        ({ speaker, transcript, start, end, meetingID }) => ({
+          speaker,
+          transcript,
+          start,
+          end,
+          meetingID,
+        })
+      );
+
+      // Now also clean speakerDetails to remove any fields not expected by the validator
+      const cleanedSpeakerDetails = speakerDetails.map(
+        ({ firstName, lastName, speakerNumber }) => ({
+          firstName,
+          lastName,
+          speakerNumber,
+        })
+      );
+
+      // Call the action with the necessary arguments, including the cleaned data
+      const summary = await retrieveSummary({
+        message: "Please generate a summary for this meeting.",
+        meetingID: meetingID,
+        aiModel: "gpt-3",
+        finalizedSentences: cleanedFinalizedSentences,
+        speakerDetails: cleanedSpeakerDetails,
+      });
+
+      // console.log("Summary:", summary);
+    } catch (error) {
+      console.error("Failed to generate meeting summary:", error);
+      // Optionally, show an error message
+    }
+  };
+
   const toggleMicrophone = useCallback(async () => {
     if (microphone && userMedia) {
       setUserMedia(null);
       setMicrophone(null);
 
       setDisableRecording(true); //stop enabling the ability to record again until we fix the error/bug
+
+      //retrieve the summary
+      handleGenerateSummary();
 
       console.log("finalCaptions:", finalCaptions); // Log the finalized
 

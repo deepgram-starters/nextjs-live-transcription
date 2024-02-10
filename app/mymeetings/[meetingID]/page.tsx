@@ -221,7 +221,7 @@ export default function Page({
         >
           <TabsList>
             <TabsTrigger value="Transcript">Transcript</TabsTrigger>
-            <TabsTrigger value="Notes">Notes</TabsTrigger>
+            <TabsTrigger value="Notes">AI Summary</TabsTrigger>
             <TabsTrigger value="Chat">Chat</TabsTrigger>
           </TabsList>
         </Tabs>
@@ -237,7 +237,7 @@ export default function Page({
           >
             <TabsList id="tabs-list-large-screen" className="absolute right-0">
               <TabsTrigger value="Transcript">Transcript</TabsTrigger>
-              <TabsTrigger value="Notes">Notes</TabsTrigger>
+              <TabsTrigger value="Notes">AI Summary</TabsTrigger>
             </TabsList>
             <TabsContent value="Transcript" className="mt-12">
               <TranscriptDisplay
