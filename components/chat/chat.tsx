@@ -2,6 +2,8 @@
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import raw from "rehype-raw";
+import Prism from "prismjs";
+import "prismjs/themes/prism-okaidia.css"; // Import PrismJS theme globally
 
 //import react stuff
 import { useState, useEffect } from "react";
@@ -36,6 +38,7 @@ import {
 //import custom stuff
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import MessageActions from "@/components/chat/message-actions";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -115,6 +118,36 @@ export default function ChatCompletion({
     setIncludeTranscript((currentValue) => !currentValue);
   };
 
+  useEffect(() => {
+    // Call Prism to highlight all code blocks
+    Prism.highlightAll();
+  }, []);
+
+  const highlightCode = (code: string, language: string): string => {
+    if (Prism.languages[language]) {
+      return Prism.highlight(code, Prism.languages[language], language);
+    }
+    return code;
+  };
+
+  const handleCopy = async (messageText: string, callback: () => void) => {
+    try {
+      await navigator.clipboard.writeText(messageText);
+      console.log("Message copied to clipboard");
+      callback(); // Call the callback function to change the icon
+    } catch (err) {
+      console.error("Failed to copy message: ", err);
+    }
+  };
+
+  const handleRedo = (messageId: string) => {
+    // Implement the redo functionality
+  };
+
+  const handleThumbsDown = (messageId: string) => {
+    // Implement the thumbs down functionality
+  };
+
   return (
     // <div className="flex flex-col h-full w-[448px]">
     <div className="flex h-full">
@@ -134,6 +167,22 @@ export default function ChatCompletion({
                     <ReactMarkdown
                       remarkPlugins={[gfm as any]}
                       rehypePlugins={[raw as any]}
+                      components={{
+                        code({ node, inline, className, children, ...props }) {
+                          const match = /language-(\w+)/.exec(className || "");
+                          return !inline && match ? (
+                            <pre style={{ overflowX: "auto" }}>
+                              <code className={className} {...props}>
+                                {children}
+                              </code>
+                            </pre>
+                          ) : (
+                            <code className={className} {...props}>
+                              {children}
+                            </code>
+                          );
+                        },
+                      }}
                     >
                       {message.userMessage}
                     </ReactMarkdown>
@@ -158,13 +207,47 @@ export default function ChatCompletion({
                       />
                     </AvatarFallback>
                   </Avatar>
-                  <div className="rounded-lg border mx-4 p-4 outline-gray-500">
+                  <div className="relative rounded-lg border mx-4 p-4 pb-8 outline-gray-500">
                     <ReactMarkdown
                       remarkPlugins={[gfm as any]}
                       rehypePlugins={[raw as any]}
+                      components={{
+                        code({ node, inline, className, children, ...props }) {
+                          const match = /language-(\w+)/.exec(className || "");
+                          if (!inline && match) {
+                            const language = match[1];
+                            const code = children.toString();
+                            const html = highlightCode(code, language);
+                            return (
+                              <div className="code-block-header">
+                                {language.toUpperCase()}
+                                <pre style={{ overflowX: "auto" }}>
+                                  <code
+                                    className={`language-${language}`}
+                                    dangerouslySetInnerHTML={{ __html: html }}
+                                    {...props}
+                                  />
+                                </pre>
+                              </div>
+                            );
+                          }
+                          return (
+                            <code className={className} {...props}>
+                              {children}
+                            </code>
+                          );
+                        },
+                      }}
                     >
                       {message.aiResponse}
                     </ReactMarkdown>
+                    <MessageActions
+                      messageId={message._id}
+                      messageText={message.aiResponse}
+                      onCopy={handleCopy}
+                      onRedo={handleRedo}
+                      onThumbsDown={handleThumbsDown}
+                    />
                   </div>
                 </div>
               </div>

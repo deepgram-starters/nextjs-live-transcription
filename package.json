@@ -43,6 +43,7 @@
     "next": "14.0.1",
     "next-themes": "^0.2.1",
     "openai": "^4.26.0",
+    "prismjs": "^1.29.0",
     "react": "^18",
     "react-day-picker": "^8.10.0",
     "react-dom": "^18",
@@ -59,6 +60,7 @@
   "devDependencies": {
     "@types/formidable": "^3.4.5",
     "@types/node": "^20",
+    "@types/prismjs": "^1.26.3",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/react-syntax-highlighter": "^15.5.11",

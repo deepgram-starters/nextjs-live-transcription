@@ -55,6 +55,14 @@
   filter: var(--logo-filter);
 }
 
+.code-block-header {
+  @apply relative bg-secondary text-secondary-foreground rounded-md my-4 p-2 text-xs;
+}
+
+/* pre {
+  @apply overflow-auto rounded-md mt-4;
+} */
+
 @layer base {
   * {
     @apply border-border;
