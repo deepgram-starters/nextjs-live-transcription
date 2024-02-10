@@ -1,4 +1,7 @@
 "use client";
+import ReactMarkdown from "react-markdown";
+import gfm from "remark-gfm";
+import raw from "rehype-raw";
 
 //import react stuff
 import { useState, useEffect } from "react";
@@ -128,7 +131,12 @@ export default function ChatCompletion({
                     </AvatarFallback>
                   </Avatar>
                   <div className="rounded-lg border mx-4 p-4 outline-gray-500">
-                    {message.userMessage}
+                    <ReactMarkdown
+                      remarkPlugins={[gfm as any]}
+                      rehypePlugins={[raw as any]}
+                    >
+                      {message.userMessage}
+                    </ReactMarkdown>
                   </div>
                 </div>
                 <div className="flex flex-row my-2">
@@ -151,7 +159,12 @@ export default function ChatCompletion({
                     </AvatarFallback>
                   </Avatar>
                   <div className="rounded-lg border mx-4 p-4 outline-gray-500">
-                    {message.aiResponse}
+                    <ReactMarkdown
+                      remarkPlugins={[gfm as any]}
+                      rehypePlugins={[raw as any]}
+                    >
+                      {message.aiResponse}
+                    </ReactMarkdown>
                   </div>
                 </div>
               </div>
@@ -175,6 +188,18 @@ export default function ChatCompletion({
                   lastName,
                 })
               );
+
+              // Trim unnecessary attributes from finalizedSentences
+              const trimmedFinalizedSentences = finalizedSentences.map(
+                ({ end, meetingID, speaker, start, transcript }) => ({
+                  end,
+                  meetingID,
+                  speaker,
+                  start,
+                  transcript,
+                })
+              );
+
               // Include the updatedChatHistory in the sendMessage call
               await sendMessage({
                 message,

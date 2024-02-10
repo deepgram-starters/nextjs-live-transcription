@@ -145,6 +145,7 @@ export const processAudioEmbedding = action({
     try {
       const audioUrl = (await storage.getUrl(storageId)) as string;
       const runpodResponse = await postToRunpod(audioUrl);
+
       console.log("Runpod response data:", runpodResponse);
     } catch (error) {
       console.error("Failed to fetch transcript:", error);
