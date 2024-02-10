@@ -8,6 +8,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      transitionProperty: {
+        height: "height",
+      },
       dropShadow: {
         glowBlue: [
           "0px 0px 2px #000",

@@ -149,6 +149,7 @@ export default function Conversation() {
 
   /**
    * is the user currently talking
+   * @todo we'll replace with VAD or something (https://github.com/JamesBrill/react-speech-recognition)
    */
   useEffect(() => {
     console.log(volume);
@@ -227,7 +228,20 @@ export default function Conversation() {
           LiveTranscriptionEvents.Transcript,
           (data: LiveTranscriptionEvent) => {
             console.log("websocket event: Transcript");
-            setUtterance(data);
+            const content = utteranceText(data);
+
+            if (content !== "") {
+              if (data.is_final) {
+                addMessage({
+                  role: "user",
+                  content,
+                });
+
+                setUtterance(null);
+              } else {
+                setUtterance(data);
+              }
+            }
           }
         );
       });
@@ -235,24 +249,24 @@ export default function Conversation() {
       setConnection(connection);
       setLoading(false);
     }
-  }, [addMessage, apiKey, setUtterance]);
+  }, [addMessage, apiKey, utterance, setUtterance, llmRequest.replied]);
 
-  /**
-   * turn utterance into message history when finalised
-   */
-  useEffect(() => {
-    if (utterance?.is_final) {
-      const content = utteranceText(utterance);
+  // /**
+  //  * turn utterance into message history when finalised
+  //  */
+  // useEffect(() => {
+  //   if (utterance?.is_final) {
+  //     const content = utteranceText(utterance);
 
-      if (content !== "") {
-        addMessage({
-          role: "user",
-          content,
-        });
-        setUtterance(null);
-      }
-    }
-  }, [addMessage, utterance]);
+  //     if (content !== "") {
+  //       addMessage({
+  //         role: "user",
+  //         content,
+  //       });
+  //       setUtterance(null);
+  //     }
+  //   }
+  // }, [addMessage, utterance]);
 
   /**
    * magic audio queue processing
@@ -405,7 +419,7 @@ export default function Conversation() {
                         <path d="M6 10.5a.75.75 0 0 1 .75.75v1.5a5.25 5.25 0 1 0 10.5 0v-1.5a.75.75 0 0 1 1.5 0v1.5a6.751 6.751 0 0 1-6 6.709v2.291h3a.75.75 0 0 1 0 1.5h-7.5a.75.75 0 0 1 0-1.5h3v-2.291a6.751 6.751 0 0 1-6-6.709v-1.5A.75.75 0 0 1 6 10.5Z" />
                       </svg>
                       <div
-                        className={`w-4 bottom-0 overflow-hidden absolute`}
+                        className={`w-4 bottom-0 overflow-hidden absolute transition-height duration-300 ease-in`}
                         style={{ height: `${volume}%` }}
                       >
                         <svg
