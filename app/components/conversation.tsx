@@ -119,7 +119,7 @@ const InitialLoad = ({ fn }: { fn: () => {} }) => {
       <button
         onClick={() => fn()}
         type="button"
-        className="relative block w-full rounded-lg border-2 border-dashed border-zinc-900 bg-black/50 p-12 text-center hover:border-zinc-700 "
+        className="relative block w-full rounded-lg border-2 border-dashed border-zinc-900 bg-gradient-to-b from-black/50 to-black/10 backdrop-blur-[2px] p-12 text-center hover:border-zinc-700 "
       >
         <span className="inline-block h-8 w-8 flex-shrink-0 ml-4">
           <svg
@@ -175,6 +175,7 @@ const getUserMessages = (messages: any[]) => {
  */
 export default function Conversation() {
   const greeting = useMemo(() => getRandomGreeting(), []);
+  const [textInput, setTextInput] = useState("");
   const [initialLoad, setInitialLoad] = useState(true);
   const [apiKey, setApiKey] = useState<CreateProjectKeyResponse | null>();
   const [connection, setConnection] = useState<LiveClient | null>();
@@ -186,6 +187,7 @@ export default function Conversation() {
   const [microphone, setMicrophone] = useState<MediaRecorder | null>();
   const [userMedia, setUserMedia] = useState<MediaStream | null>();
   const [talking, setTalking] = useState(false);
+  const [volume, setVolume] = useState(0);
   const [utterance, setUtterance] = useState<LiveTranscriptionEvent | null>(
     null
   );
@@ -257,8 +259,7 @@ export default function Conversation() {
           0
         );
 
-        const volume = maxDifferenceFrom127 / 128;
-
+        setVolume(maxDifferenceFrom127 / 128);
         addToQueue(e.data);
       };
 
@@ -273,6 +274,21 @@ export default function Conversation() {
     greeting.text,
     addToQueue,
   ]);
+
+  /**
+   * is the user currently talking
+   */
+  useEffect(() => {
+    console.log(volume);
+    setTalking(volume > 0.2);
+  }, [volume, setTalking]);
+
+  /**
+   * is the user currently talking
+   */
+  useEffect(() => {
+    console.log(talking);
+  }, [talking]);
 
   /**
    * getting a new api key
@@ -436,6 +452,7 @@ export default function Conversation() {
   useEffect(() => {
     const onKeyUp = (event: Event | KeyboardEvent) => {
       if ("key" in event && event.code === "Space") {
+        event.preventDefault();
         toggleMicrophone();
       }
     };
@@ -525,7 +542,7 @@ export default function Conversation() {
                             {" "}
                             <small
                               className={`group-hover:text-gray-500 ${
-                                micOpen ? "text-blue-100" : "text-red-300"
+                                micOpen ? "text-blue-100" : "text-red-200"
                               }`}
                             >
                               or press &apos;space&apos;
@@ -542,9 +559,29 @@ export default function Conversation() {
                      * text input field
                      */}
                     <input
+                      disabled={initialLoad || micOpen}
+                      value={textInput}
+                      onChange={(e) => setTextInput(e.target.value)}
+                      onKeyUp={(e) => {
+                        if (e.key === "Enter" && textInput !== "") {
+                          addMessage({
+                            role: "user",
+                            content: textInput,
+                          });
+                          setTextInput("");
+                        }
+                      }}
                       type="text"
-                      className="flex w-full border rounded-lg border-zinc-600 focus:outline-none focus:border-indigo-300 pl-4 h-10"
-                      placeholder="... or send me a message"
+                      className={`flex w-full border rounded-lg border-zinc-600 focus:outline-none focus:border-indigo-300 pl-4 h-10 ${
+                        initialLoad || micOpen ? "opacity-30" : "opacity-100"
+                      }`}
+                      placeholder={
+                        initialLoad
+                          ? "... or send me a message ..."
+                          : micOpen
+                          ? "... close mic to send a message ..."
+                          : "Send me a message"
+                      }
                     />
                   </div>
                 </div>
@@ -552,7 +589,21 @@ export default function Conversation() {
                   {/**
                    * text send button
                    */}
-                  <button className="flex items-center justify-center bg-[#00CF56]/50 hover:bg-[#00CF56] rounded-lg text-white px-4 lg:px-6 py-2 flex-shrink-0">
+                  <button
+                    onClick={() => {
+                      addMessage({
+                        role: "user",
+                        content: textInput,
+                      });
+                      setTextInput("");
+                    }}
+                    disabled={initialLoad || micOpen}
+                    className={`flex items-center justify-center bg-[#00CF56]/50 rounded-lg text-white px-4 lg:px-6 py-2 flex-shrink-0 ${
+                      initialLoad || micOpen
+                        ? "opacity-30"
+                        : "opacity-100 hover:bg-white hover:text-black"
+                    }`}
+                  >
                     <span>Send</span>
                     <svg
                       className="w-4 h-4 transform rotate-45 -mt-1 ml-4 hidden sm:inline"
