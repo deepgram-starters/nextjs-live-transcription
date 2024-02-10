@@ -30,7 +30,7 @@ const MessageActions: React.FC<MessageActionsProps> = ({
   };
 
   return (
-    <div className="absolute bottom-0.5 right-0.5 space-x-0">
+    <div className="">
       <Button
         variant="ghost"
         size="sm"

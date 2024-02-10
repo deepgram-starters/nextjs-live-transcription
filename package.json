@@ -49,6 +49,7 @@
     "react-day-picker": "^8.10.0",
     "react-dom": "^18",
     "react-markdown": "^8.0.7",
+    "react-spinners": "^0.13.8",
     "react-syntax-highlighter": "^15.5.0",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^3.0.1",
