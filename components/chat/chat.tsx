@@ -1,4 +1,10 @@
 "use client";
+import ReactMarkdown from "react-markdown";
+import gfm from "remark-gfm";
+import raw from "rehype-raw";
+import Prism from "prismjs";
+import "prismjs/themes/prism-tomorrow.css";
+import "prismjs/themes/prism-okaidia.css"; // Import PrismJS theme globally
 
 //import react stuff
 import { useState, useEffect } from "react";
@@ -15,13 +21,10 @@ import { useMutation, useQuery, useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Doc, Id } from "@/convex/_generated/dataModel";
 
-//import icon stuff
-import { User, Bot, CornerRightUp, Coins, Paperclip } from "lucide-react";
-
 //import shadcnui stuff
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   TooltipProvider,
@@ -30,9 +33,25 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 
+//import icon stuff
+import {
+  User,
+  Bot,
+  CornerRightUp,
+  Coins,
+  Paperclip,
+  Copy,
+  Clipboard,
+  CheckCircle,
+} from "lucide-react";
+
+//import spinner stuff
+import PulseLoader from "react-spinners/PulseLoader";
+
 //import custom stuff
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import MessageActions from "@/components/chat/message-actions";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -64,8 +83,8 @@ export default function ChatCompletion({
   speakerDetails: SpeakerDetail[];
 }) {
   const { user } = useUser();
-  // Assuming the profile image URL is stored in `user.profileImageUrl`
   const profileImageUrl = user?.imageUrl;
+  const [isAiResponding, setIsAiResponding] = useState(false);
 
   const messages = useQuery(api.chat.getMessagesForUser, {
     meetingID: meetingID!,
@@ -98,6 +117,7 @@ export default function ChatCompletion({
   }, [messages]);
 
   const sendMessage = useAction(api.chat.sendMessage);
+  const [inputMessage, setInputMessage] = useState("");
 
   // State to track the selected OpenAI model
   const [selectedModel, setSelectedModel] = useState("3.5");
@@ -110,6 +130,43 @@ export default function ChatCompletion({
   const [includeTranscript, setIncludeTranscript] = useState(true);
   const toggleTranscriptInclusion = () => {
     setIncludeTranscript((currentValue) => !currentValue);
+  };
+
+  useEffect(() => {
+    // Call Prism to highlight all code blocks
+    Prism.highlightAll();
+  }, [messages]);
+
+  const highlightCode = (code: string, language: string): string => {
+    if (Prism.languages[language]) {
+      return Prism.highlight(code, Prism.languages[language], language);
+    }
+    return code;
+  };
+
+  // State to track copy success
+  const [hasCopied, setHasCopied] = useState(false);
+
+  // Modified highlightCode function or wherever you're handling the copy action
+  const handleCopy = async (code: string) => {
+    try {
+      await navigator.clipboard.writeText(code);
+      console.log("Code copied to clipboard");
+      setHasCopied(true);
+      setTimeout(() => {
+        setHasCopied(false);
+      }, 5000); // Reset after 5 seconds
+    } catch (err) {
+      console.error("Failed to copy code: ", err);
+    }
+  };
+
+  const handleRedo = (messageId: string) => {
+    // Implement the redo functionality
+  };
+
+  const handleThumbsDown = (messageId: string) => {
+    // Implement the thumbs down functionality
   };
 
   return (
@@ -128,7 +185,28 @@ export default function ChatCompletion({
                     </AvatarFallback>
                   </Avatar>
                   <div className="rounded-lg border mx-4 p-4 outline-gray-500">
-                    {message.userMessage}
+                    <ReactMarkdown
+                      remarkPlugins={[gfm as any]}
+                      rehypePlugins={[raw as any]}
+                      components={{
+                        code({ node, inline, className, children, ...props }) {
+                          const match = /language-(\w+)/.exec(className || "");
+                          return !inline && match ? (
+                            <pre style={{ overflowX: "auto" }}>
+                              <code className={className} {...props}>
+                                {children}
+                              </code>
+                            </pre>
+                          ) : (
+                            <code className={className} {...props}>
+                              {children}
+                            </code>
+                          );
+                        },
+                      }}
+                    >
+                      {message.userMessage}
+                    </ReactMarkdown>
                   </div>
                 </div>
                 <div className="flex flex-row my-2">
@@ -150,8 +228,145 @@ export default function ChatCompletion({
                       />
                     </AvatarFallback>
                   </Avatar>
-                  <div className="rounded-lg border mx-4 p-4 outline-gray-500">
-                    {message.aiResponse}
+                  <div className="flex flex-col">
+                    <div className="relative rounded-lg border mx-4 p-4 outline-gray-500 max-w-sm">
+                      <ReactMarkdown
+                        remarkPlugins={[gfm as any]}
+                        rehypePlugins={[raw as any]}
+                        components={{
+                          // Customizing heading elements
+                          h1: ({ node, ...props }) => (
+                            <h1
+                              className="text-2xl font-bold my-2"
+                              {...props}
+                            />
+                          ),
+                          h2: ({ node, ...props }) => (
+                            <h2
+                              className="text-xl font-semibold my-2"
+                              {...props}
+                            />
+                          ),
+                          // Already customized h1 and h2 in the previous example
+                          h3: ({ node, ...props }) => (
+                            <h3
+                              className="text-lg font-semibold my-1"
+                              {...props}
+                            />
+                          ),
+                          h4: ({ node, ...props }) => (
+                            <h4
+                              className="text-md font-medium my-1"
+                              {...props}
+                            />
+                          ),
+                          h5: ({ node, ...props }) => (
+                            <h5
+                              className="text-sm font-medium my-1"
+                              {...props}
+                            />
+                          ),
+                          h6: ({ node, ...props }) => (
+                            <h6
+                              className="text-xs font-medium my-1"
+                              {...props}
+                            />
+                          ),
+                          p: ({ node, ...props }) => (
+                            <p className="my-2" {...props} />
+                          ),
+                          blockquote: ({ node, ...props }) => (
+                            <blockquote
+                              className="pl-5 border-l-2 border-muted-foreground my-3"
+                              {...props}
+                            />
+                          ),
+                          ul: ({ node, ...props }) => (
+                            <ul className="list-disc pl-5 my-2" {...props} />
+                          ),
+                          ol: ({ node, ...props }) => (
+                            <ol className="list-decimal pl-5 my-2" {...props} />
+                          ),
+                          // Continue with the previously customized components
+                          a: ({ node, ...props }) => (
+                            <a
+                              className="text-blue-500 hover:text-blue-700 underline"
+                              {...props}
+                            />
+                          ),
+
+                          code({
+                            node,
+                            inline,
+                            className,
+                            children,
+                            ...props
+                          }) {
+                            const match = /language-(\w+)/.exec(
+                              className || ""
+                            );
+                            if (!inline && match) {
+                              const language = match[1];
+                              const code = children.toString();
+                              const html = highlightCode(code, language);
+                              return (
+                                <div className="flex flex-col my-2 px-2 bg-secondary hover:bg-secondary/80 rounded-lg">
+                                  <div className="flex flex-row items-center justify-between border-b text-muted-foreground">
+                                    <span className="text-xs">
+                                      {language.toUpperCase()}
+                                    </span>
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="text-xs"
+                                      onClick={() => handleCopy(code)}
+                                    >
+                                      {hasCopied ? (
+                                        <CheckCircle size={16} />
+                                      ) : (
+                                        <Clipboard size={16} />
+                                      )}
+                                    </Button>
+                                  </div>
+                                  <ScrollArea className="">
+                                    <pre style={{ overflowX: "auto" }}>
+                                      <code
+                                        className={`language-${language}`}
+                                        dangerouslySetInnerHTML={{
+                                          __html: html,
+                                        }}
+                                        {...props}
+                                      />
+                                    </pre>
+
+                                    <ScrollBar
+                                      orientation="horizontal"
+                                      className=""
+                                    />
+                                  </ScrollArea>
+                                </div>
+                              );
+                            }
+                            return (
+                              <code className={className} {...props}>
+                                {children}
+                              </code>
+                            );
+                          },
+                        }}
+                      >
+                        {message.aiResponse}
+                      </ReactMarkdown>
+                    </div>
+                    <div className="m-2 ml-4">
+                      <MessageActions
+                        messageId={message._id}
+                        messageText={message.aiResponse}
+                        onCopy={handleCopy}
+                        onRedo={handleRedo}
+                        onThumbsDown={handleThumbsDown}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -163,9 +378,15 @@ export default function ChatCompletion({
         <form
           onSubmit={async (e) => {
             e.preventDefault();
+            setIsAiResponding(true);
             const form = e.target as HTMLFormElement;
             const formData = new FormData(form);
             const message = formData.get("message") as string;
+
+            // Clear the input field immediately after submission
+            setInputMessage(""); // Assuming you're using this state to control the input value
+            form.reset(); // Or keep this if you're not controlling the input with React state
+
             if (message.trim() !== "") {
               // Trim unnecessary attributes from speakerDetails
               const trimmedSpeakerDetails = speakerDetails.map(
@@ -175,6 +396,18 @@ export default function ChatCompletion({
                   lastName,
                 })
               );
+
+              // Trim unnecessary attributes from finalizedSentences
+              const trimmedFinalizedSentences = finalizedSentences.map(
+                ({ end, meetingID, speaker, start, transcript }) => ({
+                  end,
+                  meetingID,
+                  speaker,
+                  start,
+                  transcript,
+                })
+              );
+
               // Include the updatedChatHistory in the sendMessage call
               await sendMessage({
                 message,
@@ -186,8 +419,8 @@ export default function ChatCompletion({
                   speakerDetails: trimmedSpeakerDetails,
                 }),
               });
+              setIsAiResponding(false);
             }
-            form.reset();
           }}
         >
           <Button
@@ -226,14 +459,19 @@ export default function ChatCompletion({
           <Button
             variant="secondary"
             size="icon"
-            type="submit"
             className="absolute 
             bottom-[14px]
                           w-8
                           h-8
                           right-[15px]"
+            type="submit"
+            disabled={isAiResponding} // Disable button while AI is responding
           >
-            <CornerRightUp size={16} />
+            {isAiResponding ? (
+              <PulseLoader color="#FFFFFF" loading={isAiResponding} size={5} />
+            ) : (
+              <CornerRightUp size={16} />
+            )}
           </Button>
           <div className="absolute bottom-[3.5rem] left-2 space-x-3 text-muted-foreground items-center flex flex-row">
             <TooltipProvider>
