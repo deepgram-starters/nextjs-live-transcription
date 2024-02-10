@@ -49,6 +49,7 @@ import Dg from "@/app/dg.svg";
 //import custom stuff
 import TranscriptDisplay from "@/components/microphone/transcript";
 import { extractSegment } from "@/lib/ffmpgUtils";
+import { LanguageSelect } from "@/components/microphone/language-select";
 
 interface CaptionDetail {
   words: string;
@@ -114,6 +115,8 @@ export default function Microphone({
   initialDuration,
 }: MicrophoneProps) {
   const { add, remove, first, size, queue } = useQueue<any>([]);
+  const [microphoneSelectedLanguage, setMicrophoneSelectedLanguage] =
+    useState<string>("en-US");
   const [apiKey, setApiKey] = useState<CreateProjectKeyResponse | null>();
   const [connection, setConnection] = useState<LiveClient | null>();
   const [isListening, setListening] = useState(false);
@@ -144,6 +147,12 @@ export default function Microphone({
   const runProcessAudioEmbedding = useAction(
     api.transcript.processAudioEmbedding
   );
+
+  useEffect(() => {
+    // Example: Using microphoneSelectedLanguage in an API call
+    console.log("Microphone Selected Language:", microphoneSelectedLanguage);
+    // Use microphoneSelectedLanguage for any operation that depends on the language
+  }, [microphoneSelectedLanguage]); // Add microphoneSelectedLanguage as a dependency
 
   const uploadAudioBlob = useCallback(
     async (audioBlob: Blob) => {
@@ -440,6 +449,7 @@ export default function Microphone({
         microphone.ondataavailable = (e) => {
           add(e.data);
           setAudioBlobs((prevBlobs) => [...prevBlobs, e.data]);
+          console.log("Audio Blob Size:", e.data.size); // Log the size of the current audio blob
         };
 
         setUserMedia(userMedia);
@@ -502,17 +512,18 @@ export default function Microphone({
           console.error(e);
         });
     }
-  }, [apiKey]);
+  }, [apiKey, setLoadingKey]);
 
   useEffect(() => {
     if (apiKey && "key" in apiKey) {
-      // console.log("connecting to deepgram");
+      console.log("connecting to deepgram:", microphoneSelectedLanguage);
       const deepgram = createClient(apiKey?.key ?? "");
       const connection = deepgram.listen.live({
         model: "nova-2",
         diarize: true,
         interim_results: true,
         smart_format: true,
+        language: microphoneSelectedLanguage,
       });
 
       connection.on(LiveTranscriptionEvents.Open, () => {
@@ -556,8 +567,22 @@ export default function Microphone({
 
       setConnection(connection);
       setLoading(false);
+
+      // Cleanup function to close the connection when the component unmounts or the language changes
+      return () => {
+        console.log("disconnecting from deepgram");
+        // Check the connection state before attempting to finish
+        if (connection.getReadyState() === WebSocket.OPEN) {
+          connection.finish();
+        } else {
+          console.log(
+            `Connection not open. State: ${connection.getReadyState()}`
+          );
+          // Implement any additional handling for non-OPEN states if necessary
+        }
+      };
     }
-  }, [apiKey, setCaption, setFinalCaptions]);
+  }, [apiKey, setCaption, setFinalCaptions, microphoneSelectedLanguage]);
 
   useEffect(() => {
     const processQueue = async () => {
@@ -687,8 +712,14 @@ export default function Microphone({
     <div className="flex flex-col">
       <div className="flex flex-row">
         <div className="flex flex-row items-center space-x-2 mr-4">
-          <Timer className="w-6 h-6" />
-          <span>{formatTimer()}</span>
+          {initialDuration === 0 && timer === 0 ? (
+            <LanguageSelect onLanguageSelect={setMicrophoneSelectedLanguage} />
+          ) : (
+            <>
+              <Timer className="w-6 h-6" />
+              <span>{formatTimer()}</span>
+            </>
+          )}
         </div>
         {/* toggle microphone */}
         {!downloadUrl && (
