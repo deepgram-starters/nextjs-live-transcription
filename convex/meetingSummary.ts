@@ -147,35 +147,16 @@ export const storeMeetingSummaryStreaming = mutation({
       return [];
     }
 
-    // Check if a summary for the given meetingID already exists
-    const existingSummary = await ctx.db
-      .query("meetingSummaries")
-      .filter((q) => q.eq(q.field("userId"), user.subject))
-      .filter((q) => q.eq(q.field("meetingID"), args.meetingID))
-      .first();
+    const meetingSummariesID = await ctx.db.insert("meetingSummaries", {
+      userId: user.subject,
+      meetingID: args.meetingID,
+      aiModel: args.aiModel,
+      aiSummary: "", // Initially empty, to be updated as the AI response streams in
+      completionTokens: 0, // Default value, can be updated later
+      promptTokens: 0, // Default value, can be updated later
+    });
 
-    if (existingSummary) {
-      // If a summary exists, update it
-      await ctx.db.patch(existingSummary._id, {
-        aiModel: args.aiModel,
-        aiSummary: args.summary, // Assuming you want to reset the summary to the new one
-        completionTokens: 0, // Reset or update as necessary
-        promptTokens: 0, // Reset or update as necessary
-      });
-      return existingSummary._id; // Return the ID of the updated summary
-    } else {
-      // If no summary exists, insert a new one
-      const meetingSummariesID = await ctx.db.insert("meetingSummaries", {
-        userId: user.subject,
-        meetingID: args.meetingID,
-        aiModel: args.aiModel,
-        aiSummary: args.summary,
-        completionTokens: 0, // Default value, can be updated later
-        promptTokens: 0, // Default value, can be updated later
-      });
-
-      return meetingSummariesID; // Return the ID of the newly created summary
-    }
+    return meetingSummariesID; // Return the ID of the newly created message for future updates
   },
 });
 
@@ -193,7 +174,6 @@ export const updateAIResponse = mutation({
   },
 });
 
-// ALERT: Dissabled for now convex says we are over a gb in client requests
 export const getMeetingSummaryForUser = query({
   args: {
     meetingID: v.id("meetings"),

@@ -107,7 +107,6 @@ export const sendMessage = action({
 
     let aiResponse = "";
     let completionTokens = 0; // Initialize chunk count
-
     for await (const chunk of completion) {
       const part = chunk.choices[0].delta.content; // Note the change here to delta.content
       // console.log(chunk);

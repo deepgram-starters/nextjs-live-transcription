@@ -1,5 +1,4 @@
-//inport react stuff
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 
 //import shadcnui stuff
 import { Button } from "@/components/ui/button";
@@ -156,7 +155,10 @@ const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({
                     {index === finalizedSentences.length - 1 && (
                       <div>
                         {caption && !caption.isFinal && (
-                          <div className="text-blue-500">{caption.words}</div>
+                          <div className="text-blue-500">
+                            {caption.words}{" "}
+                            {caption.isFinal ? "(Final)" : "(Interim)"}
+                          </div>
                         )}
                       </div>
                     )}
@@ -174,7 +176,10 @@ const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({
                 <div className="flex flex-col ml-4 border rounded-lg p-4">
                   <div>
                     {caption && !caption.isFinal && (
-                      <div className="text-blue-500">{caption.words}</div>
+                      <div className="text-blue-500">
+                        {caption.words}{" "}
+                        {caption.isFinal ? "(Final)" : "(Interim)"}
+                      </div>
                     )}
                   </div>
                 </div>

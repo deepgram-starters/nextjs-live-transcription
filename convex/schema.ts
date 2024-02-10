@@ -53,19 +53,4 @@ export default defineSchema({
     speaker: v.number(),
     meetingID: v.id("meetings"),
   }).index("by_meetingID", ["meetingID"]),
-
-  wordDetails: defineTable({
-    meetingID: v.id("meetings"),
-    word: v.string(),
-    start: v.float64(),
-    end: v.float64(),
-    confidence: v.float64(),
-    speaker: v.number(),
-    punctuated_word: v.string(),
-    audio_embedding: v.optional(v.array(v.float64())), // Assuming the embedding is an array of floats
-  }).index("by_meetingID", ["meetingID"]),
-  audioFiles: defineTable({
-    storageId: v.id("_storage"), // Reference to the file in Convex storage
-    meetingID: v.id("meetings"), // Link to the meeting this audio file is associated with
-  }).index("by_meetingID", ["meetingID"]),
 });
