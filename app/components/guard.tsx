@@ -8,19 +8,19 @@ export default function Guard() {
 
   if (!loggedIn) {
     return (
-      <a
-        href="#"
-        className="w-full text-center"
-        onClick={() => setLoggedIn(true)}
-      >
-        Click to login
-      </a>
+      <ul>
+        <li>
+          <a
+            href="#"
+            className="w-full text-center"
+            onClick={() => setLoggedIn(true)}
+          >
+            Click to login
+          </a>
+        </li>
+      </ul>
     );
   }
 
-  return (
-    <>
-      <Conversation />
-    </>
-  );
+  return <Conversation />;
 }

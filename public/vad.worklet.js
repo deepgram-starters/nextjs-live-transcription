@@ -5,7 +5,7 @@ class BasicVad extends AudioWorkletProcessor {
   process(inputs) {
     const input = inputs[0][0];
 
-    const amplitudeThreshold = 0.15;
+    const amplitudeThreshold = 0.2;
 
     const rms = Math.sqrt(
       input.reduce((acc, sample) => acc + sample * sample, 0) / input.length
@@ -13,11 +13,10 @@ class BasicVad extends AudioWorkletProcessor {
 
     const isVoiceActive = rms > amplitudeThreshold;
 
-    if (isVoiceActive) {
-      this.port.postMessage({ voiceActivity: true });
-    } else {
-      this.port.postMessage({ voiceActivity: false });
-    }
+    this.port.postMessage({
+      voiceActivity: isVoiceActive,
+      timestamp: Date.now(),
+    });
 
     return true;
   }

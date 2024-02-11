@@ -18,56 +18,55 @@ import {
 import { systemContent } from "../lib/constants";
 import { InitialLoad } from "./initialload";
 import { isBrowser } from "react-device-detect";
-import { useQueue } from "@uidotdev/usehooks";
+import { useQueue, useThrottle } from "@uidotdev/usehooks";
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import type { LLMRequestMetadata, LLMMessage } from "../lib/types";
-import VAD from "../lib/vad";
 
 /**
  * Conversation element that contains the conversational AI app.
  * @returns {JSX.Element}
  */
 export default function Conversation() {
-  const messageWindow = useRef<null | HTMLDivElement>(null);
+  /**
+   * Refs
+   */
+  const messageMarker = useRef<null | HTMLDivElement>(null);
+
+  /**
+   * Memos
+   */
   const greeting = useMemo(() => getRandomGreeting(), []);
-  const [textInput, setTextInput] = useState("");
-  const [initialLoad, setInitialLoad] = useState(true);
+
+  /**
+   * State
+   */
   const [apiKey, setApiKey] = useState<CreateProjectKeyResponse | null>();
   const [connection, setConnection] = useState<LiveClient | null>();
+  const [initialLoad, setInitialLoad] = useState(true);
   const [isListening, setListening] = useState(false);
-  const [isLoadingKey, setLoadingKey] = useState(true);
   const [isLoading, setLoading] = useState(true);
+  const [isLoadingKey, setLoadingKey] = useState(true);
   const [isProcessing, setProcessing] = useState(false);
-  const [micOpen, setMicOpen] = useState(false);
-  const [microphone, setMicrophone] = useState<MediaRecorder | null>();
-  const [userMedia, setUserMedia] = useState<MediaStream | null>();
-  const [talking, setTalking] = useState(false);
-  const [volume, setVolume] = useState(0);
-  const [utterance, setUtterance] = useState<LLMMessage>(blankUserMessage);
   const [llmRequest, setLlmRequest] = useState<LLMRequestMetadata>({
     sent: false,
     sentTimestamp: null,
     replied: false,
     replyTimestamp: null,
   });
+  const [micOpen, setMicOpen] = useState(false);
+  const [microphone, setMicrophone] = useState<MediaRecorder | null>();
+  const [textInput, setTextInput] = useState<string>("");
+  const [userMedia, setUserMedia] = useState<MediaStream | null>();
+  const [utterance, setUtterance] = useState<LLMMessage>(blankUserMessage);
 
-  const sentToLlm = useCallback(() => {
-    setLlmRequest({
-      sent: true,
-      sentTimestamp: new Date(),
-      replied: false,
-      replyTimestamp: null,
-    });
-  }, [setLlmRequest]);
+  const [voiceActivity, setVoiceActivity] = useState<{
+    voiceActivity: boolean;
+    timestamp: number;
+  }>();
 
-  const responseFromLlm = useCallback(() => {
-    setLlmRequest({ ...llmRequest, replied: true, replyTimestamp: new Date() });
-  }, [llmRequest, setLlmRequest]);
-
-  const hasLlmResponded = useCallback(() => {
-    return llmRequest.replied && llmRequest.sent;
-  }, [llmRequest]);
-
+  /**
+   * Queues
+   */
   const {
     add: addToQueue,
     remove: removeFromQueue,
@@ -83,6 +82,27 @@ export default function Conversation() {
   } = useQueue<LLMMessage>([
     { role: "system", name: "Emily", content: systemContent },
   ]);
+
+  // const sentToLlm = useCallback(() => {
+  //   setLlmRequest({
+  //     sent: true,
+  //     sentTimestamp: new Date(),
+  //     replied: false,
+  //     replyTimestamp: null,
+  //   });
+  // }, [setLlmRequest]);
+
+  // const responseFromLlm = useCallback(() => {
+  //   setLlmRequest({ ...llmRequest, replied: true, replyTimestamp: new Date() });
+  // }, [llmRequest, setLlmRequest]);
+
+  // const hasLlmMessageSent = useCallback(() => {
+  //   return llmRequest.sent;
+  // }, [llmRequest]);
+
+  // const hasLlmReplied = useCallback(() => {
+  //   return llmRequest.replied;
+  // }, [llmRequest]);
 
   /**
    * toggle microphone on/off function
@@ -124,8 +144,8 @@ export default function Conversation() {
       source.connect(workletNode);
       workletNode.connect(context.destination);
       workletNode.port.onmessage = (
-        e: MessageEvent<{ voiceActivity: boolean }>
-      ) => setTalking(e.data.voiceActivity);
+        e: MessageEvent<{ voiceActivity: boolean; timestamp: number }>
+      ) => setVoiceActivity(e.data);
 
       const microphone = new MediaRecorder(userMedia);
       microphone.start(500);
@@ -155,27 +175,10 @@ export default function Conversation() {
   ]);
 
   /**
-   * is the user currently talking
-   * @todo we'll replace with VAD or something (https://github.com/JamesBrill/react-speech-recognition)
-   */
-  // useEffect(() => {
-  //   console.log(volume);
-  //   setTalking(volume > 0.2);
-  // }, [volume, setTalking]);
-
-  // /**
-  //  * is the user currently talking
-  //  */
-  // useEffect(() => {
-  //   console.log(talking);
-  // }, [talking]);
-
-  /**
    * getting a new api key
    */
   useEffect(() => {
     if (!apiKey) {
-      console.log("getting a new api key");
       fetch("/api/authenticate", { cache: "no-store" })
         .then((res) => res.json())
         .then((object) => {
@@ -195,7 +198,6 @@ export default function Conversation() {
    */
   useEffect(() => {
     if (apiKey && "key" in apiKey) {
-      console.log("connecting to deepgram");
       const deepgram = createClient(apiKey?.key ?? "");
       const connection = deepgram.listen.live({
         model: "nova",
@@ -207,14 +209,12 @@ export default function Conversation() {
        * connection established
        */
       connection.on(LiveTranscriptionEvents.Open, (e: any) => {
-        console.log("websocket event: Open", e);
         setListening(true);
 
         /**
          * connection closed
          */
         connection.on(LiveTranscriptionEvents.Close, (e: any) => {
-          console.log("websocket event: Close", e);
           setListening(false);
           setApiKey(null);
           setConnection(null);
@@ -233,7 +233,6 @@ export default function Conversation() {
         connection.on(
           LiveTranscriptionEvents.Transcript,
           (data: LiveTranscriptionEvent) => {
-            console.log("websocket event: Transcript");
             const content = utteranceText(data);
 
             if (content) {
@@ -258,10 +257,6 @@ export default function Conversation() {
       setLoading(false);
     }
   }, [addMessage, apiKey]);
-
-  useEffect(() => {
-    console.log(utterance);
-  }, [utterance]);
 
   // /**
   //  * turn utterance into message history when finalised
@@ -320,14 +315,11 @@ export default function Conversation() {
   useEffect(() => {
     let keepAlive: any;
     if (connection && isListening && !micOpen) {
-      console.log("starting keeping alive");
       keepAlive = setInterval(() => {
         // should stop spamming dev console when working on frontend in devmode
         if (connection?.getReadyState() !== LiveConnectionState.OPEN) {
-          console.log("connection went away, cancelling KeepAlive");
           clearInterval(keepAlive);
         } else {
-          console.log("sending a KeepAlive");
           connection.keepAlive();
         }
       }, 10000);
@@ -343,9 +335,8 @@ export default function Conversation() {
 
   // this works
   useEffect(() => {
-    console.log("messages added", numberOfMessages);
-    if (messageWindow.current) {
-      messageWindow.current.scrollIntoView({
+    if (messageMarker.current) {
+      messageMarker.current.scrollIntoView({
         block: "center",
         behavior: "smooth",
       });
@@ -414,7 +405,7 @@ export default function Conversation() {
                       <p className="cursor-blink">{utterance.content}</p>
                     </LeftBubble>
                   )}
-                  <div ref={messageWindow}></div>
+                  <div ref={messageMarker}></div>
                 </div>
               </div>
               <div className="flex flex-row items-center h-16 rounded-xl bg-zinc-900 w-full px-3 text-sm sm:text-base">
@@ -428,31 +419,16 @@ export default function Conversation() {
                       micOpen ? "bg-[rgb(53,67,234)] " : "bg-[rgb(234,67,53)] "
                     }`}
                   >
-                    <div className="w-4 h-4 hidden sm:inline mr-2 relative">
+                    <div className="w-4 h-4 hidden sm:inline mr-2">
                       <svg
                         viewBox="0 0 24 24"
                         xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        stroke="currentColor"
-                        className="w-4 h-4 absolute bottom-0"
+                        fill="currentColor"
+                        className="w-4 h-4"
                       >
                         <path d="M8.25 4.5a3.75 3.75 0 1 1 7.5 0v8.25a3.75 3.75 0 1 1-7.5 0V4.5Z" />
                         <path d="M6 10.5a.75.75 0 0 1 .75.75v1.5a5.25 5.25 0 1 0 10.5 0v-1.5a.75.75 0 0 1 1.5 0v1.5a6.751 6.751 0 0 1-6 6.709v2.291h3a.75.75 0 0 1 0 1.5h-7.5a.75.75 0 0 1 0-1.5h3v-2.291a6.751 6.751 0 0 1-6-6.709v-1.5A.75.75 0 0 1 6 10.5Z" />
                       </svg>
-                      <div
-                        className={`w-4 bottom-0 overflow-hidden absolute transition-height duration-300 ease-in`}
-                        style={{ height: `${volume}%` }}
-                      >
-                        <svg
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="currentColor"
-                          className="w-4 h-4 absolute bottom-px"
-                        >
-                          <path d="M8.25 4.5a3.75 3.75 0 1 1 7.5 0v8.25a3.75 3.75 0 1 1-7.5 0V4.5Z" />
-                          <path d="M6 10.5a.75.75 0 0 1 .75.75v1.5a5.25 5.25 0 1 0 10.5 0v-1.5a.75.75 0 0 1 1.5 0v1.5a6.751 6.751 0 0 1-6 6.709v2.291h3a.75.75 0 0 1 0 1.5h-7.5a.75.75 0 0 1 0-1.5h3v-2.291a6.751 6.751 0 0 1-6-6.709v-1.5A.75.75 0 0 1 6 10.5Z" />
-                        </svg>
-                      </div>
                     </div>
 
                     <span>
