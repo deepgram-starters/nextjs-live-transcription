@@ -21,6 +21,7 @@ import { isBrowser } from "react-device-detect";
 import { useQueue } from "@uidotdev/usehooks";
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import type { LLMRequestMetadata, LLMMessage } from "../lib/types";
+import VAD from "../lib/vad";
 
 /**
  * Conversation element that contains the conversational AI app.
@@ -105,15 +106,26 @@ export default function Conversation() {
       }
     } else {
       const userMedia = await navigator.mediaDevices.getUserMedia({
-        audio: true,
+        audio: {
+          noiseSuppression: true,
+          echoCancellation: true,
+        },
       });
 
       const context = new AudioContext();
-      const source = context.createMediaStreamSource(userMedia);
-      const analyzer = context.createAnalyser();
-      source.connect(analyzer);
+      await context.audioWorklet.addModule(`/vad.worklet.js?v=${Date.now()}`);
 
-      const analyzerArray = new Uint8Array(analyzer.fftSize);
+      const source = context.createMediaStreamSource(userMedia);
+      const workletNode = new AudioWorkletNode(
+        context,
+        "voice-activity-processor"
+      );
+
+      source.connect(workletNode);
+      workletNode.connect(context.destination);
+      workletNode.port.onmessage = (
+        e: MessageEvent<{ voiceActivity: boolean }>
+      ) => setTalking(e.data.voiceActivity);
 
       const microphone = new MediaRecorder(userMedia);
       microphone.start(500);
@@ -127,15 +139,6 @@ export default function Conversation() {
       };
 
       microphone.ondataavailable = (e) => {
-        analyzer.getByteTimeDomainData(analyzerArray);
-        const maxDifferenceFrom127 = analyzerArray.reduce(
-          (max, current) => Math.max(max, Math.abs(current - 127)),
-          0
-        );
-
-        const normalisedMax = Math.round((maxDifferenceFrom127 / 128) * 150);
-        setVolume(normalisedMax > 100 ? 100 : normalisedMax);
-
         addToQueue(e.data);
       };
 
