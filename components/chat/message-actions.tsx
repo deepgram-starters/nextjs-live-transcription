@@ -38,7 +38,13 @@ const MessageActions: React.FC<MessageActionsProps> = ({
         aria-label="Copy"
         title="Copy"
       >
-        {hasCopied ? <CheckCircle size={16} /> : <Clipboard size={16} />}
+        {hasCopied ? (
+          <CheckCircle size={16} />
+        ) : (
+          <div className="flex items-center space-x-2">
+            <Clipboard size={16} /> <span>Copy Response</span>
+          </div>
+        )}
       </Button>
       {/* <Button
         variant="ghost"

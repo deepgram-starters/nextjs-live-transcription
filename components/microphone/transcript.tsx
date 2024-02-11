@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 //import icon stuff
-import { User } from "lucide-react";
+import { User, X } from "lucide-react";
 import type { SpeakerDetail, FinalizedSentence } from "../microphone"; // Assuming these types are exported from microphone.tsx
 
 interface CaptionDetail {
@@ -30,6 +30,7 @@ interface TranscriptDisplayProps {
   finalizedSentences: FinalizedSentence[];
   caption: CaptionDetail | null;
   setCaption?: Dispatch<SetStateAction<CaptionDetail | null>>; // Make it optional if it's not always needed
+  removeFinalizedSentence: (index: number) => void;
 }
 
 const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({
@@ -37,6 +38,7 @@ const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({
   setSpeakerDetails,
   finalizedSentences,
   caption,
+  removeFinalizedSentence,
 }) => {
   // Moved inside TranscriptDisplay
   const handleFirstNameChange = (id: number, newFirstName: string) => {
@@ -133,7 +135,7 @@ const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({
       <ScrollArea className="h-[calc(100vh-260px)] md:h-[calc(100vh-305px)]">
         {/* Display is_final responses */}
         {(finalizedSentences.length > 0 || caption) && (
-          <div className="my-4 space-y-4">
+          <div className="mt-5 my-4 space-y-4">
             {finalizedSentences.map((sentence, index) => (
               <div key={index} className="flex flex-row">
                 <Avatar className="">
@@ -142,14 +144,22 @@ const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({
                     <User />
                   </AvatarFallback>
                 </Avatar>
-                <div className="flex flex-col ml-4 border rounded-lg p-4">
+                <div className="relative flex flex-col ml-4 border rounded-lg p-4 group">
                   <div className="flex flex-row justify-between mb-3">
-                    <div className="font-bold">
-                      {getSpeakerName(sentence.speaker)}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="absolute -top-6 right-2 opacity-0 group-hover:opacity-100 text-sm text-muted-foreground">
                       {sentence.start.toFixed(2)} - {sentence.end.toFixed(2)}
                     </div>
+                    <div className="font-bold mr-8">
+                      {getSpeakerName(sentence.speaker)}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="-m-3 text-muted-foreground opacity-0 group-hover:opacity-100"
+                      onClick={() => removeFinalizedSentence(index)}
+                    >
+                      <X size={16} />
+                    </Button>
                   </div>
                   <div>
                     {sentence.transcript}{" "}

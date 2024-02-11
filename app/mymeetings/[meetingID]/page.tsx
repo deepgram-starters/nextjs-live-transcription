@@ -69,6 +69,15 @@ interface CaptionDetail {
   isFinal: boolean;
 }
 
+export interface WordDetail {
+  word: string;
+  start: number;
+  end: number;
+  confidence: number;
+  speaker: number;
+  punctuated_word: string;
+}
+
 interface SpeakerDetail {
   speakerNumber: number;
   firstName: string;
@@ -126,8 +135,8 @@ export default function Page({
     FinalizedSentence[]
   >([]);
   const [speakerDetails, setSpeakerDetails] = useState<SpeakerDetail[]>([]);
-
   const [caption, setCaption] = useState<CaptionDetail | null>(null);
+  const [finalCaptions, setFinalCaptions] = useState<WordDetail[]>([]);
 
   // State for managing the selected tab for smaller screens to just 1 component
   const [selectedTab, setSelectedTab] = useState<string>("Transcript");
@@ -163,6 +172,30 @@ export default function Page({
   // New state for managing questions
   const [questions, setQuestions] = useState<QuestionDetail[]>([]);
 
+  const removeFinalizedSentence = useCallback(
+    (index: number) => {
+      // Retrieve the sentence to be deleted
+      const sentenceToRemove = finalizedSentences[index];
+
+      // Update finalizedSentences by removing the sentence at the specified index
+      setFinalizedSentences((currentSentences) =>
+        currentSentences.filter((_, i) => i !== index)
+      );
+
+      // Update finalCaptions by removing words that fall within the start and end time of the sentenceToRemove
+      setFinalCaptions((currentCaptions) =>
+        currentCaptions.filter(
+          (caption) =>
+            !(
+              caption.start >= sentenceToRemove.start &&
+              caption.end <= sentenceToRemove.end
+            )
+        )
+      );
+    },
+    [finalizedSentences, finalCaptions, setFinalizedSentences, setFinalCaptions]
+  );
+
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] mx-5">
       <Breadcrumbs className="mt-2">
@@ -193,6 +226,8 @@ export default function Page({
           setSpeakerDetails={setSpeakerDetails}
           setCaption={setCaption}
           caption={caption}
+          finalCaptions={finalCaptions}
+          setFinalCaptions={setFinalCaptions}
           initialDuration={meetingDetails?.[0]?.duration || 0}
           questions={questions} // Pass the questions state here
           setQuestions={setQuestions} // Pass the setQuestions state here
@@ -245,6 +280,7 @@ export default function Page({
                 setSpeakerDetails={setSpeakerDetails} // Pass this prop to update the state
                 finalizedSentences={finalizedSentences}
                 caption={caption}
+                removeFinalizedSentence={removeFinalizedSentence} // Passing the function as a prop
               />
             </TabsContent>
             <TabsContent value="Notes" className="flex flex-col">
@@ -267,6 +303,7 @@ export default function Page({
               setSpeakerDetails={setSpeakerDetails} // Pass this prop to update the state
               finalizedSentences={finalizedSentences}
               caption={caption}
+              removeFinalizedSentence={removeFinalizedSentence} // Passing the function as a prop
             />
           </div>
           <div

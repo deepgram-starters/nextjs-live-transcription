@@ -98,10 +98,12 @@ interface MicrophoneProps {
   setSpeakerDetails: React.Dispatch<React.SetStateAction<SpeakerDetail[]>>;
   caption: CaptionDetail | null;
   setCaption: Dispatch<SetStateAction<CaptionDetail | null>>;
+  finalCaptions: WordDetail[];
+  setFinalCaptions: Dispatch<SetStateAction<WordDetail[]>>;
 
   initialDuration: number; // Add this line
   questions: QuestionDetail[]; // Add this line
-  setQuestions: React.Dispatch<React.SetStateAction<QuestionDetail[]>>; // Add this line
+  setQuestions: React.Dispatch<React.SetStateAction<QuestionDetail[]>>;
 }
 
 export default function Microphone({
@@ -112,6 +114,8 @@ export default function Microphone({
   setSpeakerDetails,
   caption,
   setCaption,
+  finalCaptions,
+  setFinalCaptions,
   initialDuration,
 }: MicrophoneProps) {
   const { add, remove, first, size, queue } = useQueue<any>([]);
@@ -129,7 +133,7 @@ export default function Microphone({
   const [audioBlobs, setAudioBlobs] = useState<Blob[]>([]);
   const combinedAudioBlob = new Blob(audioBlobs, { type: "audio/webm" });
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
-  const [finalCaptions, setFinalCaptions] = useState<WordDetail[]>([]);
+  // const [finalCaptions, setFinalCaptions] = useState<WordDetail[]>([]);
 
   const retrieveSummary = useAction(api.meetingSummary.retrieveMeetingSummary);
 
