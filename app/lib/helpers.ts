@@ -1,5 +1,6 @@
 import { LiveTranscriptionEvent } from "@deepgram/sdk";
 import { greetings } from "./constants";
+import { LLMMessage } from "./types";
 
 /**
  * get a random greeting
@@ -23,8 +24,13 @@ const utteranceText = (event: LiveTranscriptionEvent) => {
  * @param {any[]} messages
  * @returns {any[]}
  */
-const getUserMessages = (messages: any[]) => {
+const getUserMessages = (messages: LLMMessage[]) => {
   return messages.filter((message) => message.role !== "system");
 };
 
-export { getRandomGreeting, getUserMessages, utteranceText };
+const blankUserMessage: LLMMessage = {
+  role: "user",
+  content: "",
+};
+
+export { getRandomGreeting, getUserMessages, utteranceText, blankUserMessage };

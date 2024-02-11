@@ -10,6 +10,7 @@ import {
   createClient,
 } from "@deepgram/sdk";
 import {
+  blankUserMessage,
   getRandomGreeting,
   getUserMessages,
   utteranceText,
@@ -19,7 +20,7 @@ import { InitialLoad } from "./initialload";
 import { isBrowser } from "react-device-detect";
 import { useQueue } from "@uidotdev/usehooks";
 import { useState, useEffect, useCallback, useMemo } from "react";
-import type { LLMRequestMetadata } from "../lib/types";
+import type { LLMRequestMetadata, LLMMessage } from "../lib/types";
 
 /**
  * Conversation element that contains the conversational AI app.
@@ -40,10 +41,7 @@ export default function Conversation() {
   const [userMedia, setUserMedia] = useState<MediaStream | null>();
   const [talking, setTalking] = useState(false);
   const [volume, setVolume] = useState(0);
-  const [utterance, setUtterance] = useState<LiveTranscriptionEvent | null>(
-    null
-  );
-
+  const [utterance, setUtterance] = useState<LLMMessage>(blankUserMessage);
   const [llmRequest, setLlmRequest] = useState<LLMRequestMetadata>({
     sent: false,
     sentTimestamp: null,
@@ -51,7 +49,7 @@ export default function Conversation() {
     replyTimestamp: null,
   });
 
-  const sentToLlm = useCallback(async () => {
+  const sentToLlm = useCallback(() => {
     setLlmRequest({
       sent: true,
       sentTimestamp: new Date(),
@@ -60,9 +58,13 @@ export default function Conversation() {
     });
   }, [setLlmRequest]);
 
-  const responseFromLlm = useCallback(async () => {
+  const responseFromLlm = useCallback(() => {
     setLlmRequest({ ...llmRequest, replied: true, replyTimestamp: new Date() });
   }, [llmRequest, setLlmRequest]);
+
+  const hasLlmResponded = useCallback(() => {
+    return llmRequest.replied && llmRequest.sent;
+  }, [llmRequest]);
 
   const {
     add: addToQueue,
@@ -70,13 +72,13 @@ export default function Conversation() {
     first: topOfQueue,
     size: queueSize,
     queue: dataQueue,
-  } = useQueue<any>([]);
+  } = useQueue<Blob>([]);
 
   const {
     add: addMessage,
     queue: messages,
     size: numberOfMessages,
-  } = useQueue<any>([
+  } = useQueue<LLMMessage>([
     { role: "system", name: "Emily", content: systemContent },
   ]);
 
@@ -88,6 +90,7 @@ export default function Conversation() {
       addMessage({
         role: "assistant",
         content: greeting.text,
+        name: "Emily",
       });
       setInitialLoad(!initialLoad);
     }
@@ -199,15 +202,15 @@ export default function Conversation() {
       /**
        * connection established
        */
-      connection.on(LiveTranscriptionEvents.Open, () => {
-        console.log("websocket event: Open");
+      connection.on(LiveTranscriptionEvents.Open, (e) => {
+        console.log("websocket event: Open", e);
         setListening(true);
 
         /**
          * connection closed
          */
-        connection.on(LiveTranscriptionEvents.Close, () => {
-          console.log("websocket event: Close");
+        connection.on(LiveTranscriptionEvents.Close, (e) => {
+          console.log("websocket event: Close", e);
           setListening(false);
           setApiKey(null);
           setConnection(null);
@@ -216,9 +219,8 @@ export default function Conversation() {
         /**
          * error detected
          */
-        connection.on(LiveTranscriptionEvents.Error, (error) => {
-          console.log("websocket event: Error");
-          console.error(error);
+        connection.on(LiveTranscriptionEvents.Error, (e) => {
+          console.error("websocket event: Error", e);
         });
 
         /**
@@ -230,16 +232,18 @@ export default function Conversation() {
             console.log("websocket event: Transcript");
             const content = utteranceText(data);
 
-            if (content !== "") {
+            if (content) {
               if (data.is_final) {
                 addMessage({
                   role: "user",
                   content,
                 });
-
-                setUtterance(null);
+                setUtterance(blankUserMessage);
               } else {
-                setUtterance(data);
+                setUtterance({
+                  role: "user",
+                  content,
+                });
               }
             }
           }
@@ -249,7 +253,11 @@ export default function Conversation() {
       setConnection(connection);
       setLoading(false);
     }
-  }, [addMessage, apiKey, utterance, setUtterance, llmRequest.replied]);
+  }, [addMessage, apiKey]);
+
+  useEffect(() => {
+    console.log(utterance);
+  }, [utterance]);
 
   // /**
   //  * turn utterance into message history when finalised
@@ -277,8 +285,10 @@ export default function Conversation() {
         setProcessing(true);
 
         if (isListening) {
-          const blob = topOfQueue;
-          connection?.send(blob);
+          if (topOfQueue) {
+            connection?.send(topOfQueue);
+          }
+
           removeFromQueue();
         }
 
@@ -389,9 +399,9 @@ export default function Conversation() {
                     getUserMessages(messages).map((message, i) => (
                       <ChatBubble message={message} key={i} />
                     ))}
-                  {utterance && utteranceText(utterance) && (
+                  {utterance && utterance.content && (
                     <LeftBubble meta={"20ms"}>
-                      <p className="cursor-blink">{utteranceText(utterance)}</p>
+                      <p className="cursor-blink">{utterance.content}</p>
                     </LeftBubble>
                   )}
                 </div>
