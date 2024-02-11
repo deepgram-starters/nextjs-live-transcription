@@ -19,7 +19,7 @@ import { systemContent } from "../lib/constants";
 import { InitialLoad } from "./initialload";
 import { isBrowser } from "react-device-detect";
 import { useQueue } from "@uidotdev/usehooks";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import type { LLMRequestMetadata, LLMMessage } from "../lib/types";
 
 /**
@@ -27,6 +27,7 @@ import type { LLMRequestMetadata, LLMMessage } from "../lib/types";
  * @returns {JSX.Element}
  */
 export default function Conversation() {
+  const messageWindow = useRef<null | HTMLDivElement>(null);
   const greeting = useMemo(() => getRandomGreeting(), []);
   const [textInput, setTextInput] = useState("");
   const [initialLoad, setInitialLoad] = useState(true);
@@ -154,10 +155,10 @@ export default function Conversation() {
    * is the user currently talking
    * @todo we'll replace with VAD or something (https://github.com/JamesBrill/react-speech-recognition)
    */
-  useEffect(() => {
-    console.log(volume);
-    // setTalking(volume > 0.2);
-  }, [volume, setTalking]);
+  // useEffect(() => {
+  //   console.log(volume);
+  //   setTalking(volume > 0.2);
+  // }, [volume, setTalking]);
 
   // /**
   //  * is the user currently talking
@@ -202,14 +203,14 @@ export default function Conversation() {
       /**
        * connection established
        */
-      connection.on(LiveTranscriptionEvents.Open, (e) => {
+      connection.on(LiveTranscriptionEvents.Open, (e: any) => {
         console.log("websocket event: Open", e);
         setListening(true);
 
         /**
          * connection closed
          */
-        connection.on(LiveTranscriptionEvents.Close, (e) => {
+        connection.on(LiveTranscriptionEvents.Close, (e: any) => {
           console.log("websocket event: Close", e);
           setListening(false);
           setApiKey(null);
@@ -219,7 +220,7 @@ export default function Conversation() {
         /**
          * error detected
          */
-        connection.on(LiveTranscriptionEvents.Error, (e) => {
+        connection.on(LiveTranscriptionEvents.Error, (e: any) => {
           console.error("websocket event: Error", e);
         });
 
@@ -337,10 +338,16 @@ export default function Conversation() {
     };
   }, [connection, isListening, micOpen]);
 
-  // // this works
-  // useEffect(() => {
-  //   console.log("messages added", numberOfMessages);
-  // }, [numberOfMessages]);
+  // this works
+  useEffect(() => {
+    console.log("messages added", numberOfMessages);
+    if (messageWindow.current) {
+      messageWindow.current.scrollIntoView({
+        block: "center",
+        behavior: "smooth",
+      });
+    }
+  }, [numberOfMessages]);
 
   /**
    * registering key up/down events
@@ -404,6 +411,7 @@ export default function Conversation() {
                       <p className="cursor-blink">{utterance.content}</p>
                     </LeftBubble>
                   )}
+                  <div ref={messageWindow}></div>
                 </div>
               </div>
               <div className="flex flex-row items-center h-16 rounded-xl bg-zinc-900 w-full px-3 text-sm sm:text-base">

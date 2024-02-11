@@ -11,6 +11,7 @@
   "dependencies": {
     "@deepgram/sdk": "^3.1.9",
     "@svgr/webpack": "^8.1.0",
+    "@types/classnames": "^2.3.1",
     "@uidotdev/usehooks": "^2.4.1",
     "ai": "^2.2.33",
     "classnames": "^2.5.1",
