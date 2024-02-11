@@ -258,23 +258,6 @@ export default function Conversation() {
     }
   }, [addMessage, apiKey]);
 
-  // /**
-  //  * turn utterance into message history when finalised
-  //  */
-  // useEffect(() => {
-  //   if (utterance?.is_final) {
-  //     const content = utteranceText(utterance);
-
-  //     if (content !== "") {
-  //       addMessage({
-  //         role: "user",
-  //         content,
-  //       });
-  //       setUtterance(null);
-  //     }
-  //   }
-  // }, [addMessage, utterance]);
-
   /**
    * magic audio queue processing
    */
@@ -393,58 +376,39 @@ export default function Conversation() {
                 <div className="grid grid-cols-12 overflow-x-auto gap-y-2">
                   {initialLoad && <InitialLoad fn={toggleMicrophone} />}
 
-                  {/**
-                   * message bubbles (left/right)
-                   */}
                   {getUserMessages(messages).length > 0 &&
                     getUserMessages(messages).map((message, i) => (
                       <ChatBubble message={message} key={i} />
                     ))}
+
                   {utterance && utterance.content && (
                     <RightBubble meta={"20ms"}>
                       <p className="cursor-blink">{utterance.content}</p>
                     </RightBubble>
                   )}
+
                   <div ref={messageMarker}></div>
                 </div>
               </div>
               <div className="flex flex-row items-center h-16 rounded-xl bg-zinc-900 w-full px-3 text-sm sm:text-base">
                 <div className="mr-3">
-                  {/**
-                   * start button in message bar
-                   */}
                   <button
                     onClick={() => toggleMicrophone()}
                     className={`group flex items-center justify-center rounded-lg hover:bg-white text-white hover:text-black px-4 lg:px-6 py-2 flex-shrink-0 ${
                       micOpen ? "bg-[rgb(53,67,234)] " : "bg-[rgb(234,67,53)] "
                     }`}
                   >
-                    {/* <div className="w-4 h-4 hidden sm:inline mr-2">
-                      {micOpen ? (
-                        <svg
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="currentColor"
-                          className="w-4 h-4"
-                        >
-                          <path d="M8.25 4.5a3.75 3.75 0 1 1 7.5 0v8.25a3.75 3.75 0 1 1-7.5 0V4.5Z" />
-                          <path d="M6 10.5a.75.75 0 0 1 .75.75v1.5a5.25 5.25 0 1 0 10.5 0v-1.5a.75.75 0 0 1 1.5 0v1.5a6.751 6.751 0 0 1-6 6.709v2.291h3a.75.75 0 0 1 0 1.5h-7.5a.75.75 0 0 1 0-1.5h3v-2.291a6.751 6.751 0 0 1-6-6.709v-1.5A.75.75 0 0 1 6 10.5Z" />
-                        </svg>
-                      ) : (
-                        <svg
-                          width="22"
-                          height="17"
-                          viewBox="0 0 22 17"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M20.6875 15.6875C21.0312 15.9375 21.0938 16.4062 20.8125 16.7188C20.6562 16.9062 20.4375 17 20.2188 17C20.0625 17 19.9062 16.9688 19.75 16.8125L1.28125 2.34375C0.9375 2.09375 0.875 1.625 1.15625 1.3125C1.40625 0.96875 1.875 0.90625 2.1875 1.1875L7.6875 5.5L11.3125 2.28125C11.5 2.09375 11.75 2 12 2C12.125 2 12.25 2.03125 12.4062 2.09375C12.75 2.25 13 2.625 13 3V9.625L14.6875 10.9688C14.5938 10.6875 14.6875 10.375 14.9375 10.1562C15.2812 9.875 15.5 9.46875 15.5 9C15.5 8.5625 15.2812 8.15625 14.9375 7.875C14.5938 7.59375 14.5625 7.125 14.8125 6.8125C14.9688 6.625 15.1875 6.53125 15.4062 6.53125C15.5625 6.53125 15.75 6.59375 15.875 6.6875C16.5938 7.28125 17 8.125 17 9C17 9.90625 16.5938 10.75 15.875 11.3438C15.75 11.4375 15.5625 11.5 15.4062 11.5C15.375 11.5 15.375 11.5 15.3438 11.5L16.75 12.5625C16.7812 12.5312 16.7812 12.5 16.8125 12.4688C17.875 11.625 18.5 10.3438 18.5 9C18.5 7.6875 17.875 6.40625 16.8125 5.59375C16.5 5.3125 16.4375 4.84375 16.7188 4.53125C16.875 4.34375 17.0625 4.25 17.2812 4.25C17.4688 4.25 17.625 4.3125 17.7812 4.40625C19.1875 5.53125 20 7.21875 20 9C20 10.7188 19.2188 12.3438 17.9375 13.5L20.6875 15.6875ZM11.5 8.4375V4.125L8.90625 6.4375L11.5 8.4375ZM11.5 13.9062V12.2812L13 13.4375V15C13 15.4062 12.75 15.75 12.4062 15.9375C12.25 16 12.125 16 12 16C11.75 16 11.5 15.9375 11.3125 15.7188L7.09375 12H4.5C3.65625 12 3 11.3438 3 10.5V7.5C3 6.9375 3.3125 6.46875 3.75 6.21875L5.4375 7.53125H4.5V10.5H7.6875L11.5 13.9062Z"
-                            fill="white"
-                          />
-                        </svg>
-                      )}
-                    </div> */}
+                    <div className="w-4 h-4 hidden sm:inline mr-2">
+                      <svg
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        className="w-4 h-4"
+                      >
+                        <path d="M8.25 4.5a3.75 3.75 0 1 1 7.5 0v8.25a3.75 3.75 0 1 1-7.5 0V4.5Z" />
+                        <path d="M6 10.5a.75.75 0 0 1 .75.75v1.5a5.25 5.25 0 1 0 10.5 0v-1.5a.75.75 0 0 1 1.5 0v1.5a6.751 6.751 0 0 1-6 6.709v2.291h3a.75.75 0 0 1 0 1.5h-7.5a.75.75 0 0 1 0-1.5h3v-2.291a6.751 6.751 0 0 1-6-6.709v-1.5A.75.75 0 0 1 6 10.5Z" />
+                      </svg>
+                    </div>
 
                     <span>
                       {micOpen
@@ -501,9 +465,6 @@ export default function Conversation() {
                   </div>
                 </div>
                 <div className="ml-3">
-                  {/**
-                   * text send button
-                   */}
                   <button
                     onClick={() => {
                       addMessage({
