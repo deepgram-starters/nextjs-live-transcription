@@ -527,7 +527,7 @@ export default function Microphone({
       });
 
       connection.on(LiveTranscriptionEvents.Open, () => {
-        // console.log("connection established");
+        console.log("connection established");
         setListening(true);
       });
 
@@ -563,6 +563,11 @@ export default function Microphone({
             ]);
           }
         }
+      });
+
+      connection.on(LiveTranscriptionEvents.Error, (error) => {
+        console.error("Deepgram connection error:", error);
+        // Handle the error appropriately in your application context
       });
 
       setConnection(connection);
