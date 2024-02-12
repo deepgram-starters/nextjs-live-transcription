@@ -127,7 +127,7 @@ export default function Conversation() {
       setUserMedia(userMedia);
       setMicrophone(microphone);
     }
-  }, [initialLoad, microphone, userMedia, addToQueue]);
+  }, [initialLoad, microphone, userMedia, append, addToQueue]);
 
   /**
    * getting a new api key
