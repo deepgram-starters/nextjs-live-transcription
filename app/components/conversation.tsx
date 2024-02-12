@@ -1,6 +1,6 @@
 "use client";
 
-import { ChatBubble, LeftBubble, RightBubble } from "./chatbubbles";
+import { ChatBubble, RightBubble } from "./chatbubbles";
 import {
   CreateProjectKeyResponse,
   LiveClient,
@@ -12,7 +12,6 @@ import {
 import {
   blankUserMessage,
   getConversationMessages,
-  getUserMessages,
   utteranceText,
 } from "../lib/helpers";
 import { systemContent } from "../lib/constants";
@@ -22,7 +21,6 @@ import { useChat } from "ai/react";
 import { useQueue } from "@uidotdev/usehooks";
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import type { LLMRequestMetadata, LLMMessage } from "../lib/types";
-import { CreateMessage } from "ai";
 
 /**
  * Conversation element that contains the conversational AI app.
@@ -30,10 +28,6 @@ import { CreateMessage } from "ai";
  */
 export default function Conversation() {
   const { messages: gptmessages, append } = useChat({ api: "/api/brain" });
-
-  useEffect(() => {
-    console.log(gptmessages);
-  }, [gptmessages]);
 
   /**
    * Refs
@@ -50,12 +44,7 @@ export default function Conversation() {
   const [isLoading, setLoading] = useState(true);
   const [isLoadingKey, setLoadingKey] = useState(true);
   const [isProcessing, setProcessing] = useState(false);
-  const [llmRequest, setLlmRequest] = useState<LLMRequestMetadata>({
-    sent: false,
-    sentTimestamp: null,
-    replied: false,
-    replyTimestamp: null,
-  });
+
   const [micOpen, setMicOpen] = useState(false);
   const [microphone, setMicrophone] = useState<MediaRecorder | null>();
   const [textInput, setTextInput] = useState<string>("");
@@ -78,42 +67,16 @@ export default function Conversation() {
     queue: dataQueue,
   } = useQueue<Blob>([]);
 
-  const {
-    add: addMessage,
-    queue: messages,
-    last: newestMessage,
-    size: numberOfMessages,
-  } = useQueue<LLMMessage>([
-    { role: "system", name: "Emily", content: systemContent },
-  ]);
-
-  // const sentToLlm = useCallback(() => {
-  //   setLlmRequest({
-  //     sent: true,
-  //     sentTimestamp: new Date(),
-  //     replied: false,
-  //     replyTimestamp: null,
-  //   });
-  // }, [setLlmRequest]);
-
-  // const responseFromLlm = useCallback(() => {
-  //   setLlmRequest({ ...llmRequest, replied: true, replyTimestamp: new Date() });
-  // }, [llmRequest, setLlmRequest]);
-
-  // const hasLlmMessageSent = useCallback(() => {
-  //   return llmRequest.sent;
-  // }, [llmRequest]);
-
-  // const hasLlmReplied = useCallback(() => {
-  //   return llmRequest.replied;
-  // }, [llmRequest]);
-
   /**
    * toggle microphone on/off function
    */
   const toggleMicrophone = useCallback(async () => {
     if (initialLoad) {
       setInitialLoad(!initialLoad);
+      append({
+        role: "system",
+        content: systemContent,
+      });
     }
 
     if (microphone && userMedia) {
@@ -165,13 +128,6 @@ export default function Conversation() {
       setMicrophone(microphone);
     }
   }, [initialLoad, microphone, userMedia, addToQueue]);
-
-  useEffect(() => {
-    // if (getUserMessages(messages).length > 0) {
-    //   setMessages(messages);
-    // }
-    append(newestMessage as CreateMessage);
-  }, [numberOfMessages, newestMessage, append]);
 
   /**
    * getting a new api key
@@ -236,7 +192,7 @@ export default function Conversation() {
 
             if (content) {
               if (data.is_final) {
-                addMessage({
+                append({
                   role: "user",
                   content,
                 });
@@ -255,7 +211,7 @@ export default function Conversation() {
       setConnection(connection);
       setLoading(false);
     }
-  }, [addMessage, apiKey]);
+  }, [append, apiKey]);
 
   /**
    * magic audio queue processing
@@ -323,7 +279,7 @@ export default function Conversation() {
         behavior: "smooth",
       });
     }
-  }, [numberOfMessages]);
+  }, [gptmessages, utterance]);
 
   // /**
   //  * registering key up/down events
@@ -375,15 +331,17 @@ export default function Conversation() {
                 <div className="grid grid-cols-12 overflow-x-auto gap-y-2">
                   {initialLoad && <InitialLoad fn={toggleMicrophone} />}
 
-                  {getConversationMessages(messages).length > 0 &&
-                    getConversationMessages(messages).map((message, i) => (
+                  {getConversationMessages(gptmessages).length > 0 &&
+                    getConversationMessages(gptmessages).map((message, i) => (
                       <ChatBubble message={message} key={i} />
                     ))}
 
                   {utterance && utterance.content && (
-                    <RightBubble meta={"20ms"}>
-                      <p className="cursor-blink">{utterance.content}</p>
-                    </RightBubble>
+                    <RightBubble
+                      text={utterance.content}
+                      blink={true}
+                      meta={"20ms"}
+                    ></RightBubble>
                   )}
 
                   <div ref={messageMarker}></div>
@@ -437,7 +395,7 @@ export default function Conversation() {
                      * text input field
                      */}
                     <input
-                      disabled={initialLoad || micOpen}
+                      /*disabled={initialLoad || micOpen}
                       value={textInput}
                       onChange={(e) => setTextInput(e.target.value)}
                       onKeyUp={(e) => {
@@ -448,7 +406,7 @@ export default function Conversation() {
                           });
                           setTextInput("");
                         }
-                      }}
+                      }}*/
                       type="text"
                       className={`flex w-full border rounded-lg border-zinc-600 focus:outline-none focus:border-indigo-300 pl-4 h-10 ${
                         initialLoad || micOpen ? "opacity-30" : "opacity-100"
@@ -465,14 +423,14 @@ export default function Conversation() {
                 </div>
                 <div className="ml-3">
                   <button
-                    onClick={() => {
+                    /*onClick={() => {
                       addMessage({
                         role: "user",
                         content: textInput,
                       });
                       setTextInput("");
                     }}
-                    disabled={initialLoad || micOpen}
+                    disabled={initialLoad || micOpen}*/
                     className={`flex items-center justify-center bg-[#00CF56]/50 rounded-lg text-white px-4 lg:px-6 py-2 flex-shrink-0 ${
                       initialLoad || micOpen
                         ? "opacity-30"

@@ -1,10 +1,9 @@
-const LeftBubble = ({
-  children,
-  meta,
-}: {
-  children: React.ReactNode;
-  meta: string;
-}) => {
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+
+const LeftBubble = ({ text, meta }: { text: string; meta: string }) => {
   return (
     <>
       <div className="col-start-1 col-end-8 p-3 rounded-lg">
@@ -23,7 +22,7 @@ const LeftBubble = ({
             </svg>
           </div>
           <div className="relative text-sm bg-[#1E1E23] py-2 px-4 shadow rounded-xl">
-            {children}
+            <TextContent text={text} />
           </div>
         </div>
         <small className="text-zinc-500 ml-[3.75rem] py-1">{meta}</small>
@@ -33,18 +32,22 @@ const LeftBubble = ({
 };
 
 const RightBubble = ({
-  children,
+  text,
   meta,
+  blink = false,
 }: {
-  children: React.ReactNode;
+  text: string;
   meta: string;
+  blink?: boolean;
 }) => {
   return (
     <>
       <div className="col-start-6 col-end-13 p-3 rounded-lg">
         <div className="flex items-center justify-start flex-row-reverse">
           <div className="relative text-sm bg-[#1E1E23] py-2 px-4 shadow rounded-xl">
-            <div>{children}</div>
+            <div className={blink ? "cursor-blink" : ""}>
+              <TextContent text={text} />
+            </div>
           </div>
         </div>
         <small className="block text-zinc-500 pr-3 text-right py-1">
@@ -55,11 +58,39 @@ const RightBubble = ({
   );
 };
 
+const TextContent = ({ text }: { text: string }) => {
+  return (
+    <Markdown
+      components={{
+        code({ node, className, children, style, ...props }) {
+          const match = /language-(\w+)/.exec(className || "");
+          return match ? (
+            <SyntaxHighlighter
+              PreTag="div"
+              language={match[1]}
+              style={atomDark}
+            >
+              {String(children).replace(/\n$/, "")}
+            </SyntaxHighlighter>
+          ) : (
+            <code {...props} className={className}>
+              {children}
+            </code>
+          );
+        },
+      }}
+      remarkPlugins={[remarkGfm]}
+    >
+      {text}
+    </Markdown>
+  );
+};
+
 const ChatBubble = ({ message }: { message: any }) => {
   if (message.role === "user") {
-    return <RightBubble meta={"3ms"}>{message.content}</RightBubble>;
+    return <RightBubble text={message.content} meta={"3ms"} />;
   } else {
-    return <LeftBubble meta={"20ms"}>{message.content}</LeftBubble>;
+    return <LeftBubble text={message.content} meta={"20ms"} />;
   }
 };
 
