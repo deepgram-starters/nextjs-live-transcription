@@ -155,9 +155,10 @@ export default function Conversation() {
     if (apiKey && "key" in apiKey) {
       const deepgram = createClient(apiKey?.key ?? "");
       const connection = deepgram.listen.live({
-        model: "nova",
+        model: "nova-2",
         interim_results: true,
         smart_format: true,
+        endpointing: 250,
       });
 
       /**
