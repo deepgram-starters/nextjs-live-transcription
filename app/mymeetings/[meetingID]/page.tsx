@@ -95,7 +95,7 @@ export interface QuestionDetail {
 export default function Page({
   params,
 }: {
-  params: { meetingID: Id<"meetings"> };
+  params: { meetingID: Id<"meetings">; language: string };
 }) {
   const [date, setDate] = useState<Date>(new Date());
   // Add a new local state for the editable title
@@ -104,6 +104,9 @@ export default function Page({
   const meetingDetails = useQuery(api.meetings.getMeetingByID, {
     meetingID: params.meetingID!,
   }) as Meeting[] | undefined;
+
+  const searchParams = useSearchParams();
+  const language = searchParams.get("language") || "defaultLanguage";
 
   // Now that date is declared, you can use it in useEffect or anywhere else
   useEffect(() => {
@@ -193,7 +196,7 @@ export default function Page({
         )
       );
     },
-    [finalizedSentences, finalCaptions, setFinalizedSentences, setFinalCaptions]
+    [finalizedSentences, setFinalizedSentences, setFinalCaptions]
   );
 
   return (
@@ -220,6 +223,7 @@ export default function Page({
         <div className="ml-4" />
         <Microphone
           meetingID={params.meetingID}
+          language={language}
           finalizedSentences={finalizedSentences}
           setFinalizedSentences={setFinalizedSentences}
           speakerDetails={speakerDetails}
@@ -289,6 +293,7 @@ export default function Page({
                   meetingID={params.meetingID}
                   finalizedSentences={finalizedSentences}
                   speakerDetails={speakerDetails}
+                  language={language}
                 />
               </Suspense>
             </TabsContent>
@@ -314,6 +319,7 @@ export default function Page({
                 meetingID={params.meetingID}
                 finalizedSentences={finalizedSentences}
                 speakerDetails={speakerDetails}
+                language={language}
               />
             </Suspense>
           </div>

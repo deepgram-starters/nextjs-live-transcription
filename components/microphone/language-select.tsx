@@ -1,4 +1,8 @@
+//import react stuff
 import * as React from "react";
+import ReactCountryFlag from "react-country-flag";
+
+//import shadcnui stuff
 import {
   Select,
   SelectContent,
@@ -8,56 +12,127 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 
 interface LanguageSelectProps {
   onLanguageSelect: (language: string) => void;
+  id?: string;
 }
+
+interface LanguageOption {
+  value: string;
+  label: string;
+  countryCode: string;
+}
+
+const languageOptions: LanguageOption[] = [
+  { value: "cs", label: "Czech", countryCode: "CZ" },
+  { value: "da", label: "Danish", countryCode: "DK" },
+  { value: "da-DK", label: "Danish (Denmark)", countryCode: "DK" },
+  { value: "nl", label: "Dutch", countryCode: "NL" },
+  { value: "en", label: "English", countryCode: "GB" },
+  { value: "en-AU", label: "English (Australia)", countryCode: "AU" },
+  { value: "en-GB", label: "English (United Kingdom)", countryCode: "GB" },
+  { value: "en-US", label: "English (United States)", countryCode: "US" },
+  { value: "en-NZ", label: "English (New Zealand)", countryCode: "NZ" },
+  { value: "en-IN", label: "English (India)", countryCode: "IN" },
+  { value: "nl-BE", label: "Flemish", countryCode: "BE" },
+  { value: "fr", label: "French", countryCode: "FR" },
+  { value: "fr-CA", label: "French (Canada)", countryCode: "CA" },
+  { value: "de", label: "German", countryCode: "DE" },
+  { value: "el", label: "Greek", countryCode: "GR" },
+  { value: "hi", label: "Hindi", countryCode: "IN" },
+  { value: "hi-Latn", label: "Hindi (Latin)", countryCode: "IN" },
+  { value: "id", label: "Indonesian", countryCode: "ID" },
+  { value: "it", label: "Italian", countryCode: "IT" },
+  { value: "ko", label: "Korean", countryCode: "KR" },
+  { value: "ko-KR", label: "Korean (South Korea)", countryCode: "KR" },
+  { value: "no", label: "Norwegian", countryCode: "NO" },
+  { value: "pl", label: "Polish", countryCode: "PL" },
+  { value: "pt", label: "Portuguese", countryCode: "PT" },
+  { value: "pt-BR", label: "Portuguese (Brazil)", countryCode: "BR" },
+  { value: "ru", label: "Russian", countryCode: "RU" },
+  { value: "es", label: "Spanish", countryCode: "ES" },
+  { value: "es-419", label: "Spanish (Latin America)", countryCode: "MX" },
+  { value: "sv", label: "Swedish", countryCode: "SE" },
+  { value: "sv-SE", label: "Swedish (Sweden)", countryCode: "SE" },
+  { value: "tr", label: "Turkish", countryCode: "TR" },
+  { value: "uk", label: "Ukrainian", countryCode: "UA" },
+  // Add more options here if needed
+];
 
 export const LanguageSelect: React.FC<LanguageSelectProps> = ({
   onLanguageSelect,
+  id,
 }) => {
+  const [selectedLanguage, setSelectedLanguage] = React.useState("en-US");
+
+  const handleLanguageSelect = (language: string) => {
+    setSelectedLanguage(language);
+    onLanguageSelect(language);
+  };
+
+  const selectedOption = languageOptions.find(
+    (option) => option.value === selectedLanguage
+  );
+  const otherOptions = languageOptions.filter(
+    (option) => option.value !== selectedLanguage
+  );
+
   return (
-    <Select onValueChange={onLanguageSelect} defaultValue="en-US">
-      <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Select a language" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-          <SelectLabel>Languages</SelectLabel>
-          <SelectItem value="cs">Czech</SelectItem>
-          <SelectItem value="da">Danish</SelectItem>
-          <SelectItem value="da-DK">Danish (Denmark)</SelectItem>
-          <SelectItem value="nl">Dutch</SelectItem>
-          <SelectItem value="en">English</SelectItem>
-          <SelectItem value="en-US">English (United States)</SelectItem>
-          <SelectItem value="en-AU">English (Australia)</SelectItem>
-          <SelectItem value="en-GB">English (United Kingdom)</SelectItem>
-          <SelectItem value="en-NZ">English (New Zealand)</SelectItem>
-          <SelectItem value="en-IN">English (India)</SelectItem>
-          <SelectItem value="nl-BE">Flemish</SelectItem>
-          <SelectItem value="fr">French</SelectItem>
-          <SelectItem value="fr-CA">French (Canada)</SelectItem>
-          <SelectItem value="de">German</SelectItem>
-          <SelectItem value="el">Greek</SelectItem>
-          <SelectItem value="hi">Hindi</SelectItem>
-          <SelectItem value="hi-Latn">Hindi (Latin)</SelectItem>
-          <SelectItem value="id">Indonesian</SelectItem>
-          <SelectItem value="it">Italian</SelectItem>
-          <SelectItem value="ko">Korean</SelectItem>
-          <SelectItem value="ko-KR">Korean (South Korea)</SelectItem>
-          <SelectItem value="no">Norwegian</SelectItem>
-          <SelectItem value="pl">Polish</SelectItem>
-          <SelectItem value="pt">Portuguese</SelectItem>
-          <SelectItem value="pt-BR">Portuguese (Brazil)</SelectItem>
-          <SelectItem value="ru">Russian</SelectItem>
-          <SelectItem value="es">Spanish</SelectItem>
-          <SelectItem value="es-419">Spanish (Latin America)</SelectItem>
-          <SelectItem value="sv">Swedish</SelectItem>
-          <SelectItem value="sv-SE">Swedish (Sweden)</SelectItem>
-          <SelectItem value="tr">Turkish</SelectItem>
-          <SelectItem value="uk">Ukrainian</SelectItem>
-        </SelectGroup>
-      </SelectContent>
-    </Select>
+    <div id={id}>
+      <Select
+        onValueChange={handleLanguageSelect}
+        defaultValue={selectedLanguage}
+      >
+        <SelectTrigger className="w-16 flex justify-between items-center p-2">
+          {selectedOption ? (
+            <>
+              <ReactCountryFlag
+                countryCode={selectedOption.countryCode}
+                svg
+                style={{
+                  marginRight: "8px",
+                  width: "24px", // Set the width of the flag in the trigger
+                  height: "16px", // Set the height of the flag in the trigger
+                }}
+              />
+            </>
+          ) : (
+            <SelectValue placeholder="Select a language" />
+          )}
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectLabel>Selected language</SelectLabel>
+            {selectedOption && (
+              <SelectItem
+                key={selectedOption.value}
+                value={selectedOption.value}
+              >
+                <ReactCountryFlag
+                  countryCode={selectedOption.countryCode}
+                  svg
+                  style={{ marginRight: "8px" }}
+                />
+                {selectedOption.label}
+              </SelectItem>
+            )}
+            <Separator />
+            <SelectLabel className="my-2">Additonal Options</SelectLabel>
+            {otherOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                <ReactCountryFlag
+                  countryCode={option.countryCode}
+                  svg
+                  style={{ marginRight: "8px" }}
+                />
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+    </div>
   );
 };

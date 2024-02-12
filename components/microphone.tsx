@@ -49,7 +49,6 @@ import Dg from "@/app/dg.svg";
 //import custom stuff
 import TranscriptDisplay from "@/components/microphone/transcript";
 import { extractSegment } from "@/lib/ffmpgUtils";
-import { LanguageSelect } from "@/components/microphone/language-select";
 
 interface CaptionDetail {
   words: string;
@@ -90,6 +89,7 @@ export interface QuestionDetail {
 
 interface MicrophoneProps {
   meetingID: Id<"meetings">;
+  language: string;
   finalizedSentences: FinalizedSentence[];
   setFinalizedSentences: React.Dispatch<
     React.SetStateAction<FinalizedSentence[]>
@@ -108,6 +108,8 @@ interface MicrophoneProps {
 
 export default function Microphone({
   meetingID,
+  language,
+
   finalizedSentences,
   setFinalizedSentences,
   speakerDetails,
@@ -119,8 +121,7 @@ export default function Microphone({
   initialDuration,
 }: MicrophoneProps) {
   const { add, remove, first, size, queue } = useQueue<any>([]);
-  const [microphoneSelectedLanguage, setMicrophoneSelectedLanguage] =
-    useState<string>("en-US");
+
   const [apiKey, setApiKey] = useState<CreateProjectKeyResponse | null>();
   const [connection, setConnection] = useState<LiveClient | null>();
   const [isListening, setListening] = useState(false);
@@ -151,12 +152,6 @@ export default function Microphone({
   const runProcessAudioEmbedding = useAction(
     api.transcript.processAudioEmbedding
   );
-
-  useEffect(() => {
-    // Example: Using microphoneSelectedLanguage in an API call
-    console.log("Microphone Selected Language:", microphoneSelectedLanguage);
-    // Use microphoneSelectedLanguage for any operation that depends on the language
-  }, [microphoneSelectedLanguage]); // Add microphoneSelectedLanguage as a dependency
 
   const uploadAudioBlob = useCallback(
     async (audioBlob: Blob) => {
@@ -339,7 +334,9 @@ export default function Microphone({
 
       // Call the action with the necessary arguments, including the cleaned data
       const summary = await retrieveSummary({
-        message: "Please generate a summary for this meeting.",
+        message:
+          "Please generate a summary for this meeting. Note that the meeting is in " +
+          language,
         meetingID: meetingID,
         aiModel: "gpt-3",
         finalizedSentences: cleanedFinalizedSentences,
@@ -520,14 +517,14 @@ export default function Microphone({
 
   useEffect(() => {
     if (apiKey && "key" in apiKey) {
-      console.log("connecting to deepgram:", microphoneSelectedLanguage);
+      console.log("connecting to deepgram:", language);
       const deepgram = createClient(apiKey?.key ?? "");
       const connection = deepgram.listen.live({
         model: "nova-2",
         diarize: true,
         interim_results: true,
         smart_format: true,
-        language: microphoneSelectedLanguage,
+        language: language,
       });
 
       connection.on(LiveTranscriptionEvents.Open, () => {
@@ -591,11 +588,7 @@ export default function Microphone({
         }
       };
     }
-  }, [apiKey, setCaption, setFinalCaptions, microphoneSelectedLanguage]);
-
-  useEffect(() => {
-    console.log("microphoneSelectedLanguage:", microphoneSelectedLanguage);
-  }, [microphoneSelectedLanguage]);
+  }, [apiKey, setCaption, setFinalCaptions]);
 
   useEffect(() => {
     const processQueue = async () => {
@@ -726,7 +719,7 @@ export default function Microphone({
       <div className="flex flex-row">
         <div className="flex flex-row items-center space-x-2 mr-4">
           {initialDuration === 0 && timer === 0 ? (
-            <LanguageSelect onLanguageSelect={setMicrophoneSelectedLanguage} />
+            <></>
           ) : (
             <>
               <Timer className="w-6 h-6" />

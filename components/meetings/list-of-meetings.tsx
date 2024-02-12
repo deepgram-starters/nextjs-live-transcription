@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
 
 //import icone stuff
 import {
@@ -43,6 +44,7 @@ import {
 
 //import custom stuff
 import MeetingCard from "@/components/meetings/meeting-card";
+import { LanguageSelect } from "../microphone/language-select";
 
 type Meeting = Doc<"meetings">;
 
@@ -62,7 +64,9 @@ export default function ListOfMeetings() {
     const response = await createMeeting({ title: "Untitled Meeting" });
     if (response && response.meetingId) {
       // Use router.push to navigate to the new meeting's detail page
-      router.push(`/mymeetings/${response.meetingId}`);
+      router.push(
+        `/mymeetings/${response.meetingId}?language=${meetingSelectedLanguage}`
+      );
     }
   };
 
@@ -175,6 +179,9 @@ export default function ListOfMeetings() {
       setSelectedMeetings(allMeetingIds);
     }
   };
+
+  const [meetingSelectedLanguage, setMeetingSelectedLanguage] =
+    useState<string>("en-US");
 
   return (
     <div className="relative flex flex-col h-full">
@@ -313,10 +320,16 @@ export default function ListOfMeetings() {
           onClick={handleCreateNewMeeting} // Updated to use the new handler
         >
           {/* Adjust the div below to match the size of MeetingCard */}
-          <div className="border border-muted-foreground bg-white bg-opacity-5 rounded-lg p-4 flex justify-center items-center h-full">
+          <div className="relative w-72 h-48 border border-muted-foreground  rounded-lg p-4 flex justify-center items-center">
             <div className="flex flex-col items-center space-y-5">
-              <CalendarPlus className="h-10 w-10" />
-              <h1>New Meeting</h1>
+              <CalendarPlus className="h-10 w-10 text-muted-foreground" />
+              <h1 className="text-muted-foreground">New Meeting</h1>
+              <div className="absolute  -top-3 right-2 flex flex-row items-center space-x-2">
+                <LanguageSelect
+                  onLanguageSelect={setMeetingSelectedLanguage}
+                  id="new-meeting-language-select"
+                />
+              </div>
             </div>
           </div>
         </li>

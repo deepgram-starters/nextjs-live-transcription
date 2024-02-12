@@ -197,6 +197,33 @@ export const deleteMeetingAndRelatedRecords = mutation({
       await ctx.db.delete(record._id);
     }
 
+    // Delete related wordDetails
+    const wordDetails = await ctx.db
+      .query("wordDetails")
+      .filter((q) => q.eq(q.field("meetingID"), meetingId))
+      .collect();
+    for (const record of wordDetails) {
+      await ctx.db.delete(record._id);
+    }
+
+    // Delete related questions
+    const questions = await ctx.db
+      .query("questions")
+      .filter((q) => q.eq(q.field("meetingID"), meetingId))
+      .collect();
+    for (const record of questions) {
+      await ctx.db.delete(record._id);
+    }
+
+    // Delete related audioFiles
+    const audioFiles = await ctx.db
+      .query("audioFiles")
+      .filter((q) => q.eq(q.field("meetingID"), meetingId))
+      .collect();
+    for (const record of audioFiles) {
+      await ctx.db.delete(record._id);
+    }
+
     // Finally, delete the meeting itself
     await ctx.db.delete(meetingId);
   },

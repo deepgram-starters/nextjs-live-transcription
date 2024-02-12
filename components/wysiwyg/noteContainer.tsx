@@ -113,8 +113,10 @@ export default function NoteContainer({
   meetingID,
   finalizedSentences,
   speakerDetails, // selectedModel,
+  language,
 }: {
   meetingID: Id<"meetings">;
+  language: string;
   finalizedSentences: FinalizedSentence[];
   speakerDetails: SpeakerDetail[];
 
@@ -178,7 +180,7 @@ export default function NoteContainer({
       // ALERT: Disabling this button since convex is saying we are at over a GB compared to other functions makes no sense
       // Call the action with the necessary arguments, including the cleaned data
       const summary = await retrieveSummary({
-        message: "Please generate a summary for this meeting.",
+        message: "Please generate a summary for this meeting." + language,
         meetingID: meetingID,
         aiModel: selectedModel,
         finalizedSentences: cleanedFinalizedSentences,
