@@ -11,31 +11,34 @@ import {
 } from "@deepgram/sdk";
 import {
   blankUserMessage,
-  getRandomGreeting,
+  getConversationMessages,
   getUserMessages,
   utteranceText,
 } from "../lib/helpers";
 import { systemContent } from "../lib/constants";
 import { InitialLoad } from "./initialload";
 import { isBrowser } from "react-device-detect";
-import { useQueue, useThrottle } from "@uidotdev/usehooks";
+import { useChat } from "ai/react";
+import { useQueue } from "@uidotdev/usehooks";
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import type { LLMRequestMetadata, LLMMessage } from "../lib/types";
+import { CreateMessage } from "ai";
 
 /**
  * Conversation element that contains the conversational AI app.
  * @returns {JSX.Element}
  */
 export default function Conversation() {
+  const { messages: gptmessages, append } = useChat({ api: "/api/brain" });
+
+  useEffect(() => {
+    console.log(gptmessages);
+  }, [gptmessages]);
+
   /**
    * Refs
    */
   const messageMarker = useRef<null | HTMLDivElement>(null);
-
-  /**
-   * Memos
-   */
-  const greeting = useMemo(() => getRandomGreeting(), []);
 
   /**
    * State
@@ -78,6 +81,7 @@ export default function Conversation() {
   const {
     add: addMessage,
     queue: messages,
+    last: newestMessage,
     size: numberOfMessages,
   } = useQueue<LLMMessage>([
     { role: "system", name: "Emily", content: systemContent },
@@ -109,11 +113,6 @@ export default function Conversation() {
    */
   const toggleMicrophone = useCallback(async () => {
     if (initialLoad) {
-      addMessage({
-        role: "assistant",
-        content: greeting.text,
-        name: "Emily",
-      });
       setInitialLoad(!initialLoad);
     }
 
@@ -165,14 +164,14 @@ export default function Conversation() {
       setUserMedia(userMedia);
       setMicrophone(microphone);
     }
-  }, [
-    initialLoad,
-    microphone,
-    userMedia,
-    addMessage,
-    greeting.text,
-    addToQueue,
-  ]);
+  }, [initialLoad, microphone, userMedia, addToQueue]);
+
+  useEffect(() => {
+    // if (getUserMessages(messages).length > 0) {
+    //   setMessages(messages);
+    // }
+    append(newestMessage as CreateMessage);
+  }, [numberOfMessages, newestMessage, append]);
 
   /**
    * getting a new api key
@@ -326,25 +325,25 @@ export default function Conversation() {
     }
   }, [numberOfMessages]);
 
-  /**
-   * registering key up/down events
-   */
-  useEffect(() => {
-    const onKeyUp = (event: Event | KeyboardEvent) => {
-      if ("key" in event && event.code === "Space") {
-        event.preventDefault();
-        toggleMicrophone();
-      }
-    };
+  // /**
+  //  * registering key up/down events
+  //  */
+  // useEffect(() => {
+  //   const onKeyUp = (event: Event | KeyboardEvent) => {
+  //     if ("key" in event && event.code === "Space") {
+  //       event.preventDefault();
+  //       toggleMicrophone();
+  //     }
+  //   };
 
-    if (isListening) {
-      document.addEventListener("keyup", onKeyUp);
-    }
+  //   if (isListening) {
+  //     document.addEventListener("keyup", onKeyUp);
+  //   }
 
-    return () => {
-      document.removeEventListener("keyup", onKeyUp);
-    };
-  }, [isListening, toggleMicrophone]);
+  //   return () => {
+  //     document.removeEventListener("keyup", onKeyUp);
+  //   };
+  // }, [isListening, toggleMicrophone]);
 
   /**
    * loading message (api key)
@@ -376,8 +375,8 @@ export default function Conversation() {
                 <div className="grid grid-cols-12 overflow-x-auto gap-y-2">
                   {initialLoad && <InitialLoad fn={toggleMicrophone} />}
 
-                  {getUserMessages(messages).length > 0 &&
-                    getUserMessages(messages).map((message, i) => (
+                  {getConversationMessages(messages).length > 0 &&
+                    getConversationMessages(messages).map((message, i) => (
                       <ChatBubble message={message} key={i} />
                     ))}
 

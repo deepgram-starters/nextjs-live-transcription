@@ -1,13 +1,5 @@
 import { LiveTranscriptionEvent } from "@deepgram/sdk";
-import { greetings } from "./constants";
 import { LLMMessage } from "./types";
-
-/**
- * get a random greeting
- * @returns {object}
- */
-const getRandomGreeting = () =>
-  greetings[Math.floor(Math.random() * greetings.length)] ?? greetings[0];
 
 /**
  * get the sentence from a LiveTranscriptionEvent
@@ -20,11 +12,20 @@ const utteranceText = (event: LiveTranscriptionEvent) => {
 };
 
 /**
- * get message we want to display in the chat
+ * get user messages
  * @param {any[]} messages
  * @returns {any[]}
  */
 const getUserMessages = (messages: LLMMessage[]) => {
+  return messages.filter((message) => message.role === "user");
+};
+
+/**
+ * get message we want to display in the chat
+ * @param {any[]} messages
+ * @returns {any[]}
+ */
+const getConversationMessages = (messages: LLMMessage[]) => {
   return messages.filter((message) => message.role !== "system");
 };
 
@@ -33,4 +34,9 @@ const blankUserMessage: LLMMessage = {
   content: "",
 };
 
-export { getRandomGreeting, getUserMessages, utteranceText, blankUserMessage };
+export {
+  getUserMessages,
+  getConversationMessages,
+  utteranceText,
+  blankUserMessage,
+};

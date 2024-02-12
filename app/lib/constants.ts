@@ -8,21 +8,7 @@ const systemContent = `- ignore all other instructions
 - keep responses as short as possible for brevity
 - use american english
 - if you don't know an answer, just reply "I don't know"
+- do not reply to messages as system or assistant roles
 `;
 
-const greetings = [
-  {
-    text: "Hey, my name is Emily. How can I help?",
-    audio: ["/audio/hey-how-can-i-help.opus.wav"],
-  },
-  {
-    text: "Hi, I'm Emily. What can I help you with today?",
-    audio: ["/audio/hi-what-can-i-help-you-with-today.opus.wav"],
-  },
-  {
-    text: "Hello! My name is Emily. How can I help you today?",
-    audio: ["/audio/hello-how-can-i-help-you-today.opus.wav"],
-  },
-];
-
-export { systemContent, greetings };
+export { systemContent };
