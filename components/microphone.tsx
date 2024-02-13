@@ -430,9 +430,17 @@ export default function Microphone({
       } else {
         setAudioBlobs([]); // Reset audio blobs here
 
-        const userMedia = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-        });
+        const constraints = {
+          audio: {
+            echoCancellation: false, // Toggle echoCancellation as needed
+            noiseSuppression: false, // Toggle noiseSuppression as needed
+          },
+        };
+
+        console.log("getting user media with constraings: ", constraints);
+
+        const userMedia =
+          await navigator.mediaDevices.getUserMedia(constraints);
 
         const microphone = new MediaRecorder(userMedia);
         microphone.start(500);
