@@ -149,8 +149,6 @@ export default function Microphone({
   const generateUploadUrl = useMutation(api.transcript.generateAudioUploadUrl);
   const sendAudio = useMutation(api.transcript.sendAudio);
 
-  const storeErrorDetail = useMutation(api.error.storeErrorEvent);
-
   const runProcessAudioEmbedding = useAction(
     api.transcript.processAudioEmbedding
   );
@@ -552,13 +550,6 @@ export default function Microphone({
       const connectionDuration = Date.now() - connectionStartTime; // Calculate connection duration
 
       console.log("Deepgram connection closed:", event);
-      const eventJson = JSON.stringify(event);
-
-      // Call the storeErrorEvent mutation to save the event data
-      const error = await storeErrorDetail({
-        meetingID: meetingID,
-        eventData: eventJson,
-      });
 
       console.log(
         "Deepgram connection closed:",
