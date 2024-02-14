@@ -319,11 +319,12 @@ export default function ListOfMeetings() {
           className="cursor-pointer"
           onClick={handleCreateNewMeeting} // Updated to use the new handler
         >
-          {/* Adjust the div below to match the size of MeetingCard */}
-          <div className="relative w-72 h-48 border border-muted-foreground  rounded-lg p-4 flex justify-center items-center">
+          {/* Adjust the div below to match the size of MeetingCard w-44 h-54 sm:w-72 sm:h-46 */}
+
+          <div className="relative h-full w-full border border-muted-foreground rounded-lg flex justify-center items-center">
             <div className="flex flex-col items-center space-y-5">
               <CalendarPlus className="h-10 w-10 text-muted-foreground" />
-              <h1 className="text-muted-foreground">New Meeting</h1>
+              <h1 className="text-muted-foreground">Meeting</h1>
               <div className="absolute  -top-3 right-2 flex flex-row items-center space-x-2">
                 <LanguageSelect
                   onLanguageSelect={setMeetingSelectedLanguage}

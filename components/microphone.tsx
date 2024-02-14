@@ -149,6 +149,8 @@ export default function Microphone({
   const generateUploadUrl = useMutation(api.transcript.generateAudioUploadUrl);
   const sendAudio = useMutation(api.transcript.sendAudio);
 
+  const storeErrorDetail = useMutation(api.error.storeErrorEvent);
+
   const runProcessAudioEmbedding = useAction(
     api.transcript.processAudioEmbedding
   );
@@ -360,7 +362,7 @@ export default function Microphone({
       //retrieve the summary
       handleGenerateSummary();
 
-      console.log("finalCaptions:", finalCaptions); // Log the finalized
+      // console.log("finalCaptions:", finalCaptions); // Log the finalized
 
       microphone.stop();
 
@@ -378,7 +380,7 @@ export default function Microphone({
             punctuated_word: caption.punctuated_word,
             // audio_embedding can be omitted if not available yet
           });
-          console.log("Word detail stored:", result);
+          // console.log("Word detail stored:", result);
         } catch (error) {
           console.error("Failed to store word detail:", error);
         }
@@ -436,8 +438,6 @@ export default function Microphone({
             noiseSuppression: false, // Toggle noiseSuppression as needed
           },
         };
-
-        console.log("getting user media with constraings: ", constraints);
 
         const userMedia =
           await navigator.mediaDevices.getUserMedia(constraints);
@@ -508,7 +508,7 @@ export default function Microphone({
 
   useEffect(() => {
     if (!apiKey) {
-      // console.log("getting a new api key");
+      console.log("getting a new api key");
       fetch("/api", { cache: "no-store" })
         .then((res) => res.json())
         .then((object) => {
@@ -523,80 +523,124 @@ export default function Microphone({
     }
   }, [apiKey, setLoadingKey]);
 
+  const connectToDeepgram = (
+    apiKey: string,
+    language: string,
+    setListening: Function,
+    setConnection: Function,
+    setCaption: Function,
+    setFinalCaptions: Function
+  ) => {
+    console.log("Connecting to Deepgram:", language);
+    const deepgram = createClient(apiKey);
+    const connectionStartTime = Date.now(); // Start timing the connection
+
+    const connection = deepgram.listen.live({
+      model: "nova-2",
+      diarize: true,
+      interim_results: true,
+      smart_format: true,
+      language: language,
+    });
+
+    connection.on(LiveTranscriptionEvents.Open, () => {
+      console.log("Connection established with Deepgram.");
+      setListening(true);
+    });
+
+    connection.on(LiveTranscriptionEvents.Close, async (event) => {
+      const connectionDuration = Date.now() - connectionStartTime; // Calculate connection duration
+
+      console.log("Deepgram connection closed:", event);
+      const eventJson = JSON.stringify(event);
+
+      // Call the storeErrorEvent mutation to save the event data
+      const error = await storeErrorDetail({
+        meetingID: meetingID,
+        eventData: eventJson,
+      });
+
+      console.log(
+        "Deepgram connection closed:",
+        JSON.stringify(
+          {
+            code: event.code, // The WebSocket close code
+            reason: event.reason, // A string indicating the reason for the close
+            wasClean: event.wasClean, // Boolean indicating whether the connection was closed cleanly
+            connectionDuration: `${connectionDuration}ms`, // The duration of the connection
+          },
+          null,
+          2
+        )
+      );
+      setListening(false);
+      setApiKey(null);
+      setConnection(null);
+    });
+
+    connection.on(LiveTranscriptionEvents.Transcript, (data) => {
+      const words = data.channel.alternatives[0].words
+        .map((word: any) => word.punctuated_word ?? word.word)
+        .join(" ");
+      if (words !== "") {
+        setCaption({ words, isFinal: data.is_final });
+
+        if (data.is_final) {
+          setFinalCaptions((prevCaptions: WordDetail[]) => [
+            ...prevCaptions,
+            ...data.channel.alternatives[0].words.map((word: any) => ({
+              word: word.word,
+              start: word.start,
+              end: word.end,
+              confidence: word.confidence,
+              speaker: word.speaker,
+              punctuated_word: word.punctuated_word,
+            })),
+          ]);
+        }
+      }
+    });
+
+    connection.on(LiveTranscriptionEvents.Error, (error) => {
+      console.error("Deepgram connection error:", error);
+    });
+
+    return connection;
+  };
+
   useEffect(() => {
     if (apiKey && "key" in apiKey) {
-      console.log("connecting to deepgram:", language);
-      const deepgram = createClient(apiKey?.key ?? "");
-      const connection = deepgram.listen.live({
-        model: "nova-2",
-        diarize: true,
-        interim_results: true,
-        smart_format: true,
-        language: language,
-      });
-
-      connection.on(LiveTranscriptionEvents.Open, () => {
-        console.log("connection established");
-        setListening(true);
-      });
-
-      connection.on(LiveTranscriptionEvents.Close, () => {
-        // console.log("connection closed");
-        setListening(false);
-        setApiKey(null);
-        setConnection(null);
-      });
-
-      connection.on(LiveTranscriptionEvents.Transcript, (data) => {
-        // console.log(data);
-        const words = data.channel.alternatives[0].words
-          .map((word: any) => word.punctuated_word ?? word.word)
-          .join(" ");
-        const isFinal = data.is_final;
-        if (words !== "") {
-          setCaption({ words, isFinal });
-
-          // Check if the transcript is final
-          if (data.is_final) {
-            // Update the finalCaptions array with word details
-            setFinalCaptions((prevCaptions) => [
-              ...prevCaptions,
-              ...data.channel.alternatives[0].words.map((word: any) => ({
-                word: word.word,
-                start: word.start,
-                end: word.end,
-                confidence: word.confidence,
-                speaker: word.speaker,
-                punctuated_word: word.punctuated_word,
-              })),
-            ]);
-          }
-        }
-      });
-
-      connection.on(LiveTranscriptionEvents.Error, (error) => {
-        console.error("Deepgram connection error:", error);
-        // Handle the error appropriately in your application context
-      });
-
+      const connection = connectToDeepgram(
+        apiKey.key,
+        language,
+        setListening,
+        setConnection,
+        setCaption,
+        setFinalCaptions
+      );
       setConnection(connection);
       setLoading(false);
 
-      // Cleanup function to close the connection when the component unmounts or the language changes
+      // Set up an interval to send keepAlive every 6 seconds
+      // const keepAliveInterval = setInterval(() => {
+      //   if (connection.getReadyState() === WebSocket.OPEN) {
+      //     console.log("Sending keepAlive to Deepgram.");
+      //     connection.keepAlive();
+      //   }
+      // }, 1000);
+
       return () => {
-        console.log("disconnecting from deepgram");
-        // Check the connection state before attempting to finish
+        console.log("Disconnecting from Deepgram.");
         if (connection.getReadyState() === WebSocket.OPEN) {
           connection.finish();
         } else {
           console.log(
             `Connection not open. State: ${connection.getReadyState()}`
           );
-          // Implement any additional handling for non-OPEN states if necessary
         }
       };
     }
-  }, [apiKey, setCaption, setFinalCaptions]);
+  }, [apiKey, language, setCaption, setFinalCaptions, setLoading]);
 
   useEffect(() => {
     const processQueue = async () => {
@@ -688,8 +732,8 @@ export default function Microphone({
         }
       }
 
-      console.log("Finalized Sentences:", sentences);
-      console.log("Detected Questions:", detectedQuestions); // Log detected questions
+      // console.log("Finalized Sentences:", sentences);
+      // console.log("Detected Questions:", detectedQuestions); // Log detected questions
       setFinalizedSentences(sentences);
       setQuestions(detectedQuestions);
     },
@@ -704,7 +748,7 @@ export default function Microphone({
     if (questions.length > prevQuestionsLengthRef.current) {
       // A new question was added, handle it here
       const newQuestion = questions[questions.length - 1];
-      console.log("New question added:", newQuestion);
+      // console.log("New question added:", newQuestion);
       storeQuestion(newQuestion);
     }
     // Update the ref to the current length after handling

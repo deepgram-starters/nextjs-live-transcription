@@ -21,6 +21,8 @@ import { Button } from "@/components/ui/button";
 
 //import custom stuff
 import { Providers } from "@/components/providers";
+//import logrocket stuff
+import LogRocketInit from "@/components/LogRocketInit"; // Adjust the import path as necessary
 
 export const metadata: Metadata = {
   title: "AI Notetaker",
@@ -37,6 +39,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <title>AI Note Taker</title>
       </head>
       <body className={inter.className}>
+        <LogRocketInit />
         <Providers>
           <div className="h-screen w-screen max-w-7xl mx-auto">
             <div className="sticky top-0 z-50 border-b border-border/40 backdrop-blur">

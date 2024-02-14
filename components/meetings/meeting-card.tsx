@@ -82,7 +82,7 @@ const MeetingCard: React.FC<MeetingCardProps> = ({
   };
 
   return (
-    <div className="group w-72 h-48 relative rounded-xl border bg-card text-card-foreground p-6 pb-8">
+    <div className="group p-4 sm:p-6 sm:pb-8 relative rounded-xl border bg-card text-card-foreground ">
       <Toggle
         size="sm"
         className="absolute top-2 right-2"
