@@ -5,7 +5,7 @@ import type { Doc, Id } from "@/convex/_generated/dataModel";
 // Import Clerk's backend SDK
 import { auth } from "@clerk/nextjs";
 
-export async function getAuthToken() {
+async function getAuthToken() {
   return (await auth().getToken({ template: "convex" })) ?? undefined;
 }
 
