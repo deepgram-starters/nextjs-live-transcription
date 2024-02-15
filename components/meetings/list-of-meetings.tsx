@@ -72,7 +72,7 @@ export default function ListOfMeetings() {
 
   // Function to handle meeting selection
   const onMeetingSelect = (meetingId: Id<"meetings">) => {
-    router.push(`/mymeetings/${meetingId}`); // Navigate to the meeting detail page
+    router.push(`/mymeetings/${meetingId}?language=${meetingSelectedLanguage}`); // Navigate to the meeting detail page
   };
 
   // Function to toggle sort order
@@ -321,10 +321,10 @@ export default function ListOfMeetings() {
         >
           {/* Adjust the div below to match the size of MeetingCard w-44 h-54 sm:w-72 sm:h-46 */}
 
-          <div className="relative h-full w-full border border-muted-foreground rounded-lg flex justify-center items-center">
+          <div className="relative h-full w-full py-10 border border-muted-foreground rounded-lg flex justify-center items-center">
             <div className="flex flex-col items-center space-y-5">
               <CalendarPlus className="h-10 w-10 text-muted-foreground" />
-              <h1 className="text-muted-foreground">Meeting</h1>
+              <h1 className="text-muted-foreground">New Meeting</h1>
               <div className="absolute  -top-3 right-2 flex flex-row items-center space-x-2">
                 <LanguageSelect
                   onLanguageSelect={setMeetingSelectedLanguage}

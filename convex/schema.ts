@@ -68,4 +68,9 @@ export default defineSchema({
     storageId: v.id("_storage"), // Reference to the file in Convex storage
     meetingID: v.id("meetings"), // Link to the meeting this audio file is associated with
   }).index("by_meetingID", ["meetingID"]),
+  sentenceEmbeddings: defineTable({
+    meetingID: v.id("meetings"),
+    finalizedSentenceId: v.id("finalizedSentences"),
+    embedding: v.array(v.float64()), // Assuming the embedding is an array of floats
+  }).index("by_meetingID", ["meetingID"]),
 });

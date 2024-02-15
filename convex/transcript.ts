@@ -15,15 +15,51 @@ export const storeFinalizedSentence = mutation({
     if (!user) {
       throw new Error("User not authenticated");
     }
-    await db.insert("finalizedSentences", {
+    // Insert the finalized sentence and get its ID
+    const finalizedSentenceId = await db.insert("finalizedSentences", {
       meetingID,
       speaker,
       transcript,
       start,
       end,
     });
+
+    // Generate embedding for the transcript
+    const embedding = await generateTextEmbedding(transcript);
+
+    // Store the embedding in the sentenceEmbeddings table using the obtained ID
+    await db.insert("sentenceEmbeddings", {
+      meetingID,
+      finalizedSentenceId,
+      embedding,
+    });
   },
 });
+
+async function generateTextEmbedding(sentence: string): Promise<number[]> {
+  // Assuming you have a function to call the RunPod API and get the embedding
+  const requestBody = {
+    input: {
+      sentence: sentence,
+    },
+  };
+
+  const response = await fetch(`${process.env.RUNPOD_EMBEDDING_URL}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.RUNPOD_API_KEY}`,
+    },
+    body: JSON.stringify(requestBody),
+  });
+
+  if (!response.ok) {
+    throw new Error(`RunPod API responded with status: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data.embedding; // Assuming the response contains an array of floats under the key 'embedding'
+}
 
 export const getFinalizedSentencesByMeeting = query({
   args: { meetingID: v.id("meetings") },
@@ -40,6 +76,19 @@ export const getFinalizedSentencesByMeeting = query({
       .query("finalizedSentences")
       .filter((q) => q.eq(q.field("meetingID"), args.meetingID))
       .collect();
+  },
+});
+
+export const deleteFinalizedSentence = mutation({
+  args: {
+    sentenceId: v.id("finalizedSentences"), // Assuming "finalizedSentences" is the collection name
+  },
+  async handler({ db, auth }, { sentenceId }) {
+    const user = await auth.getUserIdentity();
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
+    await db.delete(sentenceId); // Delete the sentence by its ID
   },
 });
 
@@ -144,7 +193,7 @@ export const processAudioEmbedding = action({
     }
     try {
       const audioUrl = (await storage.getUrl(storageId)) as string;
-      const runpodResponse = await postToRunpod(audioUrl);
+      const runpodResponse = await postAudioToRunpod(audioUrl);
 
       console.log("Runpod response data:", runpodResponse);
     } catch (error) {
@@ -153,7 +202,7 @@ export const processAudioEmbedding = action({
   },
 });
 
-async function postToRunpod(audioUrl: string): Promise<any> {
+async function postAudioToRunpod(audioUrl: string): Promise<any> {
   const requestBody = {
     input: {
       audio_file: audioUrl,

@@ -19,6 +19,7 @@ import Link from "next/link";
 import { useMutation, useQuery, useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Doc, Id } from "@/convex/_generated/dataModel";
+import { useConvex } from "convex/react";
 
 //import deepgram stuff
 import {
@@ -109,7 +110,6 @@ interface MicrophoneProps {
 export default function Microphone({
   meetingID,
   language,
-
   finalizedSentences,
   setFinalizedSentences,
   speakerDetails,
@@ -135,6 +135,7 @@ export default function Microphone({
   const combinedAudioBlob = new Blob(audioBlobs, { type: "audio/webm" });
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   // const [finalCaptions, setFinalCaptions] = useState<WordDetail[]>([]);
+  const lastSpeakerRef = useRef<number | null>(null); //used for detecting speaker changes in finalized sentences so we write to the db when the speaker finishes
 
   const retrieveSummary = useAction(api.meetingSummary.retrieveMeetingSummary);
 
@@ -280,20 +281,35 @@ export default function Microphone({
   const storeFinalizedSentences = useMutation(
     api.transcript.storeFinalizedSentence
   );
-  // Fetch finalized sentences for the given meetingID when the component mounts
-  const finalizedSentencesFromDB = useQuery(
-    api.transcript.getFinalizedSentencesByMeeting,
-    { meetingID }
+  //change to save sentence by sentence
+  const storeFinalizedSentence = useMutation(
+    api.transcript.storeFinalizedSentence
   );
 
+  // Fetch finalized sentences for the given meetingID when the component mounts
   useEffect(() => {
-    // Check if there are any finalized sentences fetched from the database
-    if (finalizedSentencesFromDB && finalizedSentencesFromDB.length > 0) {
-      // Handle the fetched finalized sentences as needed
-      // For example, you might want to set them to your component's state
-      setFinalizedSentences(finalizedSentencesFromDB);
+    async function fetchData() {
+      try {
+        const data = await fetchFinalizedSentences(meetingID);
+        console.log("Finalized Sentences from DB:", data);
+        // Here you can set the state with the fetched data
+        setFinalizedSentences(data); // Assuming you have a state setter for finalized sentences
+      } catch (error) {
+        console.error("Failed to fetch finalized sentences:", error);
+      }
     }
-  }, [finalizedSentencesFromDB, setFinalizedSentences]);
+
+    fetchData();
+  }, [meetingID, setFinalizedSentences]);
+
+  async function fetchFinalizedSentences(meetingID: Id<"meetings">) {
+    const response = await fetch(`/api/meetingDetails?meetingID=${meetingID}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch finalized sentences");
+    }
+    const data = await response.json();
+    return data;
+  }
 
   const speakersFromDB = useQuery(api.meetings.getSpeakersByMeeting, {
     meetingID,
@@ -387,10 +403,18 @@ export default function Microphone({
       stopTimer(); // Stop the timer
       await updateMeeting({ meetingID, updates: { duration: timer } });
 
-      // Store finalized sentences in the database
-      await Promise.all(
-        finalizedSentences.map((sentence) => storeFinalizedSentences(sentence))
-      );
+      // Store last finalized sentence in the database
+      if (finalizedSentences.length > 0) {
+        const lastSentence = finalizedSentences[finalizedSentences.length - 1];
+        storeFinalizedSentence({
+          meetingID: meetingID, // Assuming meetingID is available in the component's props or state
+          speaker: lastSentence.speaker,
+          transcript: lastSentence.transcript,
+          start: lastSentence.start,
+          end: lastSentence.end,
+        }).catch(console.error); // Handle errors appropriately
+      }
+
       // Push speaker details to the database
       await Promise.all(
         speakerDetails.map((speaker) => addSpeakerToDB(speaker))
@@ -456,7 +480,7 @@ export default function Microphone({
         microphone.ondataavailable = (e) => {
           add(e.data);
           setAudioBlobs((prevBlobs) => [...prevBlobs, e.data]);
-          console.log("Audio Blob Size:", e.data.size); // Log the size of the current audio blob
+          //console.log("Audio Blob Size:", e.data.size); // Log the size of the current audio blob
         };
 
         setUserMedia(userMedia);
@@ -506,7 +530,7 @@ export default function Microphone({
 
   useEffect(() => {
     if (!apiKey) {
-      console.log("getting a new api key");
+      //console.log("getting a new api key");
       fetch("/api", { cache: "no-store" })
         .then((res) => res.json())
         .then((object) => {
@@ -529,7 +553,7 @@ export default function Microphone({
     setCaption: Function,
     setFinalCaptions: Function
   ) => {
-    console.log("Connecting to Deepgram:", language);
+    //console.log("Connecting to Deepgram:", language);
     const deepgram = createClient(apiKey);
     const connectionStartTime = Date.now(); // Start timing the connection
 
@@ -542,28 +566,28 @@ export default function Microphone({
     });
 
     connection.on(LiveTranscriptionEvents.Open, () => {
-      console.log("Connection established with Deepgram.");
+      //console.log("Connection established with Deepgram.");
       setListening(true);
     });
 
     connection.on(LiveTranscriptionEvents.Close, async (event) => {
       const connectionDuration = Date.now() - connectionStartTime; // Calculate connection duration
 
-      console.log("Deepgram connection closed:", event);
+      //console.log("Deepgram connection closed:", event);
 
-      console.log(
-        "Deepgram connection closed:",
-        JSON.stringify(
-          {
-            code: event.code, // The WebSocket close code
-            reason: event.reason, // A string indicating the reason for the close
-            wasClean: event.wasClean, // Boolean indicating whether the connection was closed cleanly
-            connectionDuration: `${connectionDuration}ms`, // The duration of the connection
-          },
-          null,
-          2
-        )
-      );
+      // console.log(
+      //   "Deepgram connection closed:",
+      //   JSON.stringify(
+      //     {
+      //       code: event.code, // The WebSocket close code
+      //       reason: event.reason, // A string indicating the reason for the close
+      //       wasClean: event.wasClean, // Boolean indicating whether the connection was closed cleanly
+      //       connectionDuration: `${connectionDuration}ms`, // The duration of the connection
+      //     },
+      //     null,
+      //     2
+      //   )
+      // );
       setListening(false);
       setApiKey(null);
       setConnection(null);
@@ -621,13 +645,13 @@ export default function Microphone({
       // }, 1000);
 
       return () => {
-        console.log("Disconnecting from Deepgram.");
+        //console.log("Disconnecting from Deepgram.");
         if (connection.getReadyState() === WebSocket.OPEN) {
           connection.finish();
         } else {
-          console.log(
-            `Connection not open. State: ${connection.getReadyState()}`
-          );
+          // console.log(
+          //   `Connection not open. State: ${connection.getReadyState()}`
+          // );
         }
       };
     }
@@ -730,6 +754,33 @@ export default function Microphone({
     },
     [meetingID, handleNewSpeaker, setFinalizedSentences]
   );
+
+  //detect when speakerchanges in finalized sentence
+  useEffect(() => {
+    if (finalizedSentences.length > 0) {
+      const lastSentence = finalizedSentences[finalizedSentences.length - 1];
+      const currentSpeaker = lastSentence.speaker;
+
+      // Check if the last speaker is different from the current speaker
+      if (
+        lastSpeakerRef.current !== null &&
+        lastSpeakerRef.current !== currentSpeaker
+      ) {
+        console.log(
+          "Speaker has changed. Last sentence of the previous speaker:",
+          finalizedSentences[finalizedSentences.length - 2]
+        );
+
+        //Store previous sentence in the database
+        storeFinalizedSentence(
+          finalizedSentences[finalizedSentences.length - 2]
+        );
+      }
+
+      // Update the lastSpeakerRef with the current speaker for the next comparison
+      lastSpeakerRef.current = currentSpeaker;
+    }
+  }, [finalizedSentences, storeFinalizedSentence]);
 
   const [questions, setQuestions] = useState<QuestionDetail[]>([]);
   // Inside your component
