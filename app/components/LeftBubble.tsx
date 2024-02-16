@@ -1,7 +1,7 @@
-import { DgSvg } from "@/app/components/DgSvg";
-import { MessageAudio } from "@/app/components/MessageAudio";
-import { MessageMeta } from "@/app/components/MessageMeta";
-import { TextContent } from "@/app/components/TextContext";
+import { DgSvg } from "./DgSvg";
+import { MessageAudio } from "./MessageAudio";
+import { MessageMeta } from "./MessageMeta";
+import { TextContent } from "./TextContext";
 import { useMemo } from "react";
 import moment from "moment";
 

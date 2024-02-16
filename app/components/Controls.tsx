@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { isTablet, isMobile } from "react-device-detect";
-import { MicrophoneIcon } from "@/app/components/icons/MicrophoneIcon";
-import { SendIcon } from "@/app/components/icons/SendIcon";
+import { MicrophoneIcon } from "./icons/MicrophoneIcon";
+import { SendIcon } from "./icons/SendIcon";
 
 export const Controls = ({
   micToggle,

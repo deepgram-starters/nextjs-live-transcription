@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 
-import "@/app/globals.css";
+import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 const favorit = localFont({

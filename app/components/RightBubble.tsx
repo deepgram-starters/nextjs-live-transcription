@@ -1,5 +1,5 @@
-import { MessageMeta } from "@/app/components/MessageMeta";
-import { TextContent } from "@/app/components/TextContext";
+import { MessageMeta } from "./MessageMeta";
+import { TextContent } from "./TextContext";
 
 export const RightBubble = ({
   text,

@@ -1,6 +1,6 @@
-import { LeftBubble } from "@/app/components/LeftBubble";
+import { LeftBubble } from "./LeftBubble";
 import { Message } from "ai";
-import { RightBubble } from "@/app/components/RightBubble";
+import { RightBubble } from "./RightBubble";
 
 // const isMessage = (message: Message | Metadata): message is Message {
 //   return typeof message === 'Message';
