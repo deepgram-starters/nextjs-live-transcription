@@ -1,4 +1,4 @@
-const MessageMeta = ({ id }: { id: string }) => {
+const MessageMeta = ({ id }: { id?: string }) => {
   return <span></span>;
 };
 

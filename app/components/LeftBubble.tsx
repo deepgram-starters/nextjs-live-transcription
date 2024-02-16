@@ -5,7 +5,7 @@ import { TextContent } from "./TextContext";
 import { useMemo } from "react";
 import moment from "moment";
 
-export const LeftBubble = ({ text, id }: { text: string; id: string }) => {
+export const LeftBubble = ({ text, id }: { text: string; id?: string }) => {
   return (
     <>
       <div className="col-start-1 col-end-13 sm:col-end-11 md:col-end-9 lg:col-end-8 xl:col-end-7 p-3">

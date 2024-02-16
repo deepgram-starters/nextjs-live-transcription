@@ -1,6 +1,6 @@
 import { Spinner, Tooltip } from "flowbite-react";
 
-const MessageAudio = ({ id }: { id: string }) => {
+const MessageAudio = ({ id }: { id?: string }) => {
   const found = true;
   const playing = false;
 
