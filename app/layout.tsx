@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 
-import "./globals.css";
+import "@/app/globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 const favorit = localFont({
@@ -32,7 +32,6 @@ export default function RootLayout({
       >
         {children}
       </body>
-      {/* <body className={`h-screen ${inter.className}`}>{children}</body> */}
     </html>
   );
 }

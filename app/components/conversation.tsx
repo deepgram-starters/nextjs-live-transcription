@@ -1,6 +1,7 @@
 "use client";
 
-import { blankUserMessage, utteranceText } from "../lib/helpers";
+import { blankUserMessage, utteranceText } from "@/app/lib/helpers";
+import { ChatBubble } from "@/app/components/ChatBubble";
 import {
   CreateProjectKeyResponse,
   LiveClient,
@@ -9,18 +10,14 @@ import {
   LiveTranscriptionEvents,
   createClient,
 } from "@deepgram/sdk";
-import { ChatBubble } from "./ChatBubble";
-import { CreateMessage, Message, UseChatOptions } from "ai";
-// import { InitialLoad } from "./InitialLoad";
-import { isBrowser } from "react-device-detect";
-import { Metadata } from "../lib/types";
-import { RightBubble } from "./RightBubble";
-import { systemContent } from "../lib/constants";
-import { UseChatHelpers, useChat } from "ai/react";
+import { Controls } from "@/app/components/Controls";
+import { CreateMessage, Message } from "ai";
+import { InitialLoad } from "@/app/components/InitialLoad";
+import { RightBubble } from "@/app/components/RightBubble";
+import { systemContent } from "@/app/lib/constants";
+import { useChat } from "ai/react";
 import { useQueue } from "@uidotdev/usehooks";
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { InitialLoad } from "./InitialLoad";
-import { Controls } from "./Controls";
 
 /**
  * Conversation element that contains the conversational AI app.
