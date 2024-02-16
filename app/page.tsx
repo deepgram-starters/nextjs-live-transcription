@@ -1,4 +1,4 @@
-import { Guard } from "./components/Guard";
+import { Conversation } from "./components/Conversation";
 import Image from "next/image";
 
 export const runtime = "edge";
@@ -35,7 +35,7 @@ export default async function Home() {
 
         {/* height 100% minus 4rem */}
         <main className="mx-auto max-w-7xl px-0 sm:px-4 md:px-6 lg:px-8 h-[calc(100%-4rem)] pb-0 sm:pb-4 md:pb-6 lg:pb-8">
-          <Guard />
+          <Conversation />
         </main>
       </div>
     </>
