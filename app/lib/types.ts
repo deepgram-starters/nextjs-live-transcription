@@ -1,20 +1,9 @@
-type LLMRequestMetadata = {
-  sent: boolean;
-  sentTimestamp: Date | null;
-  replied: boolean;
-  replyTimestamp: Date | null;
-};
+import { JSONValue } from "ai";
 
-type LLMMessage = {
-  role: "system" | "user" | "assistant" | "tool";
-  content?: string;
+export interface Metadata {
+  createdAt?: Date;
+  content: string;
+  role: "tts" | "llm" | "stt";
   name?: string;
-  tool_calls?: {
-    id: string;
-    type: "function";
-    function: { name: string; arguments: string };
-  }[];
-  tool_call_id?: string;
-};
-
-export type { LLMRequestMetadata, LLMMessage };
+  data?: JSONValue;
+}

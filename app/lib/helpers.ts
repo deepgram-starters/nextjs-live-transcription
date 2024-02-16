@@ -1,6 +1,6 @@
 import { LiveTranscriptionEvent } from "@deepgram/sdk";
-import { LLMMessage } from "./types";
 import { Message } from "ai/react";
+import { CreateMessage } from "ai";
 
 /**
  * get the sentence from a LiveTranscriptionEvent
@@ -30,7 +30,7 @@ const getConversationMessages = (messages: Message[]) => {
   return messages.filter((message) => message.role !== "system");
 };
 
-const blankUserMessage: LLMMessage = {
+const blankUserMessage: CreateMessage = {
   role: "user",
   content: "",
 };

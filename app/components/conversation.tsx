@@ -1,6 +1,6 @@
 "use client";
 
-import { ChatBubble, RightBubble } from "./chatbubbles";
+import { blankUserMessage, utteranceText } from "../lib/helpers";
 import {
   CreateProjectKeyResponse,
   LiveClient,
@@ -9,25 +9,60 @@ import {
   LiveTranscriptionEvents,
   createClient,
 } from "@deepgram/sdk";
-import {
-  blankUserMessage,
-  getConversationMessages,
-  utteranceText,
-} from "../lib/helpers";
-import { systemContent } from "../lib/constants";
-import { InitialLoad } from "./initialload";
+import { ChatBubble } from "./ChatBubble";
+import { CreateMessage, Message, UseChatOptions } from "ai";
+// import { InitialLoad } from "./InitialLoad";
 import { isBrowser } from "react-device-detect";
-import { useChat } from "ai/react";
+import { Metadata } from "../lib/types";
+import { RightBubble } from "./RightBubble";
+import { systemContent } from "../lib/constants";
+import { UseChatHelpers, useChat } from "ai/react";
 import { useQueue } from "@uidotdev/usehooks";
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import type { LLMRequestMetadata, LLMMessage } from "../lib/types";
+import { InitialLoad } from "./InitialLoad";
+import { Controls } from "./Controls";
 
 /**
  * Conversation element that contains the conversational AI app.
  * @returns {JSX.Element}
  */
-export default function Conversation() {
-  const { messages: gptmessages, append } = useChat({ api: "/api/brain" });
+export const Conversation = () => {
+  const useChatOptions = useMemo(
+    () => ({
+      api: "/api/brain",
+      onResponse: (res: any) => {
+        console.log(res);
+      },
+      onFinish: (msg: any) => {
+        console.log(msg);
+      },
+      onError: (err: any) => {
+        console.log(err);
+      },
+      initialMessages: [
+        {
+          role: "system",
+          content: systemContent,
+        } as Message,
+        {
+          role: "assistant",
+          content: "Hello! My name is Emily. How can I help you today?",
+        } as Message,
+      ],
+    }),
+    []
+  );
+  const { messages, append, handleInputChange, input, handleSubmit } =
+    useChat(useChatOptions);
+
+  // append({
+  //   role: "system",
+  //   content: systemContent,
+  // });
+
+  useEffect(() => {
+    console.log(messages);
+  }, [messages]);
 
   /**
    * Refs
@@ -47,9 +82,9 @@ export default function Conversation() {
 
   const [micOpen, setMicOpen] = useState(false);
   const [microphone, setMicrophone] = useState<MediaRecorder | null>();
-  const [textInput, setTextInput] = useState<string>("");
+  // const [textInput, setTextInput] = useState<string>("");
   const [userMedia, setUserMedia] = useState<MediaStream | null>();
-  const [utterance, setUtterance] = useState<LLMMessage>(blankUserMessage);
+  const [utterance, setUtterance] = useState<CreateMessage>(blankUserMessage);
 
   const [voiceActivity, setVoiceActivity] = useState<{
     voiceActivity: boolean;
@@ -60,25 +95,21 @@ export default function Conversation() {
    * Queues
    */
   const {
-    add: addToQueue,
-    remove: removeFromQueue,
-    first: topOfQueue,
-    size: queueSize,
-    queue: dataQueue,
+    add: addAudioBlob,
+    remove: removeAudioBlob,
+    first: firstAudioBlob,
+    size: countAudioBlobs,
+    queue: audioBlobs,
   } = useQueue<Blob>([]);
+
+  const startConversation = useCallback(() => {
+    setInitialLoad(!initialLoad);
+  }, [initialLoad]);
 
   /**
    * toggle microphone on/off function
    */
   const toggleMicrophone = useCallback(async () => {
-    if (initialLoad) {
-      setInitialLoad(!initialLoad);
-      append({
-        role: "system",
-        content: systemContent,
-      });
-    }
-
     if (microphone && userMedia) {
       setUserMedia(null);
       setMicrophone(null);
@@ -121,13 +152,13 @@ export default function Conversation() {
       };
 
       microphone.ondataavailable = (e) => {
-        addToQueue(e.data);
+        addAudioBlob(e.data);
       };
 
       setUserMedia(userMedia);
       setMicrophone(microphone);
     }
-  }, [initialLoad, microphone, userMedia, append, addToQueue]);
+  }, [microphone, userMedia, addAudioBlob]);
 
   /**
    * getting a new api key
@@ -219,15 +250,15 @@ export default function Conversation() {
    */
   useEffect(() => {
     const processQueue = async () => {
-      if (queueSize > 0 && !isProcessing) {
+      if (countAudioBlobs > 0 && !isProcessing) {
         setProcessing(true);
 
         if (isListening) {
-          if (topOfQueue) {
-            connection?.send(topOfQueue);
+          if (firstAudioBlob) {
+            connection?.send(firstAudioBlob);
           }
 
-          removeFromQueue();
+          removeAudioBlob();
         }
 
         const waiting = setTimeout(() => {
@@ -240,10 +271,10 @@ export default function Conversation() {
     processQueue();
   }, [
     connection,
-    dataQueue,
-    removeFromQueue,
-    topOfQueue,
-    queueSize,
+    audioBlobs,
+    removeAudioBlob,
+    firstAudioBlob,
+    countAudioBlobs,
     isProcessing,
     isListening,
   ]);
@@ -280,7 +311,7 @@ export default function Conversation() {
         behavior: "smooth",
       });
     }
-  }, [gptmessages, utterance]);
+  }, [messages, utterance]);
 
   // /**
   //  * registering key up/down events
@@ -323,143 +354,50 @@ export default function Conversation() {
       <div className="flex h-full antialiased">
         <div className="flex flex-row h-full w-full overflow-x-hidden">
           <div className="flex flex-col flex-auto h-full">
-            <div className="flex flex-col justify-between h-full pt-4">
+            <div className="flex flex-col justify-between h-full">
               <div
-                className={`flex flex-col h-full pb-6 overflow-hidden ${
+                className={`flex flex-col h-full overflow-hidden ${
                   initialLoad ? "justify-center" : "justify-end"
                 }`}
               >
                 <div className="grid grid-cols-12 overflow-x-auto gap-y-2">
-                  {initialLoad && <InitialLoad fn={toggleMicrophone} />}
+                  {initialLoad ? (
+                    <InitialLoad fn={startConversation} />
+                  ) : (
+                    <>
+                      {messages.length > 0 &&
+                        messages.map((message, i) => (
+                          <ChatBubble message={message} key={i} />
+                        ))}
 
-                  {getConversationMessages(gptmessages).length > 0 &&
-                    getConversationMessages(gptmessages).map((message, i) => (
-                      <ChatBubble message={message} key={i} />
-                    ))}
+                      {utterance && utterance.content && (
+                        <RightBubble
+                          text={utterance.content}
+                          blink={true}
+                        ></RightBubble>
+                      )}
 
-                  {utterance && utterance.content && (
-                    <RightBubble
-                      text={utterance.content}
-                      blink={true}
-                      meta={"20ms"}
-                    ></RightBubble>
+                      <div
+                        className="h-4 col-start-1 col-end-13"
+                        ref={messageMarker}
+                      ></div>
+                    </>
                   )}
-
-                  <div ref={messageMarker}></div>
                 </div>
               </div>
-              <div className="flex flex-row items-center h-16 rounded-xl bg-zinc-900 w-full px-3 text-sm sm:text-base">
-                <div className="mr-3">
-                  <button
-                    onClick={() => toggleMicrophone()}
-                    className={`group flex items-center justify-center rounded-lg hover:bg-white text-white hover:text-black px-4 lg:px-6 py-2 flex-shrink-0 ${
-                      micOpen ? "bg-[rgb(53,67,234)] " : "bg-[rgb(234,67,53)] "
-                    }`}
-                  >
-                    <div className="w-4 h-4 hidden sm:inline mr-2">
-                      <svg
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="currentColor"
-                        className="w-4 h-4"
-                      >
-                        <path d="M8.25 4.5a3.75 3.75 0 1 1 7.5 0v8.25a3.75 3.75 0 1 1-7.5 0V4.5Z" />
-                        <path d="M6 10.5a.75.75 0 0 1 .75.75v1.5a5.25 5.25 0 1 0 10.5 0v-1.5a.75.75 0 0 1 1.5 0v1.5a6.751 6.751 0 0 1-6 6.709v2.291h3a.75.75 0 0 1 0 1.5h-7.5a.75.75 0 0 1 0-1.5h3v-2.291a6.751 6.751 0 0 1-6-6.709v-1.5A.75.75 0 0 1 6 10.5Z" />
-                      </svg>
-                    </div>
-
-                    <span>
-                      {micOpen
-                        ? `${isBrowser ? "Click" : "Tap"} to stop`
-                        : `${isBrowser ? "Click" : "Tap"} to start`}
-
-                      <span className="hidden md:inline">
-                        {isBrowser && (
-                          <>
-                            {" "}
-                            <small
-                              className={`group-hover:text-gray-500 ${
-                                micOpen ? "text-blue-100" : "text-red-200"
-                              }`}
-                            >
-                              or press &apos;space&apos;
-                            </small>
-                          </>
-                        )}
-                      </span>
-                    </span>
-                  </button>
-                </div>
-                <div className="flex-grow">
-                  <div className="relative w-full">
-                    {/**
-                     * text input field
-                     */}
-                    <input
-                      /*disabled={initialLoad || micOpen}
-                      value={textInput}
-                      onChange={(e) => setTextInput(e.target.value)}
-                      onKeyUp={(e) => {
-                        if (e.key === "Enter" && textInput !== "") {
-                          addMessage({
-                            role: "user",
-                            content: textInput,
-                          });
-                          setTextInput("");
-                        }
-                      }}*/
-                      type="text"
-                      className={`flex w-full border rounded-lg border-zinc-600 focus:outline-none focus:border-indigo-300 pl-4 h-10 ${
-                        initialLoad || micOpen ? "opacity-30" : "opacity-100"
-                      }`}
-                      placeholder={
-                        initialLoad
-                          ? "... or send me a message ..."
-                          : micOpen
-                          ? "... close mic to send a message ..."
-                          : "Send me a message"
-                      }
-                    />
-                  </div>
-                </div>
-                <div className="ml-3">
-                  <button
-                    /*onClick={() => {
-                      addMessage({
-                        role: "user",
-                        content: textInput,
-                      });
-                      setTextInput("");
-                    }}
-                    disabled={initialLoad || micOpen}*/
-                    className={`flex items-center justify-center bg-[#00CF56]/50 rounded-lg text-white px-4 lg:px-6 py-2 flex-shrink-0 ${
-                      initialLoad || micOpen
-                        ? "opacity-30"
-                        : "opacity-100 hover:bg-white hover:text-black"
-                    }`}
-                  >
-                    <span>Send</span>
-                    <svg
-                      className="w-4 h-4 transform rotate-45 -mt-1 ml-4 hidden sm:inline"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                      ></path>
-                    </svg>
-                  </button>
-                </div>
-              </div>
+              {!initialLoad && (
+                <Controls
+                  micToggle={toggleMicrophone}
+                  micOpen={micOpen}
+                  handleSubmit={handleSubmit}
+                  handleInputChange={handleInputChange}
+                  input={input}
+                />
+              )}
             </div>
           </div>
         </div>
       </div>
     </>
   );
-}
+};

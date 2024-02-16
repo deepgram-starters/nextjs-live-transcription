@@ -1,26 +1,26 @@
 "use client";
 
-import { useState } from "react";
-import Conversation from "./conversation";
+import { Conversation } from "./Conversation";
+// import { useState } from "react";
 
-export default function Guard() {
-  const [loggedIn, setLoggedIn] = useState(false);
+export const Guard = () => {
+  // const [loggedIn, setLoggedIn] = useState(false);
 
-  if (!loggedIn) {
-    return (
-      <ul>
-        <li>
-          <a
-            href="#"
-            className="w-full text-center"
-            onClick={() => setLoggedIn(true)}
-          >
-            Click to login
-          </a>
-        </li>
-      </ul>
-    );
-  }
+  // if (!loggedIn) {
+  //   return (
+  //     <ul>
+  //       <li>
+  //         <a
+  //           href="#"
+  //           className="w-full text-center"
+  //           onClick={() => setLoggedIn(true)}
+  //         >
+  //           Click to login
+  //         </a>
+  //       </li>
+  //     </ul>
+  //   );
+  // }
 
   return <Conversation />;
-}
+};

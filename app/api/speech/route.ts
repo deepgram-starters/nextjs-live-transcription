@@ -1,17 +1,12 @@
 import { DeepgramError, createClient } from "@deepgram/sdk";
 import { NextResponse } from "next/server";
 
-export async function GET(request: Request) {
-  // exit early so we don't request 70000000 keys while in devmode
-  if (process.env.DEEPGRAM_ENV === "development") {
-    return NextResponse.json({
-      key: process.env.DEEPGRAM_API_KEY ?? "",
-    });
-  }
-
+export async function POST(request: Request) {
   // gotta use the request object to invalidate the cache every request :vomit:
   const url = request.url;
-  const deepgram = createClient(process.env.DEEPGRAM_API_KEY ?? "");
+  const deepgram = createClient(process.env.DEEPGRAM_API_KEY ?? "", {
+    global: { url: process.env.DEEPGRAM_STT_DOMAIN },
+  });
 
   let { result: projectsResult, error: projectsError } =
     await deepgram.manage.getProjects();
