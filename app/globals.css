@@ -9,9 +9,11 @@
 body {
   background: black;
   color: rgba(255, 255, 255, 0.87);
-  background: url("/bg.svg");
-  background-repeat: no-repeat;
-  background-size: 120%;
+  background: url("/bg.svg") no-repeat top center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
 
 .cursor-blink {
