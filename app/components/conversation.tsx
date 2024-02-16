@@ -23,7 +23,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from "react";
  * Conversation element that contains the conversational AI app.
  * @returns {JSX.Element}
  */
-export const Conversation = () => {
+export default function Conversation(): JSX.Element {
   const useChatOptions = useMemo(
     () => ({
       api: "/api/brain",
@@ -397,4 +397,4 @@ export const Conversation = () => {
       </div>
     </>
   );
-};
+}
