@@ -408,12 +408,6 @@ export default function ChatCompletion({
                 })
               );
 
-              console.log("trimmedSpeakerDetails", trimmedSpeakerDetails);
-              console.log(
-                "trimmedFinalizedSentences",
-                trimmedFinalizedSentences
-              );
-
               // Include the updatedChatHistory in the sendMessage call
               await sendMessage({
                 message,

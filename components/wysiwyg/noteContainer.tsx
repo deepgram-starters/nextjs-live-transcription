@@ -149,6 +149,7 @@ export default function NoteContainer({
   // ALERT: Dissabling since convex says we are running way over limits
   // Use useEffect to log when summaries are fetched
   useEffect(() => {
+    // console.log("Summaries fetched:", summaries);
     if (summaries) {
       // we need to setSummaries to the last index in the array
       setMeetingSummaries(summaries);

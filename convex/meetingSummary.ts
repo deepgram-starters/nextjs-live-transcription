@@ -82,7 +82,7 @@ export const retrieveMeetingSummary = action({
       const transcriptDetailsMessage = {
         role: "user",
         content:
-          "The following is the output from a speech to text transcript of a meeting. I need to send out the meeting notes, Please provide:  1. 150 word Executive Summary 2. Additional Details in outline format 3. Any Decisions Made 4. Any Action Items & Owners  Here is the transcript:\n\ntranscript:\n" +
+          "The following is the output from a speech to text transcript of a meeting. I need to send out the meeting notes, Please provide:  1. 150 word Executive Summary 2. Additional Details in outline format 3. Any Decisions Made 4. Any Action Items & Owners.  Here is the transcript:\n\ntranscript:\n" +
             args.finalizedSentences
               .map(
                 (s) => `speaker: ${s.speaker} - transcript: '${s.transcript}'`

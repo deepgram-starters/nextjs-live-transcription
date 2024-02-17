@@ -73,4 +73,7 @@ export default defineSchema({
     finalizedSentenceId: v.id("finalizedSentences"),
     embedding: v.array(v.float64()), // Assuming the embedding is an array of floats
   }).index("by_meetingID", ["meetingID"]),
+  userSettings: defineTable({
+    language: v.string(),
+  }),
 });

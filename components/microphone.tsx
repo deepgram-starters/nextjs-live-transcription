@@ -172,7 +172,7 @@ export default function Microphone({
         const { storageId } = await response.json();
 
         // Step 3: Save the newly allocated storage id to the database
-        await sendAudio({ storageId, meetingID });
+        // await sendAudio({ storageId, meetingID });
 
         // Call the generateEmebedding action with the storageId
         // runProcessAudioEmbedding({ storageId }).then(() => {
@@ -278,10 +278,10 @@ export default function Microphone({
   };
 
   // Define the mutation hook at the top of your component
-  const storeFinalizedSentences = useMutation(
-    api.transcript.storeFinalizedSentence
+  const generateAndSaveEmbedding = useAction(
+    api.transcript.generateAndSaveEmbedding
   );
-  //change to save sentence by sentence
+  //save finalised sentences
   const storeFinalizedSentence = useMutation(
     api.transcript.storeFinalizedSentence
   );
@@ -291,7 +291,7 @@ export default function Microphone({
     async function fetchData() {
       try {
         const data = await fetchFinalizedSentences(meetingID);
-        console.log("Finalized Sentences from DB:", data);
+        // console.log("Finalized Sentences from DB:", data);
         // Here you can set the state with the fetched data
         setFinalizedSentences(data); // Assuming you have a state setter for finalized sentences
       } catch (error) {
@@ -406,13 +406,25 @@ export default function Microphone({
       // Store last finalized sentence in the database
       if (finalizedSentences.length > 0) {
         const lastSentence = finalizedSentences[finalizedSentences.length - 1];
-        storeFinalizedSentence({
-          meetingID: meetingID, // Assuming meetingID is available in the component's props or state
+        const sentenceID = await storeFinalizedSentence({
+          meetingID: meetingID,
           speaker: lastSentence.speaker,
           transcript: lastSentence.transcript,
           start: lastSentence.start,
           end: lastSentence.end,
-        }).catch(console.error); // Handle errors appropriately
+        });
+
+        if (sentenceID) {
+          // Check if sentenceID is not void
+          const sentenceEmbedding = await generateAndSaveEmbedding({
+            finalizedSentenceId: sentenceID,
+            transcript: lastSentence.transcript,
+            meetingID: meetingID,
+          });
+          // console.log("Stored sentence embedding:", sentenceEmbedding);
+        } else {
+          console.error("Failed to store sentence, sentenceID is void.");
+        }
       }
 
       // Push speaker details to the database
@@ -497,7 +509,7 @@ export default function Microphone({
     addSpeakerToDB,
     meetingID,
     speakerDetails,
-    storeFinalizedSentences,
+    // storeFinalizedSentences,
     timer,
     updateMeeting,
     disableRecording,
@@ -757,29 +769,34 @@ export default function Microphone({
 
   //detect when speakerchanges in finalized sentence
   useEffect(() => {
-    if (finalizedSentences.length > 0) {
-      const lastSentence = finalizedSentences[finalizedSentences.length - 1];
-      const currentSpeaker = lastSentence.speaker;
+    const storeData = async () => {
+      if (finalizedSentences.length > 0) {
+        const lastSentence = finalizedSentences[finalizedSentences.length - 1];
+        const currentSpeaker = lastSentence.speaker;
 
-      // Check if the last speaker is different from the current speaker
-      if (
-        lastSpeakerRef.current !== null &&
-        lastSpeakerRef.current !== currentSpeaker
-      ) {
-        console.log(
-          "Speaker has changed. Last sentence of the previous speaker:",
-          finalizedSentences[finalizedSentences.length - 2]
-        );
+        if (
+          lastSpeakerRef.current !== null &&
+          lastSpeakerRef.current !== currentSpeaker
+        ) {
+          const sentenceID = await storeFinalizedSentence(
+            finalizedSentences[finalizedSentences.length - 2]
+          );
+          if (sentenceID) {
+            const sentenceEmbedding = await generateAndSaveEmbedding({
+              finalizedSentenceId: sentenceID,
+              transcript: lastSentence.transcript,
+              meetingID: meetingID,
+            });
+          } else {
+            console.error("Failed to store sentence, sentenceID is void.");
+          }
+        }
 
-        //Store previous sentence in the database
-        storeFinalizedSentence(
-          finalizedSentences[finalizedSentences.length - 2]
-        );
+        lastSpeakerRef.current = currentSpeaker;
       }
+    };
 
-      // Update the lastSpeakerRef with the current speaker for the next comparison
-      lastSpeakerRef.current = currentSpeaker;
-    }
+    storeData();
   }, [finalizedSentences, storeFinalizedSentence]);
 
   const [questions, setQuestions] = useState<QuestionDetail[]>([]);

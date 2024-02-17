@@ -1,6 +1,13 @@
 import { v } from "convex/values";
-import { action, mutation, query } from "./_generated/server";
-import { api } from "./_generated/api";
+import {
+  query,
+  action,
+  internalMutation,
+  mutation,
+  internalAction,
+} from "./_generated/server";
+import { api, internal } from "./_generated/api";
+import { Doc, Id } from "./_generated/dataModel";
 
 export const storeFinalizedSentence = mutation({
   args: {
@@ -10,12 +17,14 @@ export const storeFinalizedSentence = mutation({
     start: v.float64(),
     end: v.float64(),
   },
-  async handler({ db, auth }, { meetingID, speaker, transcript, start, end }) {
+  async handler(
+    { db, auth, scheduler },
+    { meetingID, speaker, transcript, start, end }
+  ) {
     const user = await auth.getUserIdentity();
     if (!user) {
       throw new Error("User not authenticated");
     }
-    // Insert the finalized sentence and get its ID
     const finalizedSentenceId = await db.insert("finalizedSentences", {
       meetingID,
       speaker,
@@ -23,43 +32,88 @@ export const storeFinalizedSentence = mutation({
       start,
       end,
     });
-
-    // Generate embedding for the transcript
-    const embedding = await generateTextEmbedding(transcript);
-
-    // Store the embedding in the sentenceEmbeddings table using the obtained ID
-    await db.insert("sentenceEmbeddings", {
-      meetingID,
-      finalizedSentenceId,
-      embedding,
-    });
+    // Schedule the action to generate and add embedding
+    return finalizedSentenceId;
   },
 });
 
-async function generateTextEmbedding(sentence: string): Promise<number[]> {
-  // Assuming you have a function to call the RunPod API and get the embedding
+export const generateAndSaveEmbedding = action({
+  args: {
+    finalizedSentenceId: v.id("finalizedSentences"),
+    transcript: v.string(),
+    meetingID: v.id("meetings"),
+  },
+  handler: async (ctx, args) => {
+    // Generate embedding
+    const embedding = await generateTextEmbedding(args.transcript);
+    // Store the embedding
+    await ctx.runMutation(internal.transcript.addEmbedding, {
+      finalizedSentenceId: args.finalizedSentenceId,
+      embedding: embedding,
+      meetingID: args.meetingID,
+    });
+
+    return embedding;
+  },
+});
+
+export const generateTextEmbedding = async (
+  text: string
+): Promise<number[]> => {
+  const key = process.env.RUNPOD_API_KEY;
+  if (!key) {
+    throw new Error("RUNPOD_API_KEY environment variable not set!");
+  }
   const requestBody = {
     input: {
-      sentence: sentence,
+      sentence: text,
     },
   };
 
-  const response = await fetch(`${process.env.RUNPOD_EMBEDDING_URL}`, {
+  const response = await fetch(`${process.env.RUNPOD_RUNSYNC_URL}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.RUNPOD_API_KEY}`,
+      Authorization: `Bearer ${key}`,
     },
     body: JSON.stringify(requestBody),
   });
 
   if (!response.ok) {
-    throw new Error(`RunPod API responded with status: ${response.status}`);
+    const msg = await response.text();
+    throw new Error(`RunPod API error: ${msg}`);
   }
 
   const data = await response.json();
-  return data.embedding; // Assuming the response contains an array of floats under the key 'embedding'
-}
+  // Adjusted to correctly access the embeddings array within the output object
+  const embedding = data.output.embeddings;
+  if (!Array.isArray(embedding) || embedding.some(isNaN)) {
+    console.error("Invalid embedding format:", embedding);
+    throw new Error(
+      "Failed to generate a valid text embedding due to invalid format."
+    );
+  }
+
+  console.log(
+    `Computed embedding of "${text}": ${embedding.length} dimensions`
+  );
+  return embedding;
+};
+
+export const addEmbedding = internalMutation({
+  args: {
+    finalizedSentenceId: v.id("finalizedSentences"),
+    embedding: v.array(v.float64()),
+    meetingID: v.id("meetings"),
+  },
+  handler: async ({ db }, { finalizedSentenceId, embedding, meetingID }) => {
+    await db.insert("sentenceEmbeddings", {
+      meetingID, // This needs to be included
+      finalizedSentenceId,
+      embedding,
+    });
+  },
+});
 
 export const getFinalizedSentencesByMeeting = query({
   args: { meetingID: v.id("meetings") },
