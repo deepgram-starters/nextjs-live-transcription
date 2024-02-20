@@ -5,9 +5,15 @@ import {
   internalMutation,
   mutation,
   internalAction,
+  internalQuery,
 } from "./_generated/server";
 import { api, internal } from "./_generated/api";
 import { Doc, Id } from "./_generated/dataModel";
+
+interface EmbeddingDetail {
+  meetingID: string;
+  finalizedSentenceId: string;
+}
 
 export const storeFinalizedSentence = mutation({
   args: {
@@ -94,9 +100,9 @@ export const generateTextEmbedding = async (
     );
   }
 
-  console.log(
-    `Computed embedding of "${text}": ${embedding.length} dimensions`
-  );
+  // console.log(
+  //   `Computed embedding of "${text}": ${embedding.length} dimensions`
+  // );
   return embedding;
 };
 
@@ -112,6 +118,93 @@ export const addEmbedding = internalMutation({
       finalizedSentenceId,
       embedding,
     });
+  },
+});
+
+//@ts-ignore
+export const searchSentencesByEmbedding = action({
+  args: {
+    searchQuery: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Generate an embedding from the search query
+    const embedding = await generateTextEmbedding(args.searchQuery);
+
+    // Perform a vector search with the generated embedding
+    const results = await ctx.vectorSearch(
+      "sentenceEmbeddings",
+      "embeddingVector",
+      {
+        vector: embedding,
+        limit: 10,
+      }
+    );
+
+    // Fetch additional details for each result using the internal query
+    const resultsWithDetails: (EmbeddingDetail & { score: number })[] =
+      await Promise.all(
+        results.map(async (result) => {
+          const details = await ctx.runQuery(
+            internal.transcript.fetchEmbeddingDetails,
+            {
+              embeddingId: result._id,
+            }
+          );
+          // Merge the score from the search result with the fetched details
+          return { ...details, score: result._score };
+        })
+      );
+    return resultsWithDetails;
+  },
+});
+
+export const fetchEmbeddingDetails = internalQuery({
+  args: { embeddingId: v.id("sentenceEmbeddings") },
+  handler: async (ctx, { embeddingId }) => {
+    const embeddingDetails = await ctx.db.get(embeddingId);
+    if (!embeddingDetails) {
+      throw new Error("Embedding details not found");
+    }
+    return {
+      meetingID: embeddingDetails.meetingID,
+      finalizedSentenceId: embeddingDetails.finalizedSentenceId,
+    };
+  },
+});
+
+export const fetchFinalizedSentences = internalQuery({
+  args: { ids: v.array(v.id("finalizedSentences")) },
+  handler: async (ctx, args) => {
+    const results = [];
+    for (const id of args.ids) {
+      const doc = await ctx.db.get(id);
+      if (doc === null) {
+        continue;
+      }
+      results.push(doc);
+    }
+    return results;
+  },
+});
+
+export const fetchMultipleFinalizedSentenceDetails = query({
+  args: { sentenceIds: v.array(v.id("finalizedSentences")) },
+  handler: async (ctx, { sentenceIds }) => {
+    const user = await ctx.auth.getUserIdentity();
+
+    if (!user) {
+      throw new Error(
+        "Please login to retrieve finalized sentences for a meeting"
+      );
+    }
+
+    const sentences = await Promise.all(
+      sentenceIds.map(async (id) => await ctx.db.get(id))
+    );
+
+    console.log("Fetched sentences:", sentences);
+
+    return sentences.filter((sentence) => sentence !== null);
   },
 });
 
@@ -249,7 +342,7 @@ export const processAudioEmbedding = action({
       const audioUrl = (await storage.getUrl(storageId)) as string;
       const runpodResponse = await postAudioToRunpod(audioUrl);
 
-      console.log("Runpod response data:", runpodResponse);
+      // console.log("Runpod response data:", runpodResponse);
     } catch (error) {
       console.error("Failed to fetch transcript:", error);
     }

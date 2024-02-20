@@ -58,6 +58,18 @@ interface ChatMessage {
   content: string;
 }
 
+interface Message {
+  _id: Id<"messages">; // System field
+  _creationTime: Date; // System field
+  aiModel: string;
+  aiResponse: string;
+  completionTokens: number; // float64 in Convex schema maps to number in TypeScript
+  meetingID: string; // Assuming v.id("meetings") returns a string identifier
+  promptTokens: number;
+  userId: string;
+  userMessage: string;
+}
+
 export interface FinalizedSentence {
   speaker: number;
   transcript: string;
@@ -96,7 +108,7 @@ export default function ChatCompletion({
   // Maintain chat history in state
   useEffect(() => {
     if (messages) {
-      const history: ChatMessage[] = messages.flatMap((message) => {
+      const history: ChatMessage[] = messages.flatMap((message: Message) => {
         const entries: ChatMessage[] = [];
         if (message.userMessage) {
           entries.push({
@@ -174,7 +186,7 @@ export default function ChatCompletion({
     <div className="flex h-full">
       <ScrollArea className="h-[calc(100vh-305px)]">
         <div className="">
-          {messages?.map((message) => {
+          {messages?.map((message: Message) => {
             return (
               <div key={message._id} className="flex flex-col">
                 <div className="flex flex-row my-2">

@@ -71,8 +71,12 @@ export default defineSchema({
   sentenceEmbeddings: defineTable({
     meetingID: v.id("meetings"),
     finalizedSentenceId: v.id("finalizedSentences"),
-    embedding: v.array(v.float64()), // Assuming the embedding is an array of floats
-  }).index("by_meetingID", ["meetingID"]),
+    embedding: v.array(v.float64()),
+  }).vectorIndex("embeddingVector", {
+    vectorField: "embedding",
+    dimensions: 1024, // Adjust based on your actual embedding size
+    filterFields: ["finalizedSentenceId", "meetingID"],
+  }),
   userSettings: defineTable({
     language: v.string(),
   }),

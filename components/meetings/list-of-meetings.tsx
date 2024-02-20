@@ -40,6 +40,7 @@ import {
   AlertOctagon,
   CalendarPlus,
   Circle,
+  Search,
 } from "lucide-react";
 
 //import custom stuff

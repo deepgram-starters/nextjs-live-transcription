@@ -118,6 +118,35 @@ export const getSpeakersByMeeting = query({
   },
 });
 
+export const fetchMultipleSpeakersByMeetingIds = query({
+  args: { meetingIds: v.array(v.id("meetings")) },
+  handler: async (ctx, { meetingIds }) => {
+    const user = await ctx.auth.getUserIdentity();
+
+    if (!user) {
+      throw new Error("Please login to retrieve speaker details");
+    }
+
+    // Initialize an empty array to hold all speakers from the specified meetings
+    let speakers: any[] = [];
+
+    // Iterate over each meetingId and fetch the corresponding speakers
+    for (const meetingId of meetingIds) {
+      const meetingSpeakers = await ctx.db
+        .query("speakers")
+        .filter((q) => q.eq(q.field("meetingID"), meetingId))
+        .collect();
+
+      // Concatenate the fetched speakers to the speakers array
+      speakers = speakers.concat(meetingSpeakers);
+    }
+
+    console.log("Fetched speakers:", speakers);
+
+    return speakers;
+  },
+});
+
 export const updateMeetingDetails = mutation({
   args: {
     meetingID: v.id("meetings"),
@@ -224,7 +253,37 @@ export const deleteMeetingAndRelatedRecords = mutation({
       await ctx.db.delete(record._id);
     }
 
+    // Delete related audioFiles
+    const sentenceEmbeddings = await ctx.db
+      .query("sentenceEmbeddings")
+      .filter((q) => q.eq(q.field("meetingID"), meetingId))
+      .collect();
+    for (const record of sentenceEmbeddings) {
+      await ctx.db.delete(record._id);
+    }
+
     // Finally, delete the meeting itself
     await ctx.db.delete(meetingId);
+  },
+});
+
+export const fetchMultipleMeetingDetails = query({
+  args: { meetingIds: v.array(v.id("meetings")) },
+  handler: async (ctx, { meetingIds }) => {
+    const user = await ctx.auth.getUserIdentity();
+
+    if (!user) {
+      throw new Error(
+        "Please login to retrieve finalized sentences for a meeting"
+      );
+    }
+
+    const meetings = await Promise.all(
+      meetingIds.map(async (id) => await ctx.db.get(id))
+    );
+
+    console.log("Fetched meetings:", meetings);
+
+    return meetings.filter((meeting) => meeting !== null);
   },
 });
