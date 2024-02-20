@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@deepgram/sdk": "^3.1.9",
+    "@deepgram/sdk": "^3.2.0-alpha.1",
     "@svgr/webpack": "^8.1.0",
     "@types/audioworklet": "^0.0.53",
     "@types/classnames": "^2.3.1",

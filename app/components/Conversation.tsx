@@ -19,11 +19,53 @@ import { useChat } from "ai/react";
 import { useQueue } from "@uidotdev/usehooks";
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 
+// const requestTtsAudio = async (message: Message) => {
+//   console.log(message, "test");
+//   const res = await fetch("/api/speak", { cache: "no-store", method: "POST" });
+//   console.log(res.blob(), "test2");
+
+//   const url = window.URL.createObjectURL(await res.blob());
+//   audioRef.current = new Audio(url);
+//   const playbackRate = TTS_PLAYBACK_SPEED_MULTIPLIER;
+//   audioRef.current.playbackRate = playbackRate;
+//   audioRef.current.muted = state.muteTTS;
+//   audioRef.current.addEventListener("loadedmetadata", () =>
+//     setTimeout(
+//       () => setTTSPlaying(false),
+//       ((audioRef?.current?.duration || 0) / playbackRate) * 1000
+//     )
+//   );
+//   audioRef.current.play().then(() => {
+//     clearTimeout(holdMusicTimeoutRef.current || 0);
+//     holdMusicRef.current?.pause();
+//     setTTSPlaying(true);
+//   });
+// };
+
 /**
  * Conversation element that contains the conversational AI app.
  * @returns {JSX.Element}
  */
 export default function Conversation(): JSX.Element {
+  /**
+   * Refs
+   */
+  // const audioRef = useRef<HTMLAudioElement | null>(null);
+  const messageMarker = useRef<null | HTMLDivElement>(null);
+
+  const requestTtsAudio = useCallback(async (message: Message) => {
+    console.log(message, "test");
+    const res = await fetch("/api/speak", {
+      cache: "no-store",
+      method: "POST",
+      body: JSON.stringify(message),
+    });
+
+    const url = window.URL.createObjectURL(await res.blob());
+    const tmp = new Audio(url);
+    tmp.play();
+  }, []);
+
   const useChatOptions = useMemo(
     () => ({
       api: "/api/brain",
@@ -32,6 +74,7 @@ export default function Conversation(): JSX.Element {
       },
       onFinish: (msg: any) => {
         console.log(msg);
+        requestTtsAudio(msg);
       },
       onError: (err: any) => {
         console.log(err);
@@ -47,7 +90,7 @@ export default function Conversation(): JSX.Element {
         } as Message,
       ],
     }),
-    []
+    [requestTtsAudio]
   );
   const { messages, append, handleInputChange, input, handleSubmit } =
     useChat(useChatOptions);
@@ -60,11 +103,6 @@ export default function Conversation(): JSX.Element {
   useEffect(() => {
     console.log(messages);
   }, [messages]);
-
-  /**
-   * Refs
-   */
-  const messageMarker = useRef<null | HTMLDivElement>(null);
 
   /**
    * State
