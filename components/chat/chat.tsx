@@ -108,7 +108,7 @@ export default function ChatCompletion({
   // Maintain chat history in state
   useEffect(() => {
     if (messages) {
-      const history: ChatMessage[] = messages.flatMap((message: Message) => {
+      const history: ChatMessage[] = messages.flatMap((message) => {
         const entries: ChatMessage[] = [];
         if (message.userMessage) {
           entries.push({
@@ -186,7 +186,7 @@ export default function ChatCompletion({
     <div className="flex h-full">
       <ScrollArea className="h-[calc(100vh-305px)]">
         <div className="">
-          {messages?.map((message: Message) => {
+          {messages?.map((message) => {
             return (
               <div key={message._id} className="flex flex-col">
                 <div className="flex flex-row my-2">
