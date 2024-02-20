@@ -1,5 +1,5 @@
 const MessageMeta = ({ id }: { id?: string }) => {
-  return <span></span>;
+  return <span>3ms</span>;
 };
 
 export { MessageMeta };
