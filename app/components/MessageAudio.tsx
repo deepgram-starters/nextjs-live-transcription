@@ -1,15 +1,30 @@
 import { Spinner, Tooltip } from "flowbite-react";
 
-const MessageAudio = ({ id }: { id?: string }) => {
+const MessageAudio = ({
+  id,
+  className = "",
+  ...rest
+}: {
+  id?: string;
+  className?: string;
+}) => {
   const found = true;
   const playing = false;
 
+  if (!id) {
+    return;
+  }
+
   if (!found && !playing) {
     return (
-      <Tooltip content="Loading audio..." className="bg-black">
+      <Tooltip
+        content="Loading audio..."
+        className={`bg-black ${className}`}
+        {...rest}
+      >
         <Spinner
           aria-label="Loading audio..."
-          className="text-[#1E1E23]/50 fill-[#7800ED] hover:fill-white"
+          className="text-[#1E1E23]/50 fill-white hover:fill-[#7800ED]"
         />
       </Tooltip>
     );
@@ -20,7 +35,8 @@ const MessageAudio = ({ id }: { id?: string }) => {
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
-        className="w-6 h-6 fill-[#7800ED] hover:fill-white"
+        className={`w-6 h-6 fill-white hover:fill-[#7800ED] ${className}`}
+        {...rest}
       >
         <path
           fillRule="evenodd"
@@ -35,7 +51,8 @@ const MessageAudio = ({ id }: { id?: string }) => {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
-      className="w-6 h-6 fill-[#7800ED] hover:fill-white"
+      className={`w-6 h-6 fill-white hover:fill-[#7800ED] ${className}`}
+      {...rest}
     >
       <path
         fillRule="evenodd"

@@ -1,23 +1,6 @@
-import { DeepgramError, createClient } from "@deepgram/sdk";
-import { Message, StreamingTextResponse } from "ai";
-import { ReadStream } from "fs";
-import { NextResponse } from "next/server";
-import { PassThrough, Readable } from "stream";
-import { blob } from "stream/consumers";
+import { Message } from "ai";
 
-function readChunks(reader: any) {
-  return {
-    async *[Symbol.asyncIterator]() {
-      let readResult = await reader.read();
-      while (!readResult.done) {
-        yield readResult.value;
-        readResult = await reader.read();
-      }
-    },
-  };
-}
-
-export async function POST(request: Request, response: Response) {
+export async function POST(request: Request) {
   // gotta use the request object to invalidate the cache every request :vomit:
   const url = request.url;
   const message: Message = await request.json();

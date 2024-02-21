@@ -26,10 +26,10 @@ export const LeftBubble = ({ text, id }: { text: string; id?: string }) => {
               </div>
               <div className="pt-2 flex justify-between">
                 <MessageMeta id={id} />
-                <MessageAudio id={id} />
               </div>
             </div>
           </div>
+          <MessageAudio id={id} className="self-center ml-2" />
         </div>
       </div>
     </>
