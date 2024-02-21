@@ -8,6 +8,7 @@ export default defineSchema({
     speaker: v.number(),
     start: v.float64(),
     transcript: v.string(),
+    sentenceEmbeddingId: v.optional(v.id("sentenceEmbeddings")),
   }).index("by_meetingID", ["meetingID"]),
   meetings: defineTable({
     title: v.string(),

@@ -182,7 +182,7 @@ export default function Microphone({
         console.error("Error uploading audio blob:", error);
       }
     },
-    [meetingID, generateUploadUrl, sendAudio, runProcessAudioEmbedding]
+    [generateUploadUrl]
   );
 
   //disable re-recording until i fix the bug
@@ -326,7 +326,7 @@ export default function Microphone({
   const createMeeting = useMutation(api.meetings.createMeeting);
   const updateMeeting = useMutation(api.meetings.updateMeetingDetails);
 
-  const handleGenerateSummary = async () => {
+  const handleGenerateSummary = useCallback(async () => {
     try {
       // Clean finalizedSentences as before
       const cleanedFinalizedSentences = finalizedSentences.map(
@@ -364,7 +364,13 @@ export default function Microphone({
       console.error("Failed to generate meeting summary:", error);
       // Optionally, show an error message
     }
-  };
+  }, [
+    retrieveSummary,
+    meetingID,
+    language,
+    finalizedSentences,
+    speakerDetails,
+  ]);
 
   const toggleMicrophone = useCallback(async () => {
     if (microphone && userMedia) {
@@ -492,7 +498,7 @@ export default function Microphone({
         microphone.ondataavailable = (e) => {
           add(e.data);
           setAudioBlobs((prevBlobs) => [...prevBlobs, e.data]);
-          //console.log("Audio Blob Size:", e.data.size); // Log the size of the current audio blob
+          console.log("Audio Blob Size:", e.data.size); // Log the size of the current audio blob
         };
 
         setUserMedia(userMedia);
@@ -509,7 +515,7 @@ export default function Microphone({
     addSpeakerToDB,
     meetingID,
     speakerDetails,
-    // storeFinalizedSentences,
+    storeFinalizedSentence,
     timer,
     updateMeeting,
     disableRecording,
@@ -519,6 +525,8 @@ export default function Microphone({
     setAudioBlobs,
     setDownloadUrl,
     uploadAudioBlob,
+    generateAndSaveEmbedding,
+    handleGenerateSummary,
   ]);
 
   // Clear the interval when the component unmounts to prevent memory leaks
@@ -542,7 +550,7 @@ export default function Microphone({
 
   useEffect(() => {
     if (!apiKey) {
-      //console.log("getting a new api key");
+      // console.log("getting a new api key");
       fetch("/api", { cache: "no-store" })
         .then((res) => res.json())
         .then((object) => {
@@ -565,7 +573,7 @@ export default function Microphone({
     setCaption: Function,
     setFinalCaptions: Function
   ) => {
-    //console.log("Connecting to Deepgram:", language);
+    console.log("Connecting to Deepgram:", language);
     const deepgram = createClient(apiKey);
     const connectionStartTime = Date.now(); // Start timing the connection
 
@@ -578,14 +586,14 @@ export default function Microphone({
     });
 
     connection.on(LiveTranscriptionEvents.Open, () => {
-      //console.log("Connection established with Deepgram.");
+      console.log("Connection established with Deepgram.");
       setListening(true);
     });
 
     connection.on(LiveTranscriptionEvents.Close, async (event) => {
       const connectionDuration = Date.now() - connectionStartTime; // Calculate connection duration
 
-      //console.log("Deepgram connection closed:", event);
+      console.log("Deepgram connection closed:", event);
 
       // console.log(
       //   "Deepgram connection closed:",
@@ -797,7 +805,12 @@ export default function Microphone({
     };
 
     storeData();
-  }, [finalizedSentences, storeFinalizedSentence]);
+  }, [
+    finalizedSentences,
+    storeFinalizedSentence,
+    meetingID,
+    generateAndSaveEmbedding,
+  ]);
 
   const [questions, setQuestions] = useState<QuestionDetail[]>([]);
   // Inside your component

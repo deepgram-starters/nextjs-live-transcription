@@ -141,7 +141,7 @@ export const fetchMultipleSpeakersByMeetingIds = query({
       speakers = speakers.concat(meetingSpeakers);
     }
 
-    console.log("Fetched speakers:", speakers);
+    // console.log("Fetched speakers:", speakers);
 
     return speakers;
   },
@@ -282,7 +282,7 @@ export const fetchMultipleMeetingDetails = query({
       meetingIds.map(async (id) => await ctx.db.get(id))
     );
 
-    console.log("Fetched meetings:", meetings);
+    // console.log("Fetched meetings:", meetings);
 
     return meetings.filter((meeting) => meeting !== null);
   },

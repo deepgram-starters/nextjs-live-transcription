@@ -53,11 +53,27 @@ export const generateAndSaveEmbedding = action({
     // Generate embedding
     const embedding = await generateTextEmbedding(args.transcript);
     // Store the embedding
-    await ctx.runMutation(internal.transcript.addEmbedding, {
-      finalizedSentenceId: args.finalizedSentenceId,
-      embedding: embedding,
-      meetingID: args.meetingID,
-    });
+    const embeddingId = await ctx.runMutation(
+      internal.transcript.addEmbedding,
+      {
+        finalizedSentenceId: args.finalizedSentenceId,
+        embedding: embedding,
+        meetingID: args.meetingID,
+      }
+    );
+
+    // Update the sentence with the embedding ID
+    if (embeddingId === null) {
+      // Handle the null case: log, throw an error, or take other appropriate action
+      console.error("Failed to generate or save embedding.");
+      throw new Error("Failed to generate or save embedding.");
+    } else {
+      // Proceed with using the embeddingId, now guaranteed to be non-null
+      await ctx.runMutation(api.transcript.updateSentenceWithEmbedding, {
+        finalizedSentenceId: args.finalizedSentenceId,
+        embeddingId: embeddingId, // This is now guaranteed to be non-null
+      });
+    }
 
     return embedding;
   },
@@ -113,10 +129,23 @@ export const addEmbedding = internalMutation({
     meetingID: v.id("meetings"),
   },
   handler: async ({ db }, { finalizedSentenceId, embedding, meetingID }) => {
-    await db.insert("sentenceEmbeddings", {
+    const embeddingId = await db.insert("sentenceEmbeddings", {
       meetingID, // This needs to be included
       finalizedSentenceId,
       embedding,
+    });
+    return embeddingId;
+  },
+});
+
+export const updateSentenceWithEmbedding = mutation({
+  args: {
+    finalizedSentenceId: v.id("finalizedSentences"),
+    embeddingId: v.id("sentenceEmbeddings"), // This matches the corrected field name
+  },
+  handler: async ({ db }, { finalizedSentenceId, embeddingId }) => {
+    await db.patch(finalizedSentenceId, {
+      sentenceEmbeddingId: embeddingId, // Ensure this matches the field in your schema
     });
   },
 });
@@ -202,7 +231,7 @@ export const fetchMultipleFinalizedSentenceDetails = query({
       sentenceIds.map(async (id) => await ctx.db.get(id))
     );
 
-    console.log("Fetched sentences:", sentences);
+    // console.log("Fetched sentences:", sentences);
 
     return sentences.filter((sentence) => sentence !== null);
   },
