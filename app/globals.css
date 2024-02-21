@@ -16,23 +16,6 @@ body {
   background-size: cover;
 }
 
-.cursor-blink {
-  padding-right: 0.25em;
-  border-right: 0.05em solid white;
-  animation: blink-caret 0.5s step-end infinite;
-}
-
-/* The typewriter cursor effect */
-@keyframes blink-caret {
-  from,
-  to {
-    border-color: transparent;
-  }
-  50% {
-    border-color: white;
-  }
-}
-
 * {
   /* outline: 1px solid red; */
 }

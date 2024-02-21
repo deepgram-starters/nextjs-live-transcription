@@ -30,3 +30,7 @@ export const TextContent = ({ text }: { text: string }) => {
     </Markdown>
   );
 };
+
+// [current time]
+// [current day]
+// [current year]

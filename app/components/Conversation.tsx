@@ -19,53 +19,131 @@ import { useChat } from "ai/react";
 import { useQueue } from "@uidotdev/usehooks";
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 
-// const requestTtsAudio = async (message: Message) => {
-//   console.log(message, "test");
-//   const res = await fetch("/api/speak", { cache: "no-store", method: "POST" });
-//   console.log(res.blob(), "test2");
-
-//   const url = window.URL.createObjectURL(await res.blob());
-//   audioRef.current = new Audio(url);
-//   const playbackRate = TTS_PLAYBACK_SPEED_MULTIPLIER;
-//   audioRef.current.playbackRate = playbackRate;
-//   audioRef.current.muted = state.muteTTS;
-//   audioRef.current.addEventListener("loadedmetadata", () =>
-//     setTimeout(
-//       () => setTTSPlaying(false),
-//       ((audioRef?.current?.duration || 0) / playbackRate) * 1000
-//     )
-//   );
-//   audioRef.current.play().then(() => {
-//     clearTimeout(holdMusicTimeoutRef.current || 0);
-//     holdMusicRef.current?.pause();
-//     setTTSPlaying(true);
-//   });
-// };
-
 /**
  * Conversation element that contains the conversational AI app.
  * @returns {JSX.Element}
  */
 export default function Conversation(): JSX.Element {
   /**
+   * Queues
+   */
+  const {
+    add: addMicrophoneBlob,
+    remove: removeMicrophoneBlob,
+    first: firstMicrophoneBlob,
+    size: countMicrophoneBlobs,
+    queue: microphoneBlobs,
+  } = useQueue<Blob>([]);
+
+  const {
+    add: addSpeechBlob,
+    remove: removeSpeechBlob,
+    first: firstSpeechBlob,
+    size: countSpeechBlobs,
+    queue: speechBlobs,
+  } = useQueue<Blob>([]);
+
+  const {
+    add: addTranscriptPart,
+    remove: removeTranscriptPart,
+    first: firstTranscriptPart,
+    size: countTranscriptParts,
+    queue: transcriptParts,
+  } = useQueue<{ is_final: boolean; speech_final: boolean; text: string }>([]);
+
+  /**
    * Refs
    */
-  // const audioRef = useRef<HTMLAudioElement | null>(null);
   const messageMarker = useRef<null | HTMLDivElement>(null);
 
-  const requestTtsAudio = useCallback(async (message: Message) => {
-    console.log(message, "test");
-    const res = await fetch("/api/speak", {
-      cache: "no-store",
-      method: "POST",
-      body: JSON.stringify(message),
-    });
+  /**
+   * State
+   */
+  const [apiKey, setApiKey] = useState<CreateProjectKeyResponse | null>();
+  const [connection, setConnection] = useState<LiveClient | null>();
+  const [initialLoad, setInitialLoad] = useState(true);
+  const [isListening, setListening] = useState(false);
+  const [isLoading, setLoading] = useState(true);
+  const [isLoadingKey, setLoadingKey] = useState(true);
+  const [isProcessing, setProcessing] = useState(false);
 
-    const url = window.URL.createObjectURL(await res.blob());
-    const tmp = new Audio(url);
-    tmp.play();
-  }, []);
+  const [userMedia, setUserMedia] = useState<MediaStream | null>();
+  // const [utterance, setUtterance] = useState<CreateMessage>(blankUserMessage);
+  let utterance = useRef(blankUserMessage);
 
+  const [voiceActivity, setVoiceActivity] = useState<{
+    voiceActivity: boolean;
+    timestamp: number;
+  }>();
+
+  /**
+   * Contextual functions
+   */
+  const requestTtsAudio = useCallback(
+    async (message: Message) => {
+      console.log(message, "test");
+      const res = await fetch("/api/speak", {
+        cache: "no-store",
+        method: "POST",
+        body: JSON.stringify(message),
+      });
+
+      addSpeechBlob(await res.blob());
+    },
+    [addSpeechBlob]
+  );
+
+  const startConversation = useCallback(() => {
+    setInitialLoad(!initialLoad);
+  }, [initialLoad]);
+
+  const toggleMicrophone = useCallback(async () => {
+    if (userMedia) {
+      userMedia.getAudioTracks().every((track) => {
+        track.stop();
+      });
+      setUserMedia(null);
+    } else {
+      const userMedia = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          noiseSuppression: true,
+          echoCancellation: true,
+        },
+      });
+
+      const context = new AudioContext();
+      await context.audioWorklet.addModule(`/vad.worklet.js?v=${Date.now()}`);
+
+      const source = context.createMediaStreamSource(userMedia);
+      const workletNode = new AudioWorkletNode(
+        context,
+        "voice-activity-processor"
+      );
+
+      source.connect(workletNode);
+      workletNode.connect(context.destination);
+      workletNode.port.onmessage = (
+        e: MessageEvent<{ voiceActivity: boolean; timestamp: number }>
+      ) => setVoiceActivity(e.data);
+
+      const microphone = new MediaRecorder(userMedia);
+      microphone.start(1000);
+
+      microphone.ondataavailable = (e) => {
+        addMicrophoneBlob(e.data);
+      };
+
+      setUserMedia(userMedia);
+    }
+  }, [userMedia, addMicrophoneBlob]);
+
+  // useEffect(() => {
+  //   console.log(countMicrophoneBlobs);
+  // }, [countMicrophoneBlobs]);
+
+  /**
+   * Memos
+   */
   const useChatOptions = useMemo(
     () => ({
       api: "/api/brain",
@@ -92,111 +170,15 @@ export default function Conversation(): JSX.Element {
     }),
     [requestTtsAudio]
   );
+
+  /**
+   * AI SDK
+   */
   const { messages, append, handleInputChange, input, handleSubmit } =
     useChat(useChatOptions);
 
-  // append({
-  //   role: "system",
-  //   content: systemContent,
-  // });
-
-  useEffect(() => {
-    console.log(messages);
-  }, [messages]);
-
   /**
-   * State
-   */
-  const [apiKey, setApiKey] = useState<CreateProjectKeyResponse | null>();
-  const [connection, setConnection] = useState<LiveClient | null>();
-  const [initialLoad, setInitialLoad] = useState(true);
-  const [isListening, setListening] = useState(false);
-  const [isLoading, setLoading] = useState(true);
-  const [isLoadingKey, setLoadingKey] = useState(true);
-  const [isProcessing, setProcessing] = useState(false);
-
-  const [micOpen, setMicOpen] = useState(false);
-  const [microphone, setMicrophone] = useState<MediaRecorder | null>();
-  // const [textInput, setTextInput] = useState<string>("");
-  const [userMedia, setUserMedia] = useState<MediaStream | null>();
-  const [utterance, setUtterance] = useState<CreateMessage>(blankUserMessage);
-
-  const [voiceActivity, setVoiceActivity] = useState<{
-    voiceActivity: boolean;
-    timestamp: number;
-  }>();
-
-  /**
-   * Queues
-   */
-  const {
-    add: addAudioBlob,
-    remove: removeAudioBlob,
-    first: firstAudioBlob,
-    size: countAudioBlobs,
-    queue: audioBlobs,
-  } = useQueue<Blob>([]);
-
-  const startConversation = useCallback(() => {
-    setInitialLoad(!initialLoad);
-  }, [initialLoad]);
-
-  /**
-   * toggle microphone on/off function
-   */
-  const toggleMicrophone = useCallback(async () => {
-    if (microphone && userMedia) {
-      setUserMedia(null);
-      setMicrophone(null);
-
-      if (microphone) {
-        microphone.stop();
-      }
-    } else {
-      const userMedia = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          noiseSuppression: true,
-          echoCancellation: true,
-        },
-      });
-
-      const context = new AudioContext();
-      await context.audioWorklet.addModule(`/vad.worklet.js?v=${Date.now()}`);
-
-      const source = context.createMediaStreamSource(userMedia);
-      const workletNode = new AudioWorkletNode(
-        context,
-        "voice-activity-processor"
-      );
-
-      source.connect(workletNode);
-      workletNode.connect(context.destination);
-      workletNode.port.onmessage = (
-        e: MessageEvent<{ voiceActivity: boolean; timestamp: number }>
-      ) => setVoiceActivity(e.data);
-
-      const microphone = new MediaRecorder(userMedia);
-      microphone.start(500);
-
-      microphone.onstart = () => {
-        setMicOpen(true);
-      };
-
-      microphone.onstop = () => {
-        setMicOpen(false);
-      };
-
-      microphone.ondataavailable = (e) => {
-        addAudioBlob(e.data);
-      };
-
-      setUserMedia(userMedia);
-      setMicrophone(microphone);
-    }
-  }, [microphone, userMedia, addAudioBlob]);
-
-  /**
-   * getting a new api key
+   * Reactive effects
    */
   useEffect(() => {
     if (!apiKey) {
@@ -214,9 +196,6 @@ export default function Conversation(): JSX.Element {
     }
   }, [apiKey]);
 
-  /**
-   * connect to deepgram
-   */
   useEffect(() => {
     if (apiKey && "key" in apiKey) {
       const deepgram = createClient(apiKey?.key ?? "");
@@ -225,6 +204,7 @@ export default function Conversation(): JSX.Element {
         interim_results: true,
         smart_format: true,
         endpointing: 250,
+        utterance_end_ms: 5000,
       });
 
       /**
@@ -255,22 +235,43 @@ export default function Conversation(): JSX.Element {
         connection.on(
           LiveTranscriptionEvents.Transcript,
           (data: LiveTranscriptionEvent) => {
-            const content = utteranceText(data);
+            let content = utteranceText(data);
 
             if (content) {
-              if (data.is_final) {
-                append({
-                  role: "user",
-                  content,
-                });
-                setUtterance(blankUserMessage);
-              } else {
-                setUtterance({
-                  role: "user",
-                  content,
-                });
-              }
+              /**
+               * use an outbound message queue to build up the unsent utterance
+               */
+              addTranscriptPart({
+                is_final: data.is_final as boolean,
+                speech_final: data.speech_final as boolean,
+                text: content,
+              });
             }
+
+            // if (content) {
+            //   utterance.current = {
+            //     role: "user",
+            //     content,
+            //   };
+
+            //   if (data.is_final) {
+            //     const existingContent = utterance.current.content;
+            //     content = [existingContent, content].filter(Boolean).join("\n");
+
+            //     utterance.current = {
+            //       role: "user",
+            //       content,
+            //     };
+
+            //     if (data.speech_final) {
+            //       append({
+            //         role: "user",
+            //         content,
+            //       });
+            //       utterance.current = blankUserMessage;
+            //     }
+            //   }
+            // }
           }
         );
       });
@@ -278,22 +279,39 @@ export default function Conversation(): JSX.Element {
       setConnection(connection);
       setLoading(false);
     }
-  }, [append, apiKey]);
+  }, [addTranscriptPart, apiKey, append]);
+
+  const [currentUtterance, setCurrentUtterance] = useState("");
+
+  const getCurrentUtterance = useCallback(() => {
+    return transcriptParts.filter(({ is_final, speech_final }, i, arr) => {
+      return is_final || speech_final || (!is_final && i === arr.length - 1);
+    });
+  }, [transcriptParts]);
+
+  useEffect(() => {
+    const parts = getCurrentUtterance();
+
+    console.log(parts);
+
+    setCurrentUtterance(parts.map(({ text }) => text).join(" "));
+  }, [getCurrentUtterance]);
 
   /**
-   * magic audio queue processing
+   * magic microphone audio queue processing
    */
   useEffect(() => {
     const processQueue = async () => {
-      if (countAudioBlobs > 0 && !isProcessing) {
+      if (countMicrophoneBlobs > 0 && !isProcessing) {
         setProcessing(true);
 
         if (isListening) {
-          if (firstAudioBlob) {
-            connection?.send(firstAudioBlob);
+          const nextBlob = firstMicrophoneBlob;
+          if (nextBlob) {
+            connection?.send(nextBlob);
           }
 
-          removeAudioBlob();
+          removeMicrophoneBlob();
         }
 
         const waiting = setTimeout(() => {
@@ -306,25 +324,59 @@ export default function Conversation(): JSX.Element {
     processQueue();
   }, [
     connection,
-    audioBlobs,
-    removeAudioBlob,
-    firstAudioBlob,
-    countAudioBlobs,
+    microphoneBlobs,
+    removeMicrophoneBlob,
+    firstMicrophoneBlob,
+    countMicrophoneBlobs,
     isProcessing,
     isListening,
   ]);
+
+  /**
+   * magic tts audio queue processing
+   */
+  // useEffect(() => {
+  //   const processQueue = async () => {
+  //     if (countSpeechBlobs > 0 /*&& !playback*/) {
+  //       // setPlayback(true);
+
+  //       if (firstSpeechBlob) {
+  //         const url = window.URL.createObjectURL(firstSpeechBlob);
+  //         const tmp = new Audio(url);
+  //         tmp.play();
+  //       }
+
+  //       // removeSpeechBlob(); // probably won't remove from queue because we want to enable further playback
+
+  //       // const waiting = setTimeout(() => {
+  //       //   clearTimeout(waiting);
+  //       //   setPlayback(false);
+  //       // }, 250);
+  //     }
+  //   };
+
+  //   processQueue();
+  // }, [
+  //   speechBlobs,
+  //   removeSpeechBlob,
+  //   firstSpeechBlob,
+  //   countSpeechBlobs,
+  //   // setPlayback,
+  // ]);
 
   /**
    * keep alive when mic closed
    */
   useEffect(() => {
     let keepAlive: any;
-    if (connection && isListening && !micOpen) {
+    if (connection && isListening && !userMedia) {
       keepAlive = setInterval(() => {
         // should stop spamming dev console when working on frontend in devmode
         if (connection?.getReadyState() !== LiveConnectionState.OPEN) {
+          console.log("connection closed, stopping keep alive");
           clearInterval(keepAlive);
         } else {
+          console.log("keep alive");
           connection.keepAlive();
         }
       }, 10000);
@@ -336,7 +388,7 @@ export default function Conversation(): JSX.Element {
     return () => {
       clearInterval(keepAlive);
     };
-  }, [connection, isListening, micOpen]);
+  }, [connection, isListening, userMedia]);
 
   // this works
   useEffect(() => {
@@ -346,27 +398,7 @@ export default function Conversation(): JSX.Element {
         behavior: "smooth",
       });
     }
-  }, [messages, utterance]);
-
-  // /**
-  //  * registering key up/down events
-  //  */
-  // useEffect(() => {
-  //   const onKeyUp = (event: Event | KeyboardEvent) => {
-  //     if ("key" in event && event.code === "Space") {
-  //       event.preventDefault();
-  //       toggleMicrophone();
-  //     }
-  //   };
-
-  //   if (isListening) {
-  //     document.addEventListener("keyup", onKeyUp);
-  //   }
-
-  //   return () => {
-  //     document.removeEventListener("keyup", onKeyUp);
-  //   };
-  // }, [isListening, toggleMicrophone]);
+  }, [messages]);
 
   /**
    * loading message (api key)
@@ -405,15 +437,12 @@ export default function Conversation(): JSX.Element {
                           <ChatBubble message={message} key={i} />
                         ))}
 
-                      {utterance && utterance.content && (
-                        <RightBubble
-                          text={utterance.content}
-                          blink={true}
-                        ></RightBubble>
+                      {currentUtterance && (
+                        <RightBubble text={currentUtterance}></RightBubble>
                       )}
 
                       <div
-                        className="h-4 col-start-1 col-end-13"
+                        className="h-16 col-start-1 col-end-13"
                         ref={messageMarker}
                       ></div>
                     </>
@@ -423,7 +452,7 @@ export default function Conversation(): JSX.Element {
               {!initialLoad && (
                 <Controls
                   micToggle={toggleMicrophone}
-                  micOpen={micOpen}
+                  micOpen={userMedia?.active || false}
                   handleSubmit={handleSubmit}
                   handleInputChange={handleInputChange}
                   input={input}
