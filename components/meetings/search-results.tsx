@@ -1,3 +1,11 @@
+"use client";
+
+//import react stuff
+import React, { useState } from "react";
+
+//import next stuff
+import { useRouter } from "next/navigation"; // Changed from 'next/router' to 'next/navigation'
+
 //import convex stuff
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -27,7 +35,13 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
   searchResults,
   onClearSearch,
 }) => {
+  const router = useRouter();
   const searchInput = searchResults[0]?.searchInput;
+  const [selectedSpeaker, setSelectedSpeaker] = useState("");
+
+  const handleRowClick = (meetingId: string) => {
+    router.push(`/mymeetings/${meetingId}`);
+  };
 
   // Extract sentenceIds from searchResults
   const sentenceIds = searchResults.map((result) => result.id);
@@ -45,6 +59,8 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
   const speakers = useQuery(api.meetings.fetchMultipleSpeakersByMeetingIds, {
     meetingIds,
   });
+
+  //   console.log(speakers, meetingDetails, sentenceDetails);
 
   // You can now also use other data from searchResults, like score, if needed
   if (!sentenceDetails) return <div>Loading...</div>;
@@ -103,7 +119,8 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
         return (
           <div
             key={index}
-            className="mb-4 flex flex-row space-x-4 md:space-x-8 lg:space-x-20 border-b"
+            className="flex flex-row space-x-4 p-4 md:space-x-8 lg:space-x-20 hover:bg-muted-foreground/10 rounded-lg" // Added hover:bg-gray-100 for hover effect and rounded-lg for rounded large
+            onClick={() => detail && handleRowClick(detail.meetingID)} // Ensure detail is not null before accessing meetingID
           >
             <div className="flex flex-col">
               {/* {index === 0 && (
@@ -116,7 +133,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
               </Badge>
             </div>
             {/* Use the meeting title instead of the meeting ID */}
-            <div className="flex flex-col mb-4 space-x-2">
+            <div className="flex flex-col space-x-2">
               {/* {index === 0 && (
                 <div className="font-bold mb-4">
                   <span>Meeting</span>
@@ -142,9 +159,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
 
                   <span>{formattedDuration}</span>
                 </div>
-                <div className="text-muted-foreground text-sm">
-                  Created {timeAgo}
-                </div>
+                <div className="text-muted-foreground text-sm">{timeAgo}</div>
               </div>
             </div>
             <div>
