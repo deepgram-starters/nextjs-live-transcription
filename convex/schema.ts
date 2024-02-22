@@ -4,6 +4,7 @@ import { v } from "convex/values";
 export default defineSchema({
   finalizedSentences: defineTable({
     end: v.float64(),
+    userId: v.optional(v.string()),
     meetingID: v.id("meetings"),
     speaker: v.number(),
     start: v.float64(),

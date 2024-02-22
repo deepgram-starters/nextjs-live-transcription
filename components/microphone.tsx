@@ -66,6 +66,7 @@ export interface WordDetail {
 }
 
 export interface FinalizedSentence {
+  id?: Id<"finalizedSentences">;
   speaker: number;
   transcript: string;
   start: number;
@@ -277,9 +278,8 @@ export default function Microphone({
       : `Speaker ${speakerNumber}`;
   };
 
-  // Define the mutation hook at the top of your component
-  const generateAndSaveEmbedding = useAction(
-    api.transcript.generateAndSaveEmbedding
+  const createAndSaveEmbedding = useAction(
+    api.generateEmbeddings.createEmbeddingsforFinalizedSentencesInMeetingID
   );
   //save finalised sentences
   const storeFinalizedSentence = useMutation(
@@ -421,13 +421,17 @@ export default function Microphone({
         });
 
         if (sentenceID) {
-          // Check if sentenceID is not void
-          const sentenceEmbedding = await generateAndSaveEmbedding({
-            finalizedSentenceId: sentenceID,
-            transcript: lastSentence.transcript,
-            meetingID: meetingID,
+          //generate and save transctript text embeddings
+          const sentenceEmbeddings = await createAndSaveEmbedding({
+            meetingId: meetingID,
           });
-          // console.log("Stored sentence embedding:", sentenceEmbedding);
+          // Check if sentenceID is not void
+          // const sentenceEmbedding = await generateAndSaveEmbedding({
+          //   finalizedSentenceId: sentenceID,
+          //   transcript: lastSentence.transcript,
+          //   meetingID: meetingID,
+          // });
+          console.log("Stored sentence embedding:", sentenceEmbeddings);
         } else {
           console.error("Failed to store sentence, sentenceID is void.");
         }
@@ -498,7 +502,7 @@ export default function Microphone({
         microphone.ondataavailable = (e) => {
           add(e.data);
           setAudioBlobs((prevBlobs) => [...prevBlobs, e.data]);
-          console.log("Audio Blob Size:", e.data.size); // Log the size of the current audio blob
+          // console.log("Audio Blob Size:", e.data.size); // Log the size of the current audio blob
         };
 
         setUserMedia(userMedia);
@@ -525,8 +529,8 @@ export default function Microphone({
     setAudioBlobs,
     setDownloadUrl,
     uploadAudioBlob,
-    generateAndSaveEmbedding,
     handleGenerateSummary,
+    createAndSaveEmbedding,
   ]);
 
   // Clear the interval when the component unmounts to prevent memory leaks
@@ -573,7 +577,7 @@ export default function Microphone({
     setCaption: Function,
     setFinalCaptions: Function
   ) => {
-    console.log("Connecting to Deepgram:", language);
+    // console.log("Connecting to Deepgram:", language);
     const deepgram = createClient(apiKey);
     const connectionStartTime = Date.now(); // Start timing the connection
 
@@ -586,14 +590,14 @@ export default function Microphone({
     });
 
     connection.on(LiveTranscriptionEvents.Open, () => {
-      console.log("Connection established with Deepgram.");
+      // console.log("Connection established with Deepgram.");
       setListening(true);
     });
 
     connection.on(LiveTranscriptionEvents.Close, async (event) => {
       const connectionDuration = Date.now() - connectionStartTime; // Calculate connection duration
 
-      console.log("Deepgram connection closed:", event);
+      // console.log("Deepgram connection closed:", event);
 
       // console.log(
       //   "Deepgram connection closed:",
@@ -778,23 +782,27 @@ export default function Microphone({
   //detect when speakerchanges in finalized sentence
   useEffect(() => {
     const storeData = async () => {
-      if (finalizedSentences.length > 0) {
-        const lastSentence = finalizedSentences[finalizedSentences.length - 1];
-        const currentSpeaker = lastSentence.speaker;
+      if (finalizedSentences.length > 1) {
+        // Ensure there's at least one sentence to store
+        const lastSentenceIndex = finalizedSentences.length - 2; // Correctly define lastSentenceIndex here
+        const lastSentence = finalizedSentences[lastSentenceIndex];
+        const currentSpeaker =
+          finalizedSentences[finalizedSentences.length - 1].speaker;
 
         if (
           lastSpeakerRef.current !== null &&
           lastSpeakerRef.current !== currentSpeaker
         ) {
-          const sentenceID = await storeFinalizedSentence(
-            finalizedSentences[finalizedSentences.length - 2]
-          );
+          const sentenceID = await storeFinalizedSentence({
+            meetingID: meetingID,
+            speaker: lastSentence.speaker,
+            transcript: lastSentence.transcript,
+            start: lastSentence.start,
+            end: lastSentence.end,
+          });
+
           if (sentenceID) {
-            const sentenceEmbedding = await generateAndSaveEmbedding({
-              finalizedSentenceId: sentenceID,
-              transcript: lastSentence.transcript,
-              meetingID: meetingID,
-            });
+            // Consider doing something with the sentence ID
           } else {
             console.error("Failed to store sentence, sentenceID is void.");
           }
@@ -809,7 +817,7 @@ export default function Microphone({
     finalizedSentences,
     storeFinalizedSentence,
     meetingID,
-    generateAndSaveEmbedding,
+    setFinalizedSentences,
   ]);
 
   const [questions, setQuestions] = useState<QuestionDetail[]>([]);

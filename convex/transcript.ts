@@ -33,6 +33,7 @@ export const storeFinalizedSentence = mutation({
     }
     const finalizedSentenceId = await db.insert("finalizedSentences", {
       meetingID,
+      userId: user.subject,
       speaker,
       transcript,
       start,
