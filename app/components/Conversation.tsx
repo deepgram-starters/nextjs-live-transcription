@@ -49,6 +49,7 @@ export default function Conversation(): JSX.Element {
     first: firstTranscriptPart,
     size: countTranscriptParts,
     queue: transcriptParts,
+    clear: clearTranscriptParts,
   } = useQueue<{ is_final: boolean; speech_final: boolean; text: string }>([]);
 
   /**
@@ -81,7 +82,6 @@ export default function Conversation(): JSX.Element {
    */
   const requestTtsAudio = useCallback(
     async (message: Message) => {
-      console.log(message, "test");
       const res = await fetch("/api/speak", {
         cache: "no-store",
         method: "POST",
@@ -148,14 +148,14 @@ export default function Conversation(): JSX.Element {
     () => ({
       api: "/api/brain",
       onResponse: (res: any) => {
-        console.log(res);
+        // console.log(res);
       },
       onFinish: (msg: any) => {
-        console.log(msg);
+        // console.log(msg);
         requestTtsAudio(msg);
       },
       onError: (err: any) => {
-        console.log(err);
+        // console.log(err);
       },
       initialMessages: [
         {
@@ -197,7 +197,7 @@ export default function Conversation(): JSX.Element {
   }, [apiKey]);
 
   useEffect(() => {
-    if (apiKey && "key" in apiKey) {
+    if (apiKey?.key) {
       const deepgram = createClient(apiKey?.key ?? "");
       const connection = deepgram.listen.live({
         model: "nova-2",
@@ -235,6 +235,7 @@ export default function Conversation(): JSX.Element {
         connection.on(
           LiveTranscriptionEvents.Transcript,
           (data: LiveTranscriptionEvent) => {
+            console.log(data);
             let content = utteranceText(data);
 
             if (content) {
@@ -291,11 +292,19 @@ export default function Conversation(): JSX.Element {
 
   useEffect(() => {
     const parts = getCurrentUtterance();
+    const last = parts[parts.length - 1];
+    const content = parts.map(({ text }) => text).join(" ");
+    setCurrentUtterance(content);
 
-    console.log(parts);
-
-    setCurrentUtterance(parts.map(({ text }) => text).join(" "));
-  }, [getCurrentUtterance]);
+    if (last && last.speech_final) {
+      append({
+        role: "user",
+        content,
+      });
+      clearTranscriptParts();
+      setCurrentUtterance("");
+    }
+  }, [getCurrentUtterance, clearTranscriptParts, append]);
 
   /**
    * magic microphone audio queue processing
@@ -308,6 +317,7 @@ export default function Conversation(): JSX.Element {
         if (isListening) {
           const nextBlob = firstMicrophoneBlob;
           if (nextBlob) {
+            console.log(nextBlob);
             connection?.send(nextBlob);
           }
 
@@ -394,8 +404,8 @@ export default function Conversation(): JSX.Element {
   useEffect(() => {
     if (messageMarker.current) {
       messageMarker.current.scrollIntoView({
-        block: "center",
-        behavior: "smooth",
+        block: "end",
+        behavior: "auto",
       });
     }
   }, [messages]);
