@@ -11,7 +11,7 @@ import {
   createClient,
 } from "@deepgram/sdk";
 import { Controls } from "./Controls";
-import { CreateMessage, Message } from "ai";
+import { Message, UseChatOptions } from "ai";
 import { InitialLoad } from "./InitialLoad";
 import { RightBubble } from "./RightBubble";
 import { systemContent } from "../lib/constants";
@@ -37,20 +37,34 @@ export default function Conversation(): JSX.Element {
 
   const {
     add: addSpeechBlob,
-    remove: removeSpeechBlob,
-    first: firstSpeechBlob,
-    size: countSpeechBlobs,
-    queue: speechBlobs,
+    // remove: removeSpeechBlob,
+    // first: firstSpeechBlob,
+    // size: countSpeechBlobs,
+    // queue: speechBlobs,
+    // } = useQueue<{ id: string; blob: Blob; index: number }>([]);
   } = useQueue<Blob>([]);
 
   const {
     add: addTranscriptPart,
-    remove: removeTranscriptPart,
-    first: firstTranscriptPart,
-    size: countTranscriptParts,
+    // remove: removeTranscriptPart,
+    // first: firstTranscriptPart,
+    // size: countTranscriptParts,
     queue: transcriptParts,
     clear: clearTranscriptParts,
   } = useQueue<{ is_final: boolean; speech_final: boolean; text: string }>([]);
+
+  interface MessagePart extends Message {
+    main_id: string;
+  }
+
+  const {
+    add: addChatPart,
+    // remove: removeTranscriptPart,
+    // first: firstTranscriptPart,
+    // size: countTranscriptParts,
+    // queue: chatParts,
+    last: lastChatPart,
+  } = useQueue<MessagePart>([]);
 
   /**
    * Refs
@@ -92,10 +106,6 @@ export default function Conversation(): JSX.Element {
     },
     [addSpeechBlob]
   );
-
-  const startConversation = useCallback(() => {
-    setInitialLoad(!initialLoad);
-  }, [initialLoad]);
 
   const toggleMicrophone = useCallback(async () => {
     if (userMedia) {
@@ -144,20 +154,17 @@ export default function Conversation(): JSX.Element {
   /**
    * Memos
    */
-  const useChatOptions = useMemo(
+  const useChatOptions: UseChatOptions = useMemo(
     () => ({
       api: "/api/brain",
-      onResponse: (res: any) => {
-        // console.log(res);
-      },
       onFinish: (msg: any) => {
         // console.log(msg);
         requestTtsAudio(msg);
       },
       onError: (err: any) => {
-        // console.log(err);
+        console.log(err);
       },
-      initialMessages: [
+      initialChatMessages: [
         {
           role: "system",
           content: systemContent,
@@ -174,8 +181,21 @@ export default function Conversation(): JSX.Element {
   /**
    * AI SDK
    */
-  const { messages, append, handleInputChange, input, handleSubmit } =
-    useChat(useChatOptions);
+  const {
+    messages: chatMessages,
+    append,
+    handleInputChange,
+    input,
+    handleSubmit,
+  } = useChat(useChatOptions);
+
+  useEffect(() => {
+    console.log(chatMessages[chatMessages.length - 1]);
+  }, [chatMessages]);
+
+  const startConversation = useCallback(() => {
+    setInitialLoad(!initialLoad);
+  }, [initialLoad]);
 
   /**
    * Reactive effects
@@ -408,7 +428,7 @@ export default function Conversation(): JSX.Element {
         behavior: "auto",
       });
     }
-  }, [messages]);
+  }, [chatMessages]);
 
   /**
    * loading message (api key)
@@ -442,8 +462,9 @@ export default function Conversation(): JSX.Element {
                     <InitialLoad fn={startConversation} />
                   ) : (
                     <>
-                      {messages.length > 0 &&
-                        messages.map((message, i) => (
+                      {chatMessages.length}
+                      {chatMessages.length > 0 &&
+                        chatMessages.map((message, i) => (
                           <ChatBubble message={message} key={i} />
                         ))}
 
