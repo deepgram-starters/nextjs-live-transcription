@@ -7,3 +7,10 @@ export interface Metadata {
   name?: string;
   data?: JSONValue;
 }
+
+export interface TtsResponse {
+  id: string;
+  blob: Blob;
+  latency: number;
+  played: boolean;
+}

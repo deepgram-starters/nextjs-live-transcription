@@ -1,7 +1,5 @@
 "use client";
 
-import { blankUserMessage, utteranceText } from "../lib/helpers";
-import { ChatBubble } from "./ChatBubble";
 import {
   CreateProjectKeyResponse,
   LiveClient,
@@ -10,14 +8,17 @@ import {
   LiveTranscriptionEvents,
   createClient,
 } from "@deepgram/sdk";
+import { ChatBubble } from "./ChatBubble";
 import { Controls } from "./Controls";
-import { Message, UseChatOptions } from "ai";
 import { InitialLoad } from "./InitialLoad";
+import { Message } from "ai";
 import { RightBubble } from "./RightBubble";
 import { systemContent } from "../lib/constants";
+import { TtsResponse } from "../lib/types";
 import { useChat } from "ai/react";
 import { useQueue } from "@uidotdev/usehooks";
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { utteranceText } from "../lib/helpers";
 
 /**
  * Conversation element that contains the conversational AI app.
@@ -37,34 +38,18 @@ export default function Conversation(): JSX.Element {
 
   const {
     add: addSpeechBlob,
-    // remove: removeSpeechBlob,
-    // first: firstSpeechBlob,
-    // size: countSpeechBlobs,
-    // queue: speechBlobs,
-    // } = useQueue<{ id: string; blob: Blob; index: number }>([]);
-  } = useQueue<Blob>([]);
+    remove: removeSpeechBlob,
+    first: firstSpeechBlob,
+    size: countSpeechBlobs,
+    queue: speechBlobs,
+  } = useQueue<TtsResponse>([]);
+  // } = useQueue<Blob>([]);
 
   const {
     add: addTranscriptPart,
-    // remove: removeTranscriptPart,
-    // first: firstTranscriptPart,
-    // size: countTranscriptParts,
     queue: transcriptParts,
     clear: clearTranscriptParts,
   } = useQueue<{ is_final: boolean; speech_final: boolean; text: string }>([]);
-
-  interface MessagePart extends Message {
-    main_id: string;
-  }
-
-  const {
-    add: addChatPart,
-    // remove: removeTranscriptPart,
-    // first: firstTranscriptPart,
-    // size: countTranscriptParts,
-    // queue: chatParts,
-    last: lastChatPart,
-  } = useQueue<MessagePart>([]);
 
   /**
    * Refs
@@ -81,11 +66,7 @@ export default function Conversation(): JSX.Element {
   const [isLoading, setLoading] = useState(true);
   const [isLoadingKey, setLoadingKey] = useState(true);
   const [isProcessing, setProcessing] = useState(false);
-
   const [userMedia, setUserMedia] = useState<MediaStream | null>();
-  // const [utterance, setUtterance] = useState<CreateMessage>(blankUserMessage);
-  let utterance = useRef(blankUserMessage);
-
   const [voiceActivity, setVoiceActivity] = useState<{
     voiceActivity: boolean;
     timestamp: number;
@@ -95,17 +76,28 @@ export default function Conversation(): JSX.Element {
    * Contextual functions
    */
   const requestTtsAudio = useCallback(
-    async (message: Message) => {
-      const res = await fetch("/api/speak", {
+    async ({ id, content: text }: Message) => {
+      const start = Date.now();
+
+      fetch("/api/speak", {
         cache: "no-store",
         method: "POST",
-        body: JSON.stringify(message),
+        body: JSON.stringify({
+          text,
+        }),
+      }).then(async (res) => {
+        addSpeechBlob({
+          id,
+          blob: await res.blob(),
+          latency: (Date.now() - start) / 1000,
+          played: false,
+        });
       });
-
-      addSpeechBlob(await res.blob());
     },
     [addSpeechBlob]
   );
+
+  useEffect(() => {}, [speechBlobs]);
 
   const toggleMicrophone = useCallback(async () => {
     if (userMedia) {
@@ -147,34 +139,10 @@ export default function Conversation(): JSX.Element {
     }
   }, [userMedia, addMicrophoneBlob]);
 
-  // useEffect(() => {
-  //   console.log(countMicrophoneBlobs);
-  // }, [countMicrophoneBlobs]);
-
-  /**
-   * Memos
-   */
-  const useChatOptions: UseChatOptions = useMemo(
-    () => ({
-      api: "/api/brain",
-      onFinish: (msg: any) => {
-        // console.log(msg);
-        requestTtsAudio(msg);
-      },
-      onError: (err: any) => {
-        console.log(err);
-      },
-      initialChatMessages: [
-        {
-          role: "system",
-          content: systemContent,
-        } as Message,
-        {
-          role: "assistant",
-          content: "Hello! My name is Emily. How can I help you today?",
-        } as Message,
-      ],
-    }),
+  const onFinish = useCallback(
+    (msg: any) => {
+      requestTtsAudio(msg);
+    },
     [requestTtsAudio]
   );
 
@@ -187,15 +155,33 @@ export default function Conversation(): JSX.Element {
     handleInputChange,
     input,
     handleSubmit,
-  } = useChat(useChatOptions);
-
-  useEffect(() => {
-    console.log(chatMessages[chatMessages.length - 1]);
-  }, [chatMessages]);
+  } = useChat({
+    api: "/api/brain",
+    initialMessages: [
+      {
+        role: "system",
+        content: systemContent,
+      } as Message,
+      {
+        id: "welcome",
+        role: "assistant",
+        content: "Hello! My name is Emily. How can I help you today?",
+      } as Message,
+    ],
+    onFinish,
+  });
 
   const startConversation = useCallback(() => {
-    setInitialLoad(!initialLoad);
-  }, [initialLoad]);
+    setInitialLoad(false);
+
+    // get welcome audio
+    // addSpeechBlob({
+    //   id,
+    //   blob: await res.blob(),
+    //   latency: (Date.now() - start) / 1000,
+    //   played: false,
+    // });
+  }, []);
 
   /**
    * Reactive effects
@@ -255,7 +241,7 @@ export default function Conversation(): JSX.Element {
         connection.on(
           LiveTranscriptionEvents.Transcript,
           (data: LiveTranscriptionEvent) => {
-            console.log(data);
+            // console.log(data);
             let content = utteranceText(data);
 
             if (content) {
@@ -337,7 +323,7 @@ export default function Conversation(): JSX.Element {
         if (isListening) {
           const nextBlob = firstMicrophoneBlob;
           if (nextBlob) {
-            console.log(nextBlob);
+            // console.log(nextBlob);
             connection?.send(nextBlob);
           }
 
@@ -365,34 +351,34 @@ export default function Conversation(): JSX.Element {
   /**
    * magic tts audio queue processing
    */
-  // useEffect(() => {
-  //   const processQueue = async () => {
-  //     if (countSpeechBlobs > 0 /*&& !playback*/) {
-  //       // setPlayback(true);
+  useEffect(() => {
+    const processQueue = async () => {
+      if (countSpeechBlobs > 0 /*&& !playback*/) {
+        // setPlayback(true);
 
-  //       if (firstSpeechBlob) {
-  //         const url = window.URL.createObjectURL(firstSpeechBlob);
-  //         const tmp = new Audio(url);
-  //         tmp.play();
-  //       }
+        if (firstSpeechBlob) {
+          const url = window.URL.createObjectURL(firstSpeechBlob.blob);
+          const tmp = new Audio(url);
+          tmp.play();
+        }
 
-  //       // removeSpeechBlob(); // probably won't remove from queue because we want to enable further playback
+        // removeSpeechBlob(); // probably won't remove from queue because we want to enable further playback
 
-  //       // const waiting = setTimeout(() => {
-  //       //   clearTimeout(waiting);
-  //       //   setPlayback(false);
-  //       // }, 250);
-  //     }
-  //   };
+        // const waiting = setTimeout(() => {
+        //   clearTimeout(waiting);
+        //   setPlayback(false);
+        // }, 250);
+      }
+    };
 
-  //   processQueue();
-  // }, [
-  //   speechBlobs,
-  //   removeSpeechBlob,
-  //   firstSpeechBlob,
-  //   countSpeechBlobs,
-  //   // setPlayback,
-  // ]);
+    processQueue();
+  }, [
+    speechBlobs,
+    removeSpeechBlob,
+    firstSpeechBlob,
+    countSpeechBlobs,
+    // setPlayback,
+  ]);
 
   /**
    * keep alive when mic closed
@@ -403,10 +389,10 @@ export default function Conversation(): JSX.Element {
       keepAlive = setInterval(() => {
         // should stop spamming dev console when working on frontend in devmode
         if (connection?.getReadyState() !== LiveConnectionState.OPEN) {
-          console.log("connection closed, stopping keep alive");
+          // console.log("connection closed, stopping keep alive");
           clearInterval(keepAlive);
         } else {
-          console.log("keep alive");
+          // console.log("keep alive");
           connection.keepAlive();
         }
       }, 10000);
