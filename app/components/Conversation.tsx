@@ -43,7 +43,6 @@ export default function Conversation(): JSX.Element {
     size: countSpeechBlobs,
     queue: speechBlobs,
   } = useQueue<TtsResponse>([]);
-  // } = useQueue<Blob>([]);
 
   const {
     add: addTranscriptPart,
@@ -76,28 +75,28 @@ export default function Conversation(): JSX.Element {
    * Contextual functions
    */
   const requestTtsAudio = useCallback(
-    async ({ id, content: text }: Message) => {
+    async (message: Message) => {
       const start = Date.now();
 
-      fetch("/api/speak", {
+      const res = await fetch("/api/speak", {
         cache: "no-store",
         method: "POST",
-        body: JSON.stringify({
-          text,
-        }),
-      }).then(async (res) => {
-        addSpeechBlob({
-          id,
-          blob: await res.blob(),
-          latency: (Date.now() - start) / 1000,
-          played: false,
-        });
+        body: JSON.stringify(message),
+      });
+
+      addSpeechBlob({
+        id: message.id,
+        blob: await res.blob(),
+        latency: (Date.now() - start) / 1000,
+        played: false,
       });
     },
     [addSpeechBlob]
   );
 
-  useEffect(() => {}, [speechBlobs]);
+  useEffect(() => {
+    console.log(speechBlobs);
+  }, [speechBlobs]);
 
   const toggleMicrophone = useCallback(async () => {
     if (userMedia) {
@@ -361,8 +360,6 @@ export default function Conversation(): JSX.Element {
           const tmp = new Audio(url);
           tmp.play();
         }
-
-        // removeSpeechBlob(); // probably won't remove from queue because we want to enable further playback
 
         // const waiting = setTimeout(() => {
         //   clearTimeout(waiting);

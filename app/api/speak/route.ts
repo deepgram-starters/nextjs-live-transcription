@@ -38,24 +38,24 @@ function streamFile(
  * @param {NextRequest} req - The HTTP request
  * @returns {Promise<NextResponse>} A NextResponse with the downloadable file
  */
-export async function GET(req: NextRequest): Promise<NextResponse> {
-  // const uri = req.nextUrl.searchParams.get("uri");
-  const file = path.join(__dirname, "alpha-athena-en_hello-my-name-is.mp3");
+// export async function GET(req: NextRequest): Promise<NextResponse> {
+//   // const uri = req.nextUrl.searchParams.get("uri");
+//   const file = path.join(__dirname, "alpha-athena-en_hello-my-name-is.mp3");
 
-  const stats: Stats = await fs.promises.stat(file);
-  const data: ReadableStream<Uint8Array> = streamFile(file);
-  const res = new NextResponse(data, {
-    status: 200,
-    headers: new Headers({
-      //Headers
-      "content-disposition": `attachment; filename=${path.basename(file)}`,
-      "content-type": "audio/mp3",
-      "content-length": stats.size + "",
-    }),
-  });
+//   const stats: Stats = await fs.promises.stat(file);
+//   const data: ReadableStream<Uint8Array> = streamFile(file);
+//   const res = new NextResponse(data, {
+//     status: 200,
+//     headers: new Headers({
+//       //Headers
+//       "content-disposition": `attachment; filename=${path.basename(file)}`,
+//       "content-type": "audio/mp3",
+//       "content-length": stats.size + "",
+//     }),
+//   });
 
-  return res;
-}
+//   return res;
+// }
 
 /**
  * Return a stream from the API
@@ -66,6 +66,8 @@ export async function POST(req: NextRequest) {
   // gotta use the request object to invalidate the cache every request :vomit:
   const url = req.url;
   const message: Message = await req.json();
+
+  console.log(message);
 
   return await fetch(
     `${process.env.DEEPGRAM_STT_DOMAIN}/v1/speak?model=alpha-athena-en`,
