@@ -19,12 +19,27 @@ import { useChat } from "ai/react";
 import { useQueue } from "@uidotdev/usehooks";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { utteranceText } from "../lib/helpers";
+import { useNowPlaying } from "../context/NowPlaying";
+import { usePlayQueue } from "../context/PlayQueue";
 
 /**
  * Conversation element that contains the conversational AI app.
  * @returns {JSX.Element}
  */
 export default function Conversation(): JSX.Element {
+  /**
+   * Custom context providers
+   */
+  const {
+    playQueue,
+    // setPlayQueue,
+    // clearQueue,
+    enqueueItem,
+    updateItem,
+  } = usePlayQueue();
+
+  const { nowPlaying, setNowPlaying, clearNowPlaying } = useNowPlaying();
+
   /**
    * Queues
    */
@@ -35,14 +50,6 @@ export default function Conversation(): JSX.Element {
     size: countMicrophoneBlobs,
     queue: microphoneBlobs,
   } = useQueue<Blob>([]);
-
-  const {
-    add: addSpeechBlob,
-    remove: removeSpeechBlob,
-    last: lastSpeechBlob,
-    size: countSpeechBlobs,
-    queue: speechBlobs,
-  } = useQueue<SpeechBlob>([]);
 
   const {
     add: addTranscriptPart,
@@ -86,7 +93,7 @@ export default function Conversation(): JSX.Element {
 
       const headers = res.headers;
 
-      addSpeechBlob({
+      enqueueItem({
         id: message.id,
         blob: await res.blob(),
         latency:
@@ -94,7 +101,7 @@ export default function Conversation(): JSX.Element {
         played: false,
       });
     },
-    [addSpeechBlob]
+    [enqueueItem]
   );
 
   const toggleMicrophone = useCallback(async () => {
@@ -179,13 +186,13 @@ export default function Conversation(): JSX.Element {
       "/api/speak?uri=alpha-athena-en_hello-my-name-is.mp3"
     );
 
-    addSpeechBlob({
+    enqueueItem({
       id: "welcome",
       blob: await res.blob(),
       latency: (Date.now() - start) / 1000,
       played: false,
     });
-  }, [addSpeechBlob]);
+  }, [enqueueItem]);
 
   const startConversation = useCallback(() => {
     setInitialLoad(false);
@@ -264,31 +271,6 @@ export default function Conversation(): JSX.Element {
                 text: content,
               });
             }
-
-            // if (content) {
-            //   utterance.current = {
-            //     role: "user",
-            //     content,
-            //   };
-
-            //   if (data.is_final) {
-            //     const existingContent = utterance.current.content;
-            //     content = [existingContent, content].filter(Boolean).join("\n");
-
-            //     utterance.current = {
-            //       role: "user",
-            //       content,
-            //     };
-
-            //     if (data.speech_final) {
-            //       append({
-            //         role: "user",
-            //         content,
-            //       });
-            //       utterance.current = blankUserMessage;
-            //     }
-            //   }
-            // }
           }
         );
       });
@@ -357,52 +339,24 @@ export default function Conversation(): JSX.Element {
     isListening,
   ]);
 
-  const [nowPlaying, setNowPlaying] = useState("");
-
   // monitoring speech queue for now
   useEffect(() => {
-    console.log(speechBlobs);
-  }, [speechBlobs]);
+    console.log(playQueue);
+  }, [playQueue]);
 
   /**
-   * Update an item in the speech queue
-   */
-  const updateSpeechBlob = useCallback(
-    (id: string, values: Partial<SpeechBlob>) => {
-      const index = speechBlobs.findIndex((speechBlob) => id === speechBlob.id);
-
-      speechBlobs[index] = { ...speechBlobs[index], ...values };
-    },
-    [speechBlobs]
-  );
-
-  /**
-   * magic tts audio queue processing
+   * magic tts audio queue processing mk2
    */
   useEffect(() => {
-    const processQueue = async () => {
-      if (countSpeechBlobs > 0 /*&& !nowPlaying*/) {
-        const blob = lastSpeechBlob;
-
-        if (blob && !blob?.played && nowPlaying === "") {
-          setNowPlaying(blob.id);
-
-          const url = window.URL.createObjectURL(lastSpeechBlob.blob);
-          const player = new Audio(url);
-          player.addEventListener("canplay", () => {
-            player.play();
-          });
-
-          player.addEventListener("ended", () => {
-            setNowPlaying("");
-            updateSpeechBlob(blob.id, { played: true });
-          });
-        }
+    if (playQueue.length > 0) {
+      console.log(nowPlaying);
+      const playableItems = playQueue.filter((item) => !item.played);
+      const nextPlayableItem = playableItems[playableItems.length - 1];
+      if (nextPlayableItem && !nowPlaying) {
+        setNowPlaying(nextPlayableItem);
       }
-    };
-
-    processQueue();
-  }, [nowPlaying, lastSpeechBlob, countSpeechBlobs, updateSpeechBlob]);
+    }
+  }, [playQueue, updateItem, nowPlaying, setNowPlaying, clearNowPlaying]);
 
   /**
    * keep alive when mic closed

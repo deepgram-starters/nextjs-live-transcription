@@ -8,6 +8,20 @@ export interface Metadata {
   data?: JSONValue;
 }
 
+export interface NowPlaying {
+  id: string;
+  blob: Blob;
+  latency: number;
+  played: boolean;
+}
+
+export interface PlayQueueItem {
+  id: string;
+  blob: Blob;
+  latency: number;
+  played: boolean;
+}
+
 export interface SpeechBlob {
   id: string;
   blob: Blob;

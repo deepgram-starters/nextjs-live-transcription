@@ -5,6 +5,9 @@ import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 
 import "./globals.css";
+import { ErrorContextProvider } from "./context/Error";
+import { NowPlayingContextProvider } from "./context/NowPlaying";
+import { PlayQueueContextProvider } from "./context/PlayQueue";
 
 const inter = Inter({ subsets: ["latin"] });
 const favorit = localFont({
@@ -30,7 +33,11 @@ export default function RootLayout({
       <body
         className={`h-full ${classNames(favorit.variable, inter.className)}`}
       >
-        {children}
+        <ErrorContextProvider>
+          <PlayQueueContextProvider>
+            <NowPlayingContextProvider>{children}</NowPlayingContextProvider>
+          </PlayQueueContextProvider>
+        </ErrorContextProvider>
       </body>
     </html>
   );
