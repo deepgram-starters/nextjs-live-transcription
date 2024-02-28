@@ -84,10 +84,13 @@ export default function Conversation(): JSX.Element {
         body: JSON.stringify(message),
       });
 
+      const headers = res.headers;
+
       addSpeechBlob({
         id: message.id,
         blob: await res.blob(),
-        latency: (Date.now() - start) / 1000,
+        latency:
+          Number(headers.get("X-DG-Latency")) ?? (Date.now() - start) / 1000,
         played: false,
       });
     },

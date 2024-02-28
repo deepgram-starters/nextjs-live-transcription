@@ -1,9 +1,5 @@
 import { Message } from "ai";
-
-import fs, { Stats } from "fs";
 import { NextRequest, NextResponse } from "next/server";
-import path from "path";
-import { ReadableOptions } from "stream";
 
 /**
  * Return a stream from the API
@@ -12,16 +8,20 @@ import { ReadableOptions } from "stream";
  */
 export async function GET(req: NextRequest) {
   const uri = req.nextUrl.searchParams.get("uri");
+  const start = Date.now();
 
   return await fetch(`${req.nextUrl.origin}/${uri}`)
     .then(async (response) => {
+      const headers = new Headers();
+      headers.set("X-DG-Latency", `${(Date.now() - start) / 1000}`);
+
       if (!response?.body) {
         return new NextResponse("Unable to get response from API.", {
           status: 500,
         });
       }
 
-      return new NextResponse(response.body);
+      return new NextResponse(response.body, { headers });
     })
     .catch((error: any) => {
       return new NextResponse(error || error?.message, { status: 500 });
@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
   // gotta use the request object to invalidate the cache every request :vomit:
   const url = req.url;
   const message: Message = await req.json();
+  const start = Date.now();
 
   return await fetch(
     `${process.env.DEEPGRAM_STT_DOMAIN}/v1/speak?model=alpha-athena-en`,
@@ -51,13 +52,16 @@ export async function POST(req: NextRequest) {
     }
   )
     .then(async (response) => {
+      const headers = new Headers();
+      headers.set("X-DG-Latency", `${(Date.now() - start) / 1000}`);
+
       if (!response?.body) {
         return new NextResponse("Unable to get response from API.", {
           status: 500,
         });
       }
 
-      return new NextResponse(response.body);
+      return new NextResponse(response.body, { headers });
     })
     .catch((error: any) => {
       return new NextResponse(error || error?.message, { status: 500 });
