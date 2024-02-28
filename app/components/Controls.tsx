@@ -27,7 +27,7 @@ export const Controls = ({
   return (
     <form onSubmit={handleSubmit}>
       <div className="flex bg-[#101014] sm:rounded-full">
-        <span className="flex-grow sm:flex-grow-0 sm:rounded-s-full bg-gradient-to-r from-[#a035f5] to-[#503bff] sm:ps-0.5 py-0.5 ">
+        <span className="flex-grow sm:flex-grow-0 sm:rounded-s-full bg-gradient-to-r bg-gradient to-[#13EF93]/50 from-[#149AFB]/80 sm:ps-0.5 py-0.5 ">
           <a
             href="#"
             onClick={(e: any) => microphoneToggle(e)}
@@ -44,7 +44,7 @@ export const Controls = ({
           </a>
         </span>
 
-        <span className="sm:flex-grow bg-[#503bff] py-0.5">
+        <span className="sm:flex-grow bg-[#13EF93]/50 py-0.5">
           <input
             type="text"
             className="p-4 w-full h-full bg-[#101014] text-light-900 border-0 text-sm sm:text-base outline-none focus:ring-0"
@@ -54,7 +54,7 @@ export const Controls = ({
           />
         </span>
 
-        <span className="sm:rounded-e-full bg-gradient-to-l from-[#a035f5] to-[#503bff] sm:pe-0.5 py-0.5 ">
+        <span className="sm:rounded-e-full bg-gradient-to-l to-[#13EF93]/50 from-[#149AFB]/80 sm:pe-0.5 py-0.5 ">
           <button className="py-4 px-2 sm:px-8 sm:rounded-e-full font-bold bg-[#101014] hover:bg-transparent text-light-900 text-sm sm:text-base flex items-center">
             <span>Send text</span>
             <SendIcon />

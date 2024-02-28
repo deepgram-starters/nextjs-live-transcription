@@ -17,16 +17,10 @@ const MessageAudio = ({
 
   if (!found && !playing) {
     return (
-      <Tooltip
-        content="Loading audio..."
-        className={`bg-black ${className}`}
-        {...rest}
-      >
-        <Spinner
-          aria-label="Loading audio..."
-          className="text-[#1E1E23]/50 fill-white hover:fill-[#7800ED]"
-        />
-      </Tooltip>
+      <Spinner
+        aria-label="Loading audio..."
+        className="text-[#1E1E23]/50 fill-white hover:fill-[#149AFB]"
+      />
     );
   }
 
@@ -35,7 +29,7 @@ const MessageAudio = ({
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
-        className={`w-6 h-6 fill-white hover:fill-[#7800ED] ${className}`}
+        className={`w-6 h-6 fill-white hover:fill-[#149AFB] ${className}`}
         {...rest}
       >
         <path
@@ -51,7 +45,7 @@ const MessageAudio = ({
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
-      className={`w-6 h-6 fill-white hover:fill-[#7800ED] ${className}`}
+      className={`w-6 h-6 fill-white hover:fill-[#149AFB] ${className}`}
       {...rest}
     >
       <path

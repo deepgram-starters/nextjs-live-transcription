@@ -10,7 +10,7 @@ export const LeftBubble = ({ text, id }: { text: string; id: string }) => {
     <>
       <div className="col-start-1 col-end-13 sm:col-end-11 md:col-end-9 lg:col-end-8 xl:col-end-7 p-3">
         <div className="flex items-start gap-2.5">
-          <div className="h-8 w-8 p-1 bg-gradient-to-br from-[#7800ED]/70 via-[#7800ED]/50 to-black/50 text-white rounded-full">
+          <div className="h-8 w-8 p-1 text-white shrink-0">
             <DgSvg />
           </div>
           <div className="flex  p-4 rounded-e-xl rounded-es-xl bg-[#1E1E23]/50">
@@ -29,7 +29,9 @@ export const LeftBubble = ({ text, id }: { text: string; id: string }) => {
               </div>
             </div>
           </div>
-          <MessageAudio id={id} className="self-center ml-2" />
+          <div className="h-6 w-6 shrink-0 self-center">
+            <MessageAudio id={id} />
+          </div>
         </div>
       </div>
     </>

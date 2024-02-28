@@ -19,7 +19,7 @@ export default async function Home() {
                 height={0}
                 priority
               />
-              <h1 className="ml-2 font-favorit text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#EE028B] to-[#AE29FF]">
+              <h1 className="ml-2 -mb-px font-favorit text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r to-[#13EF93]/80 from-[#149AFB]/80 ">
                 EmilyAI
               </h1>
             </a>
