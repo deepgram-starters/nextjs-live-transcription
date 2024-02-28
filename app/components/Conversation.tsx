@@ -11,10 +11,10 @@ import {
 import { ChatBubble } from "./ChatBubble";
 import { Controls } from "./Controls";
 import { InitialLoad } from "./InitialLoad";
-import { Message } from "ai";
+import { CreateMessage, Message } from "ai";
 import { RightBubble } from "./RightBubble";
 import { systemContent } from "../lib/constants";
-import { TtsResponse } from "../lib/types";
+import { SpeechBlob } from "../lib/types";
 import { useChat } from "ai/react";
 import { useQueue } from "@uidotdev/usehooks";
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -39,10 +39,10 @@ export default function Conversation(): JSX.Element {
   const {
     add: addSpeechBlob,
     remove: removeSpeechBlob,
-    first: firstSpeechBlob,
+    last: lastSpeechBlob,
     size: countSpeechBlobs,
     queue: speechBlobs,
-  } = useQueue<TtsResponse>([]);
+  } = useQueue<SpeechBlob>([]);
 
   const {
     add: addTranscriptPart,
@@ -93,10 +93,6 @@ export default function Conversation(): JSX.Element {
     },
     [addSpeechBlob]
   );
-
-  useEffect(() => {
-    console.log(speechBlobs);
-  }, [speechBlobs]);
 
   const toggleMicrophone = useCallback(async () => {
     if (userMedia) {
@@ -170,17 +166,30 @@ export default function Conversation(): JSX.Element {
     onFinish,
   });
 
+  /**
+   * Contextual functions
+   */
+  const requestWelcomeAudio = useCallback(async () => {
+    const start = Date.now();
+
+    const res = await fetch(
+      "/api/speak?uri=alpha-athena-en_hello-my-name-is.mp3"
+    );
+
+    addSpeechBlob({
+      id: "welcome",
+      blob: await res.blob(),
+      latency: (Date.now() - start) / 1000,
+      played: false,
+    });
+  }, [addSpeechBlob]);
+
   const startConversation = useCallback(() => {
     setInitialLoad(false);
 
     // get welcome audio
-    // addSpeechBlob({
-    //   id,
-    //   blob: await res.blob(),
-    //   latency: (Date.now() - start) / 1000,
-    //   played: false,
-    // });
-  }, []);
+    requestWelcomeAudio();
+  }, [requestWelcomeAudio]);
 
   /**
    * Reactive effects
@@ -240,7 +249,6 @@ export default function Conversation(): JSX.Element {
         connection.on(
           LiveTranscriptionEvents.Transcript,
           (data: LiveTranscriptionEvent) => {
-            // console.log(data);
             let content = utteranceText(data);
 
             if (content) {
@@ -322,7 +330,6 @@ export default function Conversation(): JSX.Element {
         if (isListening) {
           const nextBlob = firstMicrophoneBlob;
           if (nextBlob) {
-            // console.log(nextBlob);
             connection?.send(nextBlob);
           }
 
@@ -347,35 +354,52 @@ export default function Conversation(): JSX.Element {
     isListening,
   ]);
 
+  const [nowPlaying, setNowPlaying] = useState("");
+
+  // monitoring speech queue for now
+  useEffect(() => {
+    console.log(speechBlobs);
+  }, [speechBlobs]);
+
+  /**
+   * Update an item in the speech queue
+   */
+  const updateSpeechBlob = useCallback(
+    (id: string, values: Partial<SpeechBlob>) => {
+      const index = speechBlobs.findIndex((speechBlob) => id === speechBlob.id);
+
+      speechBlobs[index] = { ...speechBlobs[index], ...values };
+    },
+    [speechBlobs]
+  );
+
   /**
    * magic tts audio queue processing
    */
   useEffect(() => {
     const processQueue = async () => {
-      if (countSpeechBlobs > 0 /*&& !playback*/) {
-        // setPlayback(true);
+      if (countSpeechBlobs > 0 /*&& !nowPlaying*/) {
+        const blob = lastSpeechBlob;
 
-        if (firstSpeechBlob) {
-          const url = window.URL.createObjectURL(firstSpeechBlob.blob);
-          const tmp = new Audio(url);
-          tmp.play();
+        if (blob && !blob?.played && nowPlaying === "") {
+          setNowPlaying(blob.id);
+
+          const url = window.URL.createObjectURL(lastSpeechBlob.blob);
+          const player = new Audio(url);
+          player.addEventListener("canplay", () => {
+            player.play();
+          });
+
+          player.addEventListener("ended", () => {
+            setNowPlaying("");
+            updateSpeechBlob(blob.id, { played: true });
+          });
         }
-
-        // const waiting = setTimeout(() => {
-        //   clearTimeout(waiting);
-        //   setPlayback(false);
-        // }, 250);
       }
     };
 
     processQueue();
-  }, [
-    speechBlobs,
-    removeSpeechBlob,
-    firstSpeechBlob,
-    countSpeechBlobs,
-    // setPlayback,
-  ]);
+  }, [nowPlaying, lastSpeechBlob, countSpeechBlobs, updateSpeechBlob]);
 
   /**
    * keep alive when mic closed
@@ -386,10 +410,8 @@ export default function Conversation(): JSX.Element {
       keepAlive = setInterval(() => {
         // should stop spamming dev console when working on frontend in devmode
         if (connection?.getReadyState() !== LiveConnectionState.OPEN) {
-          // console.log("connection closed, stopping keep alive");
           clearInterval(keepAlive);
         } else {
-          // console.log("keep alive");
           connection.keepAlive();
         }
       }, 10000);

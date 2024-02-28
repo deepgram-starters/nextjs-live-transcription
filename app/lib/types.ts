@@ -8,7 +8,7 @@ export interface Metadata {
   data?: JSONValue;
 }
 
-export interface TtsResponse {
+export interface SpeechBlob {
   id: string;
   blob: Blob;
   latency: number;
