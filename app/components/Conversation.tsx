@@ -467,7 +467,6 @@ export default function Conversation(): JSX.Element {
                     <InitialLoad fn={startConversation} />
                   ) : (
                     <>
-                      {chatMessages.length}
                       {chatMessages.length > 0 &&
                         chatMessages.map((message, i) => (
                           <ChatBubble message={message} key={i} />
