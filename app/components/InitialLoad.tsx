@@ -1,5 +1,6 @@
-import { isBrowser } from "react-device-detect";
+import { isBrowser, isIOS } from "react-device-detect";
 import { Headphones } from "./Headphones";
+import { Exclamation } from "./Exclamation";
 
 export const InitialLoad = ({ fn }: { fn: () => void }) => {
   return (
@@ -30,6 +31,12 @@ export const InitialLoad = ({ fn }: { fn: () => void }) => {
             <Headphones /> For optimal enjoyment, we recommend using headphones
             while using this application.
           </span>
+          {isIOS && (
+            <span className="mt-4 block text-sm text-[#ffb02e]">
+              <Exclamation /> Text-to-speech audio playback is currently
+              disabled on iOS mobile devices.
+            </span>
+          )}
           <span className="mt-6 block text-sm font-semibold">
             <span className="bg-white text-black rounded m-px px-4 py-2 font-semibold">
               {isBrowser ? "Click" : "Tap"} here to start
