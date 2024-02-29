@@ -105,6 +105,10 @@ export default function Conversation(): JSX.Element {
 
   const toggleMicrophone = useCallback(async () => {
     if (userMedia) {
+      if (connection) {
+        connection.keepAlive();
+      }
+
       userMedia.getAudioTracks().every((track) => {
         track.stop();
       });
@@ -126,7 +130,7 @@ export default function Conversation(): JSX.Element {
 
       setUserMedia(userMedia);
     }
-  }, [userMedia, addMicrophoneBlob]);
+  }, [userMedia, connection, addMicrophoneBlob]);
 
   const onFinish = useCallback(
     (msg: any) => {
