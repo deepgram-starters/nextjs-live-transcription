@@ -1,6 +1,8 @@
 import { usePlayQueue } from "../context/PlayQueue";
 import { useNowPlaying } from "../context/NowPlaying";
 import { Message } from "ai/react";
+import { Spinner } from "flowbite-react";
+import { useState } from "react";
 
 const MessageAudio = ({
   message,
@@ -12,16 +14,67 @@ const MessageAudio = ({
 }) => {
   const { playQueue } = usePlayQueue();
   const { nowPlaying, setNowPlaying, player } = useNowPlaying();
+  const [paused, setPaused] = useState(false);
 
   const found = playQueue.findLast((item) => item.id === message.id);
 
+  const pause = () => {
+    setPaused(true);
+    player?.current?.pause();
+  };
+
+  const play = () => {
+    if (nowPlaying?.id === message?.id) {
+      setPaused(false);
+      player?.current?.play();
+    } else {
+      setNowPlaying(found);
+    }
+  };
+
+  /**
+   * Spinner if still waiting for a response
+   */
   if (!found) {
-    return;
+    return <Spinner />;
   }
 
-  if (nowPlaying?.id !== message?.id) {
+  /**
+   * Pause button
+   *
+   * nowPlaying === this message
+   * AND
+   * paused === false
+   */
+  if (nowPlaying?.id === message?.id && !paused) {
     return (
-      <a href="#" onClick={() => setNowPlaying(found)}>
+      <a href="#" onClick={() => pause()}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          className={`w-6 h-6 fill-white hover:fill-[#149AFB] ${className}`}
+          {...rest}
+        >
+          <path
+            fillRule="evenodd"
+            d="M6.75 5.25a.75.75 0 0 1 .75-.75H9a.75.75 0 0 1 .75.75v13.5a.75.75 0 0 1-.75.75H7.5a.75.75 0 0 1-.75-.75V5.25Zm7.5 0A.75.75 0 0 1 15 4.5h1.5a.75.75 0 0 1 .75.75v13.5a.75.75 0 0 1-.75.75H15a.75.75 0 0 1-.75-.75V5.25Z"
+            clipRule="evenodd"
+          />
+        </svg>
+      </a>
+    );
+  }
+
+  /**
+   * Play button
+   *
+   * nowPlaying !== this message
+   * OR
+   * paused === true
+   */
+  if (nowPlaying?.id !== message?.id || paused) {
+    return (
+      <a href="#" onClick={() => play()}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
@@ -39,23 +92,6 @@ const MessageAudio = ({
   }
 
   return <></>;
-
-  // return (
-  //   <a href="#" onClick={pause}>
-  //     <svg
-  //       xmlns="http://www.w3.org/2000/svg"
-  //       viewBox="0 0 24 24"
-  //       className={`w-6 h-6 fill-white hover:fill-[#149AFB] ${className}`}
-  //       {...rest}
-  //     >
-  //       <path
-  //         fillRule="evenodd"
-  //         d="M6.75 5.25a.75.75 0 0 1 .75-.75H9a.75.75 0 0 1 .75.75v13.5a.75.75 0 0 1-.75.75H7.5a.75.75 0 0 1-.75-.75V5.25Zm7.5 0A.75.75 0 0 1 15 4.5h1.5a.75.75 0 0 1 .75.75v13.5a.75.75 0 0 1-.75.75H15a.75.75 0 0 1-.75-.75V5.25Z"
-  //         clipRule="evenodd"
-  //       />
-  //     </svg>
-  //   </a>
-  // );
 };
 
 export { MessageAudio };

@@ -36,9 +36,9 @@ export const LeftBubble = ({
               </div>
             </div>
           </div>
-          {/* <div className="h-6 w-6 shrink-0 self-center">
+          <div className="h-6 w-6 shrink-0 self-center">
             <MessageAudio message={message} />
-          </div> */}
+          </div>
         </div>
       </div>
     </>
