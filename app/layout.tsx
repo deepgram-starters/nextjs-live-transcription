@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { GoogleTagManager } from "@next/third-parties/google";
 
 import classNames from "classnames";
 import { Inter } from "next/font/google";
@@ -39,6 +40,7 @@ export default function RootLayout({
           </PlayQueueContextProvider>
         </ErrorContextProvider>
       </body>
+      <GoogleTagManager gtmId="GTM-5R73N627" />
     </html>
   );
 }
