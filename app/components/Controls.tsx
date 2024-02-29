@@ -2,6 +2,8 @@ import { useCallback } from "react";
 import { isTablet, isMobile } from "react-device-detect";
 import { MicrophoneIcon } from "./icons/MicrophoneIcon";
 import { SendIcon } from "./icons/SendIcon";
+import { useNowPlaying } from "../context/NowPlaying";
+import { usePlayQueue } from "../context/PlayQueue";
 
 export const Controls = ({
   micToggle,
@@ -24,8 +26,23 @@ export const Controls = ({
     [micToggle]
   );
 
+  const { updateItem } = usePlayQueue();
+  const { nowPlaying, clearNowPlaying, player } = useNowPlaying();
+
+  const submitter = useCallback(
+    (e: any) => {
+      if (nowPlaying) {
+        player?.current?.pause();
+        clearNowPlaying();
+        updateItem(nowPlaying.id, { played: true });
+      }
+      handleSubmit(e);
+    },
+    [clearNowPlaying, handleSubmit, nowPlaying, player, updateItem]
+  );
+
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={submitter}>
       <div className="flex bg-[#101014] sm:rounded-full">
         <span className="flex-grow sm:flex-grow-0 sm:rounded-s-full bg-gradient-to-r bg-gradient to-[#13EF93]/50 from-[#149AFB]/80 sm:ps-0.5 py-0.5 ">
           <a

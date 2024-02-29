@@ -35,6 +35,7 @@ export default function Conversation(): JSX.Element {
     // setPlayQueue,
     // clearQueue,
     enqueueItem,
+    updateItem,
   } = usePlayQueue();
 
   const { nowPlaying, setNowPlaying } = useNowPlaying();
@@ -204,6 +205,8 @@ export default function Conversation(): JSX.Element {
     }
   }, [apiKey]);
 
+  const { player, clearNowPlaying } = useNowPlaying();
+
   useEffect(() => {
     if (apiKey?.key) {
       const deepgram = createClient(apiKey?.key ?? "");
@@ -213,6 +216,8 @@ export default function Conversation(): JSX.Element {
         smart_format: true,
         endpointing: 250,
         utterance_end_ms: 5000,
+        vad_events: true,
+        filler_words: true,
       });
 
       /**
@@ -244,7 +249,6 @@ export default function Conversation(): JSX.Element {
           LiveTranscriptionEvents.Transcript,
           (data: LiveTranscriptionEvent) => {
             let content = utteranceText(data);
-
             if (content) {
               /**
                * use an outbound message queue to build up the unsent utterance
@@ -289,6 +293,19 @@ export default function Conversation(): JSX.Element {
   }, [getCurrentUtterance, clearTranscriptParts, append]);
 
   /**
+   * barge-in
+   */
+  useEffect(() => {
+    if (!currentUtterance || currentUtterance === "") return;
+
+    if (nowPlaying) {
+      player?.current?.pause();
+      clearNowPlaying();
+      updateItem(nowPlaying.id, { played: true });
+    }
+  }, [currentUtterance, clearNowPlaying, nowPlaying, player, updateItem]);
+
+  /**
    * magic microphone audio queue processing
    */
   useEffect(() => {
@@ -324,16 +341,15 @@ export default function Conversation(): JSX.Element {
   ]);
 
   // monitoring speech queue for now
-  useEffect(() => {
-    console.log(playQueue);
-  }, [playQueue]);
+  // useEffect(() => {
+  //   console.log(playQueue);
+  // }, [playQueue]);
 
   /**
    * magic tts audio queue processing mk2
    */
   useEffect(() => {
     if (playQueue.length > 0) {
-      console.log(nowPlaying);
       const playableItems = playQueue.filter((item) => !item.played);
       const nextPlayableItem = playableItems[playableItems.length - 1];
       if (nextPlayableItem && !nowPlaying) {

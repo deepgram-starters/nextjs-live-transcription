@@ -7,7 +7,7 @@ export const InitialLoad = ({ fn }: { fn: () => void }) => {
         <button
           onClick={() => fn()}
           type="button"
-          className="relative block w-full glass p-12 "
+          className="relative block w-full glass p-12 rounded-xl"
         >
           <span className="inline-block h-8 w-8 flex-shrink-0 ml-4">
             <svg

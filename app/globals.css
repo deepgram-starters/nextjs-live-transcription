@@ -20,14 +20,15 @@ body {
   /* outline: 1px solid red; */
 }
 
-.glass {
-  /* From https://css.glass */
-  background: rgba(150, 140, 140, 0.06);
-  border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  border: 1px solid rgba(150, 140, 140, 0.1);
+@layer utilities {
+  .glass {
+    /* From https://css.glass */
+    @apply bg-[rgba(150,140,140,0.06)];
+    @apply border border-[rgba(150,140,140,0.1)];
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+  }
 }
 
 /* Additional vertical padding used by kbd tag. */
