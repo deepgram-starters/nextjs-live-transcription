@@ -168,7 +168,7 @@ export default function Conversation(): JSX.Element {
     const start = Date.now();
 
     const res = await fetch(
-      "/api/speak?uri=alpha-athena-en_hello-my-name-is.mp3"
+      "/api/speak?uri=aura-athena-en_hello-my-name-is.mp3"
     );
 
     enqueueItem({

@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
   const start = Date.now();
 
   return await fetch(
-    `${process.env.DEEPGRAM_STT_DOMAIN}/v1/speak?model=alpha-athena-en`,
+    `${process.env.DEEPGRAM_STT_DOMAIN}/v1/speak?model=aura-athena-en`,
     {
       method: "POST",
       body: JSON.stringify({ text: message.content }),
