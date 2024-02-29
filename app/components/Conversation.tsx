@@ -116,21 +116,6 @@ export default function Conversation(): JSX.Element {
         },
       });
 
-      const context = new AudioContext();
-      await context.audioWorklet.addModule(`/vad.worklet.js?v=${Date.now()}`);
-
-      const source = context.createMediaStreamSource(userMedia);
-      const workletNode = new AudioWorkletNode(
-        context,
-        "voice-activity-processor"
-      );
-
-      source.connect(workletNode);
-      workletNode.connect(context.destination);
-      workletNode.port.onmessage = (
-        e: MessageEvent<{ voiceActivity: boolean; timestamp: number }>
-      ) => setVoiceActivity(e.data);
-
       const microphone = new MediaRecorder(userMedia);
       microphone.start(1000);
 
