@@ -21,6 +21,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { utteranceText } from "../lib/helpers";
 import { useNowPlaying } from "../context/NowPlaying";
 import { usePlayQueue } from "../context/PlayQueue";
+import { Spinner } from "flowbite-react";
 
 /**
  * Conversation element that contains the conversational AI app.
@@ -401,7 +402,10 @@ export default function Conversation(): JSX.Element {
    */
   if (isLoadingKey) {
     return (
-      <span className="w-full text-center">Loading temporary API key...</span>
+      <div className="w-auto h-full items-center flex justify-center">
+        <Spinner size={"md"} className="-mt-1 mr-2" />
+        Connecting...
+      </div>
     );
   }
 
@@ -409,7 +413,12 @@ export default function Conversation(): JSX.Element {
    * loading message (app)
    */
   if (isLoading) {
-    return <span className="w-full text-center">Loading the app...</span>;
+    return (
+      <div className="w-auto h-full items-center flex justify-center">
+        <Spinner size={"md"} className="-mt-1 mr-2" />
+        Loading...
+      </div>
+    );
   }
 
   return (
