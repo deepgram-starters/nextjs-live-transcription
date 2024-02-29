@@ -26,10 +26,12 @@ export const InitialLoad = ({ fn }: { fn: () => void }) => {
           <h6 className="mt-2 block ">
             Welcome to EmilyAI, the conversational AI powered by Deepgram.
           </h6>
-          <span className="mt-6 block text-sm font-semibold">
-            {isBrowser ? "Click" : "Tap"} here to start
+          <span className="my-6 block text-sm font-semibold">
+            <span className="hidden sm:inline-block bg-white text-black rounded m-px px-4 py-2 font-semibold">
+              {isBrowser ? "Click" : "Tap"} here to start
+            </span>
           </span>
-          <span className="text-xs text-zinc-500">
+          <span className="text-sm text-zinc-500">
             <Headphones /> For optimal enjoyment, we recommend using headphones
             while using this application.
           </span>
