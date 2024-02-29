@@ -29,6 +29,10 @@ body {
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
   }
+
+  .gradient-shadow {
+    box-shadow: -1em 0px 2em 0px #13ef9335, 1em 0px 2em 0px #149afb35;
+  }
 }
 
 /* Additional vertical padding used by kbd tag. */
