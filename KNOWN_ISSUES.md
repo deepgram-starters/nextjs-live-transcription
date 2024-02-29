@@ -6,3 +6,4 @@
 - errorcontextprovider should also handle system messages and warnings (rename to systemmessagecontextprovider?)
 - mobile ux tweaks
 - opengraph and metadata
+- better prompt injection protection against role play
