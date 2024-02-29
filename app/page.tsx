@@ -25,7 +25,7 @@ export default async function Home() {
                 </h1>
               </a>
             </div>
-            <div className="flex items-center gap-4 text-xs">
+            <div className="flex items-center gap-4 text-sm">
               <span className="bg-white rounded">
                 <a
                   href="https://github.com/deepgram-devs/deepgram-conversational-demo"
