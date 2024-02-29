@@ -8,7 +8,7 @@ export const InitialLoad = ({ fn }: { fn: () => void }) => {
         <button
           onClick={() => fn()}
           type="button"
-          className="relative block w-full glass py-12 px-6 rounded-xl"
+          className="relative block w-full glass p-12 rounded-xl"
         >
           <span className="inline-block h-8 w-8 flex-shrink-0 ml-4">
             <svg
@@ -23,17 +23,17 @@ export const InitialLoad = ({ fn }: { fn: () => void }) => {
               />
             </svg>
           </span>
-          <h6 className="mt-2 block ">
+          <h6 className="mt-2 block">
             Welcome to EmilyAI, the conversational AI powered by Deepgram.
           </h6>
-          <span className="my-6 block text-sm font-semibold">
+          <span className="mt-4 block text-sm text-zinc-500">
+            <Headphones /> For optimal enjoyment, we recommend using headphones
+            while using this application.
+          </span>
+          <span className="mt-6 block text-sm font-semibold">
             <span className="hidden sm:inline-block bg-white text-black rounded m-px px-4 py-2 font-semibold">
               {isBrowser ? "Click" : "Tap"} here to start
             </span>
-          </span>
-          <span className="text-sm text-zinc-500">
-            <Headphones /> For optimal enjoyment, we recommend using headphones
-            while using this application.
           </span>
         </button>
       </div>
