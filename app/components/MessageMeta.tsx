@@ -1,7 +1,20 @@
-import { Message } from "ai/react";
+import { Message, useChat } from "ai/react";
+import { usePlayQueue } from "../context/PlayQueue";
 
 const MessageMeta = ({ message }: { message: Message }) => {
-  return <span>3ms</span>;
+  const { playQueue } = usePlayQueue();
+  // const { messages } = useChat({
+  //   id: "aura",
+  // });
+
+  const foundAudio = playQueue.findLast((item) => item.id === message.id);
+
+  if (message.id === "welcome") return;
+
+  if (foundAudio?.latency)
+    return (
+      <span className="text-xs">Latency [TTS] {foundAudio?.latency}ms</span>
+    );
 };
 
 export { MessageMeta };

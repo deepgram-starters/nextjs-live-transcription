@@ -12,6 +12,7 @@ const openai = new OpenAI({
 export async function POST(req: Request) {
   // Extract the `messages` from the body of the request
   const { messages } = await req.json();
+  const start = Date.now();
 
   // Request the OpenAI API for the response based on the prompt
   try {
@@ -24,8 +25,12 @@ export async function POST(req: Request) {
     // Convert the response into a friendly text-stream
     const stream = OpenAIStream(response);
 
+    const headers = new Headers();
+    headers.set("X-LLM-Start", `${start}`);
+    headers.set("X-LLM-Latency", `${Date.now() - start}`);
+
     // Respond with the stream
-    return new StreamingTextResponse(stream);
+    return new StreamingTextResponse(stream, { headers });
   } catch (error) {
     console.error("test", error);
   }

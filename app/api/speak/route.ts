@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   return await fetch(`${req.nextUrl.origin}/${uri}`)
     .then(async (response) => {
       const headers = new Headers();
-      headers.set("X-DG-Latency", `${(Date.now() - start) / 1000}`);
+      headers.set("X-DG-Latency", `${Date.now() - start}`);
 
       if (!response?.body) {
         return new NextResponse("Unable to get response from API.", {
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
   )
     .then(async (response) => {
       const headers = new Headers();
-      headers.set("X-DG-Latency", `${(Date.now() - start) / 1000}`);
+      headers.set("X-DG-Latency", `${Date.now() - start}`);
 
       if (!response?.body) {
         return new NextResponse("Unable to get response from API.", {

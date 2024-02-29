@@ -13,7 +13,7 @@ const MessageAudio = ({
   const { playQueue } = usePlayQueue();
   const { nowPlaying, setNowPlaying, player } = useNowPlaying();
 
-  const found = playQueue.findLast((item) => (item.id = message.id));
+  const found = playQueue.findLast((item) => item.id === message.id);
 
   if (!found) {
     return;

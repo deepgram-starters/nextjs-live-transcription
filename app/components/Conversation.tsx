@@ -95,8 +95,7 @@ export default function Conversation(): JSX.Element {
       enqueueItem({
         id: message.id,
         blob: await res.blob(),
-        latency:
-          Number(headers.get("X-DG-Latency")) ?? (Date.now() - start) / 1000,
+        latency: Number(headers.get("X-DG-Latency")) ?? Date.now() - start,
         played: false,
       });
     },
@@ -160,6 +159,7 @@ export default function Conversation(): JSX.Element {
     input,
     handleSubmit,
   } = useChat({
+    id: "aura",
     api: "/api/brain",
     initialMessages: [
       {
@@ -188,7 +188,7 @@ export default function Conversation(): JSX.Element {
     enqueueItem({
       id: "welcome",
       blob: await res.blob(),
-      latency: (Date.now() - start) / 1000,
+      latency: Date.now() - start,
       played: false,
     });
   }, [enqueueItem]);
