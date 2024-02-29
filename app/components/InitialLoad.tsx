@@ -31,7 +31,7 @@ export const InitialLoad = ({ fn }: { fn: () => void }) => {
             while using this application.
           </span>
           <span className="mt-6 block text-sm font-semibold">
-            <span className="hidden sm:inline-block bg-white text-black rounded m-px px-4 py-2 font-semibold">
+            <span className="bg-white text-black rounded m-px px-4 py-2 font-semibold">
               {isBrowser ? "Click" : "Tap"} here to start
             </span>
           </span>

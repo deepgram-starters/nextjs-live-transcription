@@ -1,0 +1,3 @@
+- toggle microphone off when tab no longer visible https://stackoverflow.com/questions/10338704/javascript-to-detect-if-user-changes-tab
+- iOS autoplay issues
+- echocancellation doesn't always work in Chrome/Chromium browsers. Caused by not using peer-devices. Here is the ticket: https://bugs.chromium.org/p/chromium/issues/detail?id=687574 It basically says that the echo cancellation only works for audio that is coming from a peer connection. As soon as it is processed locally by the Web Audio API it will not be considered anymore by the echo cancellation.
