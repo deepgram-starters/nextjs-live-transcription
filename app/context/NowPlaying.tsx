@@ -2,10 +2,12 @@
 
 import {
   Dispatch,
+  MutableRefObject,
   SetStateAction,
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { NowPlaying } from "../lib/types";
@@ -15,6 +17,7 @@ type NowPlayingContext = {
   nowPlaying: NowPlaying | undefined;
   setNowPlaying: Dispatch<SetStateAction<NowPlaying | undefined>>;
   clearNowPlaying: () => void;
+  player: MutableRefObject<HTMLAudioElement | undefined>;
 };
 
 interface NowPlayingContextInterface {
@@ -27,19 +30,21 @@ const NowPlayingContextProvider = ({
   children,
 }: NowPlayingContextInterface) => {
   const [nowPlaying, setNowPlaying] = useState<NowPlaying>();
+  const player = useRef<HTMLAudioElement | undefined>(
+    typeof Audio !== "undefined" ? new Audio("") : undefined
+  );
   const { updateItem } = usePlayQueue();
 
   useEffect(() => {
-    if (nowPlaying) {
-      const url = window.URL.createObjectURL(nowPlaying.blob);
-      const player = new Audio(url);
-      player.addEventListener("canplay", () => {
-        player.play();
+    if (nowPlaying && player.current) {
+      player.current.src = window.URL.createObjectURL(nowPlaying.blob);
+      player.current.addEventListener("canplaythrough", function () {
+        this.play();
       });
 
-      player.addEventListener("ended", () => {
-        clearNowPlaying();
+      player.current.addEventListener("ended", () => {
         updateItem(nowPlaying.id, { played: true });
+        clearNowPlaying();
       });
     }
   });
@@ -50,7 +55,7 @@ const NowPlayingContextProvider = ({
 
   return (
     <NowPlayingContext.Provider
-      value={{ nowPlaying, setNowPlaying, clearNowPlaying }}
+      value={{ nowPlaying, setNowPlaying, clearNowPlaying, player }}
     >
       {children}
     </NowPlayingContext.Provider>

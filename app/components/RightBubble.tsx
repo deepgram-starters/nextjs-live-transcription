@@ -10,9 +10,6 @@ export const RightBubble = ({ text, id }: { text: string; id?: string }) => {
             <TextContent text={text} />
           </div>
         </div>
-        <small className="block text-zinc-500 pr-3 text-right py-1">
-          <MessageMeta id={id} />
-        </small>
       </div>
     </>
   );

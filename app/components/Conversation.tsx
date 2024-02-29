@@ -35,10 +35,9 @@ export default function Conversation(): JSX.Element {
     // setPlayQueue,
     // clearQueue,
     enqueueItem,
-    updateItem,
   } = usePlayQueue();
 
-  const { nowPlaying, setNowPlaying, clearNowPlaying } = useNowPlaying();
+  const { nowPlaying, setNowPlaying } = useNowPlaying();
 
   /**
    * Queues
@@ -356,7 +355,7 @@ export default function Conversation(): JSX.Element {
         setNowPlaying(nextPlayableItem);
       }
     }
-  }, [playQueue, updateItem, nowPlaying, setNowPlaying, clearNowPlaying]);
+  }, [nowPlaying, playQueue, setNowPlaying]);
 
   /**
    * keep alive when mic closed

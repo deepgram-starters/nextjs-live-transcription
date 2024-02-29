@@ -4,8 +4,15 @@ import { MessageMeta } from "./MessageMeta";
 import { TextContent } from "./TextContext";
 import { useMemo } from "react";
 import moment from "moment";
+import { Message } from "ai/react";
 
-export const LeftBubble = ({ text, id }: { text: string; id: string }) => {
+export const LeftBubble = ({
+  text,
+  message,
+}: {
+  text: string;
+  message: Message;
+}) => {
   return (
     <>
       <div className="col-start-1 col-end-13 sm:col-end-11 md:col-end-9 lg:col-end-8 xl:col-end-7 p-3">
@@ -25,13 +32,13 @@ export const LeftBubble = ({ text, id }: { text: string; id: string }) => {
                 <TextContent text={text} />
               </div>
               <div className="pt-2 flex justify-between">
-                <MessageMeta id={id} />
+                <MessageMeta message={message} />
               </div>
             </div>
           </div>
-          <div className="h-6 w-6 shrink-0 self-center">
-            <MessageAudio id={id} />
-          </div>
+          {/* <div className="h-6 w-6 shrink-0 self-center">
+            <MessageAudio message={message} />
+          </div> */}
         </div>
       </div>
     </>

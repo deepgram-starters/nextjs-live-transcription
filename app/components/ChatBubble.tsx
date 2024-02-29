@@ -17,10 +17,10 @@ function isAssistantMessage(message: any): message is Message {
 export const ChatBubble = ({ message }: { message: any }) => {
   if (isUserMessage(message)) {
     // chat user
-    return <RightBubble text={message.content} id={message.id} />;
+    return <RightBubble text={message.content} />;
   } else if (isAssistantMessage(message)) {
     // chat assistant
-    return <LeftBubble text={message.content} id={message.id} />;
+    return <LeftBubble text={message.content} message={message} />;
   } else {
     // other as-yet unlabelled messages
     return <></>;
