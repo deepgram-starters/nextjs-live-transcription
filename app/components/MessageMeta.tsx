@@ -13,7 +13,10 @@ const MessageMeta = ({ message }: { message: Message }) => {
 
   if (foundAudio?.latency)
     return (
-      <span className="text-xs">Latency [TTS] {foundAudio?.latency}ms</span>
+      <span className="text-xs text-zinc-400">
+        Latency [TTS]{" "}
+        <span className="font-semibold">{foundAudio?.latency}ms</span>
+      </span>
     );
 };
 
