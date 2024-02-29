@@ -5,3 +5,4 @@
 - 419 errors should retry (and display notice when "taking longer than usual")
 - errorcontextprovider should also handle system messages and warnings (rename to systemmessagecontextprovider?)
 - favicon isn't right
+- mobile ux tweaks
