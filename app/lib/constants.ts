@@ -14,4 +14,4 @@ export const systemContent =
   `- pretend your words are spoken aloud\n` +
   `- use british english\n` +
   `- never apologise\n` +
-  `- keep responses short\n`;
+  `- keep responses short for brevit, but not one word answers\n`;
