@@ -1,19 +1,19 @@
-# Live Audio Next.js Starter
+# Deepgram Aura TTS Demo
 
 [![Discord](https://dcbadge.vercel.app/api/server/xWRaCDBtW4?style=flat)](https://discord.gg/xWRaCDBtW4)
 
-This sample demonstrates interacting with Deepgram from Next.js to transcribe your microphone audio. It uses the Deepgram JavaScript SDK. This was originally a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+The purpose of this demo is to showcase how you can build a Conversational AI application that engages users in natural language interactions, mimicking human conversation through natural language processing using [Deepgram](https://deepgram.com/).
+
+Examples of where you would see this type of application include: virtual assistants for tasks like answering queries and controlling smart devices, educational tutors for personalized learning, healthcare advisors for medical information, and entertainment chat bots for engaging conversations and games.
+
+These applications aim to enhance user experiences by offering efficient and intuitive interactions, reducing the need for human intervention in various tasks and services.
 
 ## Demo features
 
-- Persistent connection to Deepgram
-  - This demo will automatically reconnect in the event the websocket disconnects.
-- Microphone audio buffer
-  - The microphone audio is buffered and instantly sent to Deepgram. In the event the socket disconnects, the audio continues to buffer and then catches up once the connection is re-established.
-- Uses temporary API keys
-  - This demo mints it's own temporary short-lived (a few seconds), limited scope API keys in a server route, to protect your main API key.
-- Browser-side transcription
-  - The connection to Deepgram is established directly from the client, and does not use a server-side component to transcribe the audio.
+- Capture streaming audio using [Deepgram Streaming Speech to Text](https://developers.deepgram.com/docs/getting-started-with-live-streaming-audio).
+- Natural Language responses using an OpenAI LLM.
+- Speech to Text conversion using [Deepgram Aura Text to Speech](https://developers.deepgram.com/docs/text-to-speech).
+- A quirky British sense of humour. 🇬🇧
 
 ## What is Deepgram?
 
@@ -21,7 +21,7 @@ This sample demonstrates interacting with Deepgram from Next.js to transcribe yo
 
 ## Sign-up to Deepgram
 
-Before you start, it's essential to generate a Deepgram API key to use in this project. [Sign-up now for Deepgram and create an API key](https://console.deepgram.com/signup?jump=keys).
+Want to start building using this project? [Sign-up now for Deepgram and create an API key](https://console.deepgram.com/signup?jump=keys).
 
 ## Quickstart
 
@@ -43,11 +43,17 @@ npm install
 
 #### Edit the config file
 
-Copy the code from `sample.env.local` and create a new file called `.env.local`. Paste in the code and enter your API key you generated in the [Deepgram console](https://console.deepgram.com/).
+Copy the code from `sample.env.local` and create a new file called `.env.local`.
 
 ```bash
-DEEPGRAM_API_KEY=%api_key%
+DEEPGRAM_STT_DOMAIN=https://api.deepgram.com
+DEEPGRAM_API_KEY=YOUR-DG-API-KEY
+OPENAI_API_KEY=YOUR-OPENAI-API-KEY
 ```
+
+1. For `DEEPGRAM_API_KEY` paste in the key you generated in the [Deepgram console](https://console.deepgram.com/).
+2. Set `DEEPGRAM_STT_DOMAIN` to be `https://api.deepgram.com`.
+3. `OPENAI_API_KEY` should be an OpenAI API Key that can access the chat completions API.
 
 #### Run the application
 
@@ -65,7 +71,7 @@ If you have found a bug or if you have a feature request, please report them at 
 
 We love to hear from you so if you have questions, comments or find a bug in the project, let us know! You can either:
 
-- [Open an issue in this repository](https://github.com/deepgram-starters/live-nextjs-starter/issues/new)
+- [Open an issue in this repository](https://github.com/deepgram-devs/deepgram-aura-tts-demo/issues)
 - [Join the Deepgram Github Discussions Community](https://github.com/orgs/deepgram/discussions)
 - [Join the Deepgram Discord Community](https://discord.gg/xWRaCDBtW4)
 
