@@ -1,7 +1,9 @@
+import { Message } from "ai/react";
 import { Avatar } from "./Avatar";
+import { MessageMeta } from "./MessageMeta";
 import { TextContent } from "./TextContext";
 
-export const RightBubble = ({ text, id }: { text: string; id?: string }) => {
+export const RightBubble = ({ message }: { message: Message; id?: string }) => {
   return (
     <>
       <div className="col-start-6 col-end-13 p-3">
@@ -10,9 +12,12 @@ export const RightBubble = ({ text, id }: { text: string; id?: string }) => {
             <Avatar />
           </div>
           <div className="glass relative text-sm py-2 px-4 shadow rounded-s-xl rounded-ee-xl">
-            <TextContent text={text} />
+            <div className="text-sm font-normal text-white/80 markdown">
+              <TextContent text={message.content} />
+            </div>
           </div>
         </div>
+        <MessageMeta message={message} />
       </div>
     </>
   );

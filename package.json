@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@deepgram/sdk": "^3.2.0-alpha.1",
+    "@fullstory/browser": "^2.0.3",
     "@next/third-parties": "^14.1.0",
     "@svgr/webpack": "^8.1.0",
     "@types/audioworklet": "^0.0.53",

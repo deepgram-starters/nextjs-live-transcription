@@ -11,6 +11,7 @@ const config: Config = {
     extend: {
       transitionProperty: {
         height: "height",
+        width: "width",
       },
       dropShadow: {
         glowBlue: [

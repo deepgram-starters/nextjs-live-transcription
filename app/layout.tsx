@@ -9,7 +9,6 @@ import "./globals.css";
 import { ErrorContextProvider } from "./context/Error";
 import { NowPlayingContextProvider } from "./context/NowPlaying";
 import { PlayQueueContextProvider } from "./context/PlayQueue";
-import Head from "next/head";
 import Script from "next/script";
 import { MicrophoneContextProvider } from "./context/Microphone";
 

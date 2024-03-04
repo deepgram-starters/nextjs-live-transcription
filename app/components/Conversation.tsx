@@ -11,11 +11,9 @@ import {
 import { ChatBubble } from "./ChatBubble";
 import { Controls } from "./Controls";
 import { InitialLoad } from "./InitialLoad";
-import { CreateMessage, Message } from "ai";
 import { RightBubble } from "./RightBubble";
 import { systemContent } from "../lib/constants";
-import { SpeechBlob } from "../lib/types";
-import { useChat } from "ai/react";
+import { Message, useChat } from "ai/react";
 import { useQueue } from "@uidotdev/usehooks";
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { utteranceText } from "../lib/helpers";
@@ -32,13 +30,7 @@ export default function Conversation(): JSX.Element {
   /**
    * Custom context providers
    */
-  const {
-    playQueue,
-    // setPlayQueue,
-    // clearQueue,
-    enqueueItem,
-    updateItem,
-  } = usePlayQueue();
+  const { playQueue, enqueueItem, updateItem } = usePlayQueue();
 
   const { nowPlaying, setNowPlaying } = useNowPlaying();
 
@@ -66,7 +58,6 @@ export default function Conversation(): JSX.Element {
   const [isLoading, setLoading] = useState(true);
   const [isLoadingKey, setLoadingKey] = useState(true);
   const [isProcessing, setProcessing] = useState(false);
-  // const [userMedia, setUserMedia] = useState<MediaStream | null>();
 
   /**
    * Contextual functions
@@ -401,7 +392,7 @@ export default function Conversation(): JSX.Element {
                         ))}
 
                       {currentUtterance && (
-                        <RightBubble text={currentUtterance}></RightBubble>
+                        <RightBubble message={currentUtterance}></RightBubble>
                       )}
 
                       <div
