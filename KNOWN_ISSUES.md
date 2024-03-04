@@ -80,3 +80,19 @@ We'd like to be able to start the TTS response earlier. We have chunking logic f
 
 See: https://www.npmjs.com/package/multistream
 Issue: https://github.com/deepgram-devs/deepgram-conversational-demo/issues/12
+
+## STT sometimes hangs and needs extra words to finalise
+
+I think we get an is_final but not a speech_final. Is this a case of tuning utterance_end_ms?
+
+Issue: https://github.com/deepgram-devs/deepgram-conversational-demo/issues/14
+
+## Mini control panel to allow for changing various settings
+
+Add a control panel that will allow for the adjusting of settings, and that will restart the websocket or other connections when settings change where appropriate.
+
+Issue: https://github.com/deepgram-devs/deepgram-conversational-demo/issues/15
+
+## Name change
+
+Rebranding of the app
