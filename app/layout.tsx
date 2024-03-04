@@ -19,10 +19,7 @@ const favorit = localFont({
   variable: "--font-favorit",
 });
 
-const windowUrl =
-  typeof window !== "undefined"
-    ? window.location.toString()
-    : "http://localhost:3000";
+const windowUrl = process.env.VERCEL_URL ?? "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(windowUrl),
