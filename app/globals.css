@@ -3,7 +3,14 @@
 @tailwind utilities;
 
 :root {
+  font-size: 16px;
   color-scheme: dark;
+}
+
+@media only screen and (min-width: 2000px) {
+  :root {
+    font-size: 22px;
+  }
 }
 
 body {
@@ -25,13 +32,13 @@ body {
     /* From https://css.glass */
     @apply bg-[rgba(150,140,140,0.06)];
     @apply border border-[rgba(150,140,140,0.1)];
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
+    box-shadow: 0 0.25rem 1.875rem rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(0.3125rem);
+    -webkit-backdrop-filter: blur(0.3125rem);
   }
 
   .gradient-shadow {
-    box-shadow: -1em 0px 2em 0px #13ef9335, 1em 0px 2em 0px #149afb35;
+    box-shadow: -1rem 0px 2rem 0px #13ef9335, 1rem 0px 2rem 0px #149afb35;
   }
 }
 
