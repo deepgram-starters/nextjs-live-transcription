@@ -1,6 +1,7 @@
 import { LiveTranscriptionEvent } from "@deepgram/sdk";
 import { Message } from "ai/react";
 import { CreateMessage } from "ai";
+import moment from "moment";
 
 /**
  * get the sentence from a LiveTranscriptionEvent
@@ -79,7 +80,25 @@ const chunkStringWithMinLength = (
   return chunks.filter((chunk) => chunk.trim() !== "");
 };
 
+/**
+ * @returns {string}
+ */
+const contextualHello = () => {
+  if (moment().isBetween(3, 12, "hour")) {
+    return "Good morning";
+  } else if (moment().isBetween(12, 15, "hour")) {
+    return "Good mfternoon";
+  } else if (moment().isBetween(15, 20, "hour")) {
+    return "Good evening";
+  } else if (moment().isBetween(20, 3, "hour")) {
+    return "You're up late";
+  } else {
+    return "Hello";
+  }
+};
+
 export {
+  contextualHello,
   chunkStringWithMinLength,
   getUserMessages,
   getConversationMessages,
