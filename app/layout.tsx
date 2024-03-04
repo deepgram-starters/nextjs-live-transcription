@@ -20,10 +20,11 @@ const favorit = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Deepgram // EmilyAI",
-  description: `Conversation AI Demo - STT+LLM+TTS`,
+  title: "Deepgram AI Agent",
+  description: `Deepgram's AI Agent Demo shows just how fast Speech-to-Text and Text-to-Speech can be.`,
   robots: {
     index: false,
+    follow: false,
   },
 };
 

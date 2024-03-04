@@ -12,6 +12,7 @@
     "@deepgram/sdk": "^3.2.0-alpha.1",
     "@fullstory/browser": "^2.0.3",
     "@next/third-parties": "^14.1.0",
+    "@nextui-org/react": "^2.2.10",
     "@svgr/webpack": "^8.1.0",
     "@types/audioworklet": "^0.0.53",
     "@types/classnames": "^2.3.1",
