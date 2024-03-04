@@ -6,33 +6,6 @@ import { NextRequest, NextResponse } from "next/server";
  * @param {NextRequest} req - The HTTP request
  * @returns {Promise<NextResponse>} A NextResponse with the streamable response
  */
-export async function GET(req: NextRequest) {
-  const uri = req.nextUrl.searchParams.get("uri");
-  const start = Date.now();
-
-  return await fetch(`${req.nextUrl.origin}/${uri}`)
-    .then(async (response) => {
-      const headers = new Headers();
-      headers.set("X-DG-Latency", `${Date.now() - start}`);
-
-      if (!response?.body) {
-        return new NextResponse("Unable to get response from API.", {
-          status: 500,
-        });
-      }
-
-      return new NextResponse(response.body, { headers });
-    })
-    .catch((error: any) => {
-      return new NextResponse(error || error?.message, { status: 500 });
-    });
-}
-
-/**
- * Return a stream from the API
- * @param {NextRequest} req - The HTTP request
- * @returns {Promise<NextResponse>} A NextResponse with the streamable response
- */
 export async function POST(req: NextRequest) {
   // gotta use the request object to invalidate the cache every request :vomit:
   const url = req.url;

@@ -9,8 +9,6 @@ const MessageMeta = ({ message }: { message: Message }) => {
 
   const foundAudio = playQueue.findLast((item) => item.id === message.id);
 
-  if (message.id === "welcome") return;
-
   if (foundAudio?.latency)
     return (
       <span className="text-xs text-zinc-400">

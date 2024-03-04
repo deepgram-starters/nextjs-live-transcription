@@ -17,7 +17,7 @@ import { systemContent } from "../lib/constants";
 import { SpeechBlob } from "../lib/types";
 import { useChat } from "ai/react";
 import { useQueue } from "@uidotdev/usehooks";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { utteranceText } from "../lib/helpers";
 import { useNowPlaying } from "../context/NowPlaying";
 import { usePlayQueue } from "../context/PlayQueue";
@@ -100,6 +100,16 @@ export default function Conversation(): JSX.Element {
     [requestTtsAudio]
   );
 
+  const greeting = useMemo(
+    () =>
+      ({
+        id: "welcome",
+        role: "assistant",
+        content: "Hello! My name is Emily. How can I help you today?",
+      } as Message),
+    []
+  );
+
   /**
    * AI SDK
    */
@@ -117,11 +127,7 @@ export default function Conversation(): JSX.Element {
         role: "system",
         content: systemContent,
       } as Message,
-      {
-        id: "welcome",
-        role: "assistant",
-        content: "Hello! My name is Emily. How can I help you today?",
-      } as Message,
+      greeting,
     ],
     onFinish,
   });
@@ -130,19 +136,8 @@ export default function Conversation(): JSX.Element {
    * Contextual functions
    */
   const requestWelcomeAudio = useCallback(async () => {
-    const start = Date.now();
-
-    const res = await fetch(
-      "/api/speak?uri=aura-athena-en_hello-my-name-is.mp3"
-    );
-
-    enqueueItem({
-      id: "welcome",
-      blob: await res.blob(),
-      latency: Date.now() - start,
-      played: false,
-    });
-  }, [enqueueItem]);
+    requestTtsAudio(greeting);
+  }, [greeting, requestTtsAudio]);
 
   const startConversation = useCallback(() => {
     setInitialLoad(false);
