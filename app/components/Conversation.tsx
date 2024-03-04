@@ -6,6 +6,7 @@ import {
   LiveConnectionState,
   LiveTranscriptionEvent,
   LiveTranscriptionEvents,
+  UtteranceEndEvent,
   createClient,
 } from "@deepgram/sdk";
 import { ChatBubble } from "./ChatBubble";
@@ -210,7 +211,8 @@ export default function Conversation(): JSX.Element {
         model: "nova-2",
         interim_results: true,
         smart_format: true,
-        endpointing: 500,
+        endpointing: 350,
+        utterance_end_ms: 1000,
         filler_words: true,
       });
 
@@ -242,6 +244,8 @@ export default function Conversation(): JSX.Element {
         connection.on(
           LiveTranscriptionEvents.Transcript,
           (data: LiveTranscriptionEvent) => {
+            // console.log(data);
+
             let content = utteranceText(data);
             if (content) {
               /**
@@ -253,6 +257,16 @@ export default function Conversation(): JSX.Element {
                 text: content,
               });
             }
+          }
+        );
+
+        /**
+         * utterance end response received
+         */
+        connection.on(
+          LiveTranscriptionEvents.UtteranceEnd,
+          (data: UtteranceEndEvent) => {
+            // console.log(data);
           }
         );
       });
