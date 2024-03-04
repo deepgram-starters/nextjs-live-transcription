@@ -22,6 +22,7 @@ import { utteranceText } from "../lib/helpers";
 import { useNowPlaying } from "../context/NowPlaying";
 import { usePlayQueue } from "../context/PlayQueue";
 import { Spinner } from "flowbite-react";
+import { useMicrophone } from "../context/Microphone";
 
 /**
  * Conversation element that contains the conversational AI app.
@@ -45,14 +46,6 @@ export default function Conversation(): JSX.Element {
    * Queues
    */
   const {
-    add: addMicrophoneBlob,
-    remove: removeMicrophoneBlob,
-    first: firstMicrophoneBlob,
-    size: countMicrophoneBlobs,
-    queue: microphoneBlobs,
-  } = useQueue<Blob>([]);
-
-  const {
     add: addTranscriptPart,
     queue: transcriptParts,
     clear: clearTranscriptParts,
@@ -73,11 +66,7 @@ export default function Conversation(): JSX.Element {
   const [isLoading, setLoading] = useState(true);
   const [isLoadingKey, setLoadingKey] = useState(true);
   const [isProcessing, setProcessing] = useState(false);
-  const [userMedia, setUserMedia] = useState<MediaStream | null>();
-  const [voiceActivity, setVoiceActivity] = useState<{
-    voiceActivity: boolean;
-    timestamp: number;
-  }>();
+  // const [userMedia, setUserMedia] = useState<MediaStream | null>();
 
   /**
    * Contextual functions
@@ -103,35 +92,6 @@ export default function Conversation(): JSX.Element {
     },
     [enqueueItem]
   );
-
-  const toggleMicrophone = useCallback(async () => {
-    if (userMedia) {
-      if (connection) {
-        connection.keepAlive();
-      }
-
-      userMedia.getAudioTracks().every((track) => {
-        track.stop();
-      });
-      setUserMedia(null);
-    } else {
-      const userMedia = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          noiseSuppression: true,
-          echoCancellation: true,
-        },
-      });
-
-      const microphone = new MediaRecorder(userMedia);
-      microphone.start(1000);
-
-      microphone.ondataavailable = (e) => {
-        addMicrophoneBlob(e.data);
-      };
-
-      setUserMedia(userMedia);
-    }
-  }, [userMedia, connection, addMicrophoneBlob]);
 
   const onFinish = useCallback(
     (msg: any) => {
@@ -310,45 +270,48 @@ export default function Conversation(): JSX.Element {
     }
   }, [currentUtterance, clearNowPlaying, nowPlaying, player, updateItem]);
 
+  const {
+    microphoneOpen,
+    queue: microphoneQueue,
+    queueSize: microphoneQueueSize,
+    firstBlob,
+    removeBlob,
+  } = useMicrophone();
+
   /**
    * magic microphone audio queue processing
    */
   useEffect(() => {
     const processQueue = async () => {
-      if (countMicrophoneBlobs > 0 && !isProcessing) {
+      if (microphoneQueueSize > 0 && !isProcessing) {
         setProcessing(true);
 
         if (isListening) {
-          const nextBlob = firstMicrophoneBlob;
+          const nextBlob = firstBlob;
           if (nextBlob) {
             connection?.send(nextBlob);
           }
 
-          removeMicrophoneBlob();
+          removeBlob();
         }
 
         const waiting = setTimeout(() => {
           clearTimeout(waiting);
           setProcessing(false);
-        }, 250);
+        }, 200);
       }
     };
 
     processQueue();
   }, [
     connection,
-    microphoneBlobs,
-    removeMicrophoneBlob,
-    firstMicrophoneBlob,
-    countMicrophoneBlobs,
+    microphoneQueue,
+    removeBlob,
+    firstBlob,
+    microphoneQueueSize,
     isProcessing,
     isListening,
   ]);
-
-  // monitoring speech queue for now
-  // useEffect(() => {
-  //   console.log(playQueue);
-  // }, [playQueue]);
 
   /**
    * magic tts audio queue processing mk2
@@ -368,7 +331,7 @@ export default function Conversation(): JSX.Element {
    */
   useEffect(() => {
     let keepAlive: any;
-    if (connection && isListening && !userMedia) {
+    if (connection && isListening && !microphoneOpen) {
       keepAlive = setInterval(() => {
         // should stop spamming dev console when working on frontend in devmode
         if (connection?.getReadyState() !== LiveConnectionState.OPEN) {
@@ -385,7 +348,7 @@ export default function Conversation(): JSX.Element {
     return () => {
       clearInterval(keepAlive);
     };
-  }, [connection, isListening, userMedia]);
+  }, [connection, isListening, microphoneOpen]);
 
   // this works
   useEffect(() => {
@@ -456,8 +419,6 @@ export default function Conversation(): JSX.Element {
               </div>
               {!initialLoad && (
                 <Controls
-                  micToggle={toggleMicrophone}
-                  micOpen={userMedia?.active || false}
                   handleSubmit={handleSubmit}
                   handleInputChange={handleInputChange}
                   input={input}

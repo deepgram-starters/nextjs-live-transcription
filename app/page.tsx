@@ -12,6 +12,9 @@ export default async function Home() {
           <header className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 flex items-center justify-between">
             <div>
               <a className="flex items-center" href="/">
+                <h1 className="mr-2 -mb-px font-favorit text-2xl font-semibold text-white">
+                  Powered by
+                </h1>
                 <Image
                   className="w-auto h-6 -mb-px"
                   src="/deepgram.svg"
@@ -20,9 +23,6 @@ export default async function Home() {
                   height={0}
                   priority
                 />
-                <h1 className="ml-2 -mb-px font-favorit text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r to-[#13EF93]/80 from-[#149AFB]/80 ">
-                  EmilyAI
-                </h1>
               </a>
             </div>
             <div className="flex items-center gap-4 text-sm">

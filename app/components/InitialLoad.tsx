@@ -1,6 +1,7 @@
 import { isBrowser, isIOS } from "react-device-detect";
 import { Headphones } from "./Headphones";
 import { Exclamation } from "./Exclamation";
+import Image from "next/image";
 
 export const InitialLoad = ({ fn }: { fn: () => void }) => {
   return (
@@ -24,10 +25,31 @@ export const InitialLoad = ({ fn }: { fn: () => void }) => {
               />
             </svg>
           </span>
-          <h6 className="mt-2 block">
-            Welcome to EmilyAI, the conversational AI powered by Deepgram.
-          </h6>
-          <span className="mt-4 block text-sm text-zinc-500">
+          <h2 className="mt-2 block font-bold text-xl text-gray-100">
+            Welcome to the{" "}
+            <Image
+              className="inline w-auto h-5 -mb-px"
+              src="/deepgram.svg"
+              alt="Deepgram Logo"
+              width={0}
+              height={0}
+              priority
+            />{" "}
+            AI Agent.
+          </h2>
+          <h3 className="mt-2 block text-gray-100">
+            Powered by Deepgram&apos;s{" "}
+            <span className="font-semibold text-gray-100">
+              Nova-2 Speech-to-Text
+            </span>{" "}
+            &amp;
+            <br />
+            <span className="font-semibold text-gray-100">
+              Aura Text-to-Speech
+            </span>{" "}
+            APIs
+          </h3>
+          <span className="mt-4 block text-sm text-gray-100/70">
             <Headphones /> For optimal enjoyment, we recommend using headphones
             while using this application.
           </span>
@@ -37,8 +59,8 @@ export const InitialLoad = ({ fn }: { fn: () => void }) => {
               disabled on iOS mobile devices.
             </span>
           )}
-          <span className="mt-6 block text-sm font-semibold">
-            <span className="bg-white text-black rounded m-px px-4 py-2 font-semibold">
+          <span className="mt-8 block font-semibold">
+            <span className="bg-white text-black rounded m-px px-6 py-3 font-semibold">
               {isBrowser ? "Click" : "Tap"} here to start
             </span>
           </span>

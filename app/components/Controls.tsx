@@ -1,29 +1,33 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { isTablet, isMobile } from "react-device-detect";
 import { MicrophoneIcon } from "./icons/MicrophoneIcon";
 import { SendIcon } from "./icons/SendIcon";
 import { useNowPlaying } from "../context/NowPlaying";
 import { usePlayQueue } from "../context/PlayQueue";
+import { useMicrophone } from "../context/Microphone";
 
 export const Controls = ({
-  micToggle,
-  micOpen,
   input,
   handleSubmit,
   handleInputChange,
 }: {
-  micToggle: () => Promise<void>;
-  micOpen: boolean;
   input: string;
   handleSubmit: any;
   handleInputChange: any;
 }) => {
+  const { startMicrophone, stopMicrophone, microphoneOpen } = useMicrophone();
+
   const microphoneToggle = useCallback(
     async (e: Event) => {
       e.preventDefault();
-      await micToggle();
+
+      if (microphoneOpen) {
+        stopMicrophone();
+      } else {
+        startMicrophone();
+      }
     },
-    [micToggle]
+    [microphoneOpen, startMicrophone, stopMicrophone]
   );
 
   const { updateItem } = usePlayQueue();
@@ -50,9 +54,9 @@ export const Controls = ({
             onClick={(e: any) => microphoneToggle(e)}
             className="group py-4 px-2 sm:px-8 w-full sm:rounded-s-full font-bold bg-[#101014] hover:bg-transparent text-light-900 text-sm sm:text-base flex items-center"
           >
-            <MicrophoneIcon micOpen={micOpen} />
+            <MicrophoneIcon micOpen={microphoneOpen} />
             <span>
-              {micOpen ? (
+              {microphoneOpen ? (
                 <>Listening...</>
               ) : (
                 <>{`${isTablet || isMobile ? "Tap" : "Click"} to speak`}</>

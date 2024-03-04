@@ -2,15 +2,6 @@
 
 This is a list of known issues. For the latest list of all issues see the [Github Issues page](https://github.com/deepgram-devs/deepgram-conversational-demo/issues).
 
-## Delay after unmuting the microphone for a second time.
-
-When unmuted the microphone there is a 10-20s delay before transcriptions will continue to come back.
-
-Possible fix is to pause/resume the microphone, and store the mediarecorder interface in state rather than destroy it.
-
-See: https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/pause
-Issue: https://github.com/deepgram-devs/deepgram-conversational-demo/issues/2
-
 ## Microphone continues to listen when you tab away from the site.
 
 Mute microphone when tab no longer visible.

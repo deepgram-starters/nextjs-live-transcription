@@ -11,6 +11,7 @@ import { NowPlayingContextProvider } from "./context/NowPlaying";
 import { PlayQueueContextProvider } from "./context/PlayQueue";
 import Head from "next/head";
 import Script from "next/script";
+import { MicrophoneContextProvider } from "./context/Microphone";
 
 const inter = Inter({ subsets: ["latin"] });
 const favorit = localFont({
@@ -37,9 +38,11 @@ export default function RootLayout({
         className={`h-full ${classNames(favorit.variable, inter.className)}`}
       >
         <ErrorContextProvider>
-          <PlayQueueContextProvider>
-            <NowPlayingContextProvider>{children}</NowPlayingContextProvider>
-          </PlayQueueContextProvider>
+          <MicrophoneContextProvider>
+            <PlayQueueContextProvider>
+              <NowPlayingContextProvider>{children}</NowPlayingContextProvider>
+            </PlayQueueContextProvider>
+          </MicrophoneContextProvider>
         </ErrorContextProvider>
       </body>
       <GoogleTagManager gtmId="GTM-5R73N627" />
