@@ -1,6 +1,6 @@
-import { isBrowser, isIOS } from "react-device-detect";
+import { ExclamationIcon } from "./icons/ExclamationIcon";
 import { Headphones } from "./Headphones";
-import { Exclamation } from "./Exclamation";
+import { isBrowser, isIOS } from "react-device-detect";
 import Image from "next/image";
 
 export const InitialLoad = ({ fn }: { fn: () => void }) => {
@@ -55,7 +55,7 @@ export const InitialLoad = ({ fn }: { fn: () => void }) => {
           </span>
           {isIOS && (
             <span className="mt-4 block text-sm text-[#ffb02e]">
-              <Exclamation /> Text-to-speech audio playback is currently
+              <ExclamationIcon /> Text-to-speech audio playback is currently
               disabled on iOS mobile devices.
             </span>
           )}
