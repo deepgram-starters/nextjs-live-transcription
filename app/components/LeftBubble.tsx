@@ -17,8 +17,10 @@ export const LeftBubble = ({ message }: { message: Message }) => {
           <div className="glass flex p-4 rounded-e-xl rounded-es-xl">
             <div className="flex flex-col">
               <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                <span className="text-sm font-semibold text-white">Emily</span>
-                <span className="text-sm font-normal text-gray-400">
+                <span className="text-sm font-semibold text-white">
+                  Deepgram AI
+                </span>
+                <span className="text-xs font-normal text-gray-400">
                   {useMemo(() => moment().calendar(), [])}
                 </span>
               </div>

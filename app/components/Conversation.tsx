@@ -34,8 +34,15 @@ export default function Conversation(): JSX.Element {
    * Custom context providers
    */
   const { playQueue, enqueueItem, updateItem } = usePlayQueue();
-
   const { nowPlaying, setNowPlaying } = useNowPlaying();
+  const { addMessageData } = useMessageData();
+  const {
+    microphoneOpen,
+    queue: microphoneQueue,
+    queueSize: microphoneQueueSize,
+    firstBlob,
+    removeBlob,
+  } = useMicrophone();
 
   /**
    * Queues
@@ -141,14 +148,6 @@ export default function Conversation(): JSX.Element {
     onFinish,
     onResponse,
   });
-
-  // const [messageData, setMessageData] = useState<MessageMetadata[]>([]);
-
-  // const addMessageData = useCallback((message: MessageMetadata): void => {
-  //   setMessageData((d) => [...d, message]);
-  // }, []);
-
-  const { addMessageData } = useMessageData();
 
   useEffect(() => {
     if (llmLoading) return;
@@ -312,14 +311,6 @@ export default function Conversation(): JSX.Element {
       updateItem(nowPlaying.id, { played: true });
     }
   }, [currentUtterance, clearNowPlaying, nowPlaying, player, updateItem]);
-
-  const {
-    microphoneOpen,
-    queue: microphoneQueue,
-    queueSize: microphoneQueueSize,
-    firstBlob,
-    removeBlob,
-  } = useMicrophone();
 
   /**
    * magic microphone audio queue processing

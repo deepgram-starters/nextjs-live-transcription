@@ -7,6 +7,10 @@ export const runtime = "edge";
 import * as FullStory from "@fullstory/browser";
 import { useEffect } from "react";
 import { NextUIProvider } from "@nextui-org/react";
+import { BoltIcon } from "./components/icons/BoltIcon";
+import { XIcon } from "./components/icons/XIcon";
+import { FacebookIcon } from "./components/icons/FacebookIcon";
+import { LinkedInIcon } from "./components/icons/LinkedInIcon";
 
 export default function Home() {
   useEffect(() => {
@@ -58,10 +62,64 @@ export default function Home() {
           </header>
         </div>
 
-        {/* height 100% minus 4rem */}
-        <main className="mx-auto max-w-7xl px-0 sm:px-4 md:px-6 lg:px-8 h-[calc(100%-4rem)] pb-0 sm:pb-4 md:pb-6 lg:pb-8">
+        {/* height 100% minus 8rem */}
+        <main className="mx-auto max-w-7xl px-0 sm:px-4 md:px-6 lg:px-8 h-[calc(100%-8rem)]">
           <Conversation />
         </main>
+        {/* height 4rem */}
+        <div className=" backdrop-blur-[2px] h-[4rem] flex items-center">
+          <header className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 flex items-center justify-center gap-4 text-xl font-inter font-semibold text-[#4e4e52]">
+            <span>share it</span>
+            <a
+              href="#"
+              onClick={(e) => {
+                window.open(
+                  "https://twitter.com/intent/tweet?text=%F0%9F%94%A5%F0%9F%8E%89%20Check%20out%20this%20awesome%20%23AI%20demo%20by%20%40Deepgram%20and%20%40lukeocodes%0A%0A%20https%3A//aura-tts-demo.deepgram.com",
+                  "",
+                  "_blank, width=600, height=500, resizable=yes, scrollbars=yes"
+                );
+
+                return e.preventDefault();
+              }}
+              target="_blank"
+            >
+              <XIcon />
+            </a>
+            <a
+              href="#"
+              onClick={(e) => {
+                window.open(
+                  "https://www.linkedin.com/shareArticle?mini=true&url=https%3A//aura-tts-demo.deepgram.com&title=Excellent review on my website reviews",
+                  "",
+                  "_blank, width=600, height=500, resizable=yes, scrollbars=yes"
+                );
+
+                return e.preventDefault();
+              }}
+            >
+              <LinkedInIcon />
+            </a>
+            <a
+              href="#"
+              onClick={(e) => {
+                window.open(
+                  "https://www.facebook.com/sharer/sharer.php?u=https%3A//aura-tts-demo.deepgram.com",
+                  "",
+                  "_blank, width=600, height=500, resizable=yes, scrollbars=yes"
+                );
+
+                return e.preventDefault();
+              }}
+              target="_blank"
+            >
+              <FacebookIcon />
+            </a>
+            <div className="border-l border-current w-px h-7">&nbsp;</div>
+            <a href="https://deepgram.com/contact-us" target="_blank">
+              contact us
+            </a>
+          </header>
+        </div>
       </div>
     </>
   );
