@@ -37,14 +37,14 @@ export const InitialLoad = ({ fn }: { fn: () => void }) => {
             />
             AI Agent.
           </h2>
-          <h3 className="mt-2 block text-gray-100">
+          <h3 className="mt-2 block text-gray-100/80">
             Powered by Deepgram&apos;s{" "}
-            <span className="font-semibold text-gray-100">
+            <span className="font-semibold text-gray-100/80">
               Nova-2 Speech-to-Text
             </span>{" "}
             &amp;
             <br />
-            <span className="font-semibold text-gray-100">
+            <span className="font-semibold text-gray-100/80">
               Aura Text-to-Speech
             </span>{" "}
             APIs
