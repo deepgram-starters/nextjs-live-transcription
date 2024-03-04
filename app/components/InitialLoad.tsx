@@ -28,7 +28,7 @@ export const InitialLoad = ({ fn }: { fn: () => void }) => {
           <h2 className="mt-2 block font-bold text-xl text-gray-100">
             Welcome to the{" "}
             <Image
-              className="inline w-auto h-5 -mb-px"
+              className="inline w-auto h-5 mb-px"
               src="/deepgram.svg"
               alt="Deepgram Logo"
               width={0}
