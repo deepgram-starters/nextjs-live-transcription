@@ -84,6 +84,12 @@ Add a control panel that will allow for the adjusting of settings, and that will
 
 Issue: https://github.com/deepgram-devs/deepgram-conversational-demo/issues/15
 
+## Potential incomplete-is-final error occuring in app
+
+> re: emailyai; I periodically get to points in the conversation where the STT is clearly good and done and waiting, but the reponse mechanism isn’t triggered (I don’t see the STT latency thing pop up.) and so I can just sit there and wait and nothing happens until I speak again and then, it’ll probably pick up and go again. Any idea what’s going on?
+
+Issue: https://github.com/deepgram-devs/deepgram-conversational-demo/issues/17
+
 ## Name change
 
 Rebranding of the app
