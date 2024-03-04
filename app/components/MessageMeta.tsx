@@ -18,10 +18,10 @@ const MessageMeta = ({
 
     if (foundAudio?.latency)
       return (
-        <div className={`flex gap-x-2.5 text-xs text-zinc-500 ${className}`}>
+        <div className={`flex gap-x-2.5 text-xs text-[#BBBBBF] ${className}`}>
           <span>Total latency: {(foundAudio?.latency / 1000).toFixed(1)}s</span>
           <button
-            className="font-semibold"
+            className="font-semibold hover:text-[#fbfbff]"
             onClick={() => setBreakdown(!breakdown)}
           >
             Breakdown{" "}
@@ -32,13 +32,15 @@ const MessageMeta = ({
             />
           </button>
 
-          <span
-            className={`overflow-hidden whitespace-nowrap w-0 transition-width duration-500 ease-in-out ${
-              breakdown && "w-fit"
-            }`}
-          >
-            LLM: {(foundAudio?.latency / 1000).toFixed(1)}s
-          </span>
+          {message.id !== "welcome" && (
+            <span
+              className={`overflow-hidden whitespace-nowrap w-0 transition-width duration-500 ease-in-out ${
+                breakdown && "w-fit"
+              }`}
+            >
+              LLM: {(foundAudio?.latency / 1000).toFixed(1)}s
+            </span>
+          )}
 
           <span
             className={`overflow-hidden whitespace-nowrap w-0 transition-width duration-500 ease-in-out ${
