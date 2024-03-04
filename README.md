@@ -8,6 +8,12 @@ Examples of where you would see this type of application include: virtual assist
 
 These applications aim to enhance user experiences by offering efficient and intuitive interactions, reducing the need for human intervention in various tasks and services.
 
+## Issue Reporting
+
+If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker.
+
+Check out our [KNOWN ISSUES](./KNOWN_ISSUES.md) before reporting.
+
 ## Demo features
 
 - Capture streaming audio using [Deepgram Streaming Speech to Text](https://developers.deepgram.com/docs/getting-started-with-live-streaming-audio).
@@ -62,10 +68,6 @@ Once running, you can [access the application in your browser](http://localhost:
 ```bash
 npm run dev
 ```
-
-## Issue Reporting
-
-If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Security Policy](./SECURITY.md) details the procedure for contacting Deepgram.
 
 ## Getting Help
 
