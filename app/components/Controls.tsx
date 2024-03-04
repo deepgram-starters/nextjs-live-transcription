@@ -47,12 +47,12 @@ export const Controls = ({
 
   return (
     <form onSubmit={submitter}>
-      <div className="flex bg-[#101014] sm:rounded-full">
-        <span className="flex-grow sm:flex-grow-0 sm:rounded-s-full bg-gradient-to-r bg-gradient to-[#13EF93]/50 from-[#149AFB]/80 sm:ps-0.5 py-0.5 ">
+      <div className="flex bg-[#101014] rounded-full">
+        <span className="flex-grow sm:flex-grow-0 rounded-s-full bg-gradient-to-r bg-gradient to-[#13EF93]/50 from-[#149AFB]/80 ps-0.5 py-0.5">
           <a
             href="#"
             onClick={(e: any) => microphoneToggle(e)}
-            className="group py-4 px-2 sm:px-8 w-full sm:rounded-s-full font-bold bg-[#101014] hover:bg-transparent text-light-900 text-sm sm:text-base flex items-center"
+            className="group py-4 px-2 sm:px-8 w-full rounded-s-full font-bold bg-[#101014] betterhover:hover:bg-transparent text-light-900 text-sm sm:text-base flex items-center"
           >
             <MicrophoneIcon micOpen={microphoneOpen} />
             <span>
@@ -75,8 +75,8 @@ export const Controls = ({
           />
         </span>
 
-        <span className="sm:rounded-e-full bg-gradient-to-l to-[#13EF93]/50 from-[#149AFB]/80 sm:pe-0.5 py-0.5 ">
-          <button className="py-4 px-2 sm:px-8 sm:rounded-e-full font-bold bg-[#101014] hover:bg-transparent text-light-900 text-sm sm:text-base flex items-center">
+        <span className="rounded-e-full bg-gradient-to-l to-[#13EF93]/50 from-[#149AFB]/80 pe-0.5 py-0.5">
+          <button className="py-4 px-2 sm:px-8 rounded-e-full font-bold bg-[#101014] betterhover:hover:bg-transparent text-light-900 text-sm sm:text-base flex items-center">
             <span>Send text</span>
             <SendIcon />
           </button>
