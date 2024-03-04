@@ -210,9 +210,7 @@ export default function Conversation(): JSX.Element {
         model: "nova-2",
         interim_results: true,
         smart_format: true,
-        endpointing: 250,
-        utterance_end_ms: 5000,
-        vad_events: true,
+        endpointing: 500,
         filler_words: true,
       });
 

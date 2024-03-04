@@ -26,16 +26,7 @@ export const InitialLoad = ({ fn }: { fn: () => void }) => {
             </svg>
           </span>
           <h2 className="font-favorit mt-2 block font-bold text-xl text-gray-100">
-            Welcome to the
-            <Image
-              className="inline w-auto h-6 mx-2 mb-2"
-              src="/deepgram.svg"
-              alt="Deepgram Logo"
-              width={0}
-              height={0}
-              priority
-            />
-            AI Agent.
+            Welcome to Deepgram&apos;s AI Agent Demo.
           </h2>
           <h3 className="mt-2 block text-gray-100/80">
             Powered by Deepgram&apos;s{" "}
