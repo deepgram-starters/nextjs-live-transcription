@@ -19,12 +19,8 @@ const favorit = localFont({
   variable: "--font-favorit",
 });
 
-const windowUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : "http://localhost:3000";
-
 export const metadata: Metadata = {
-  metadataBase: new URL(windowUrl),
+  metadataBase: new URL("https://aura-tts-demo.deepgram.com"),
   title: "Deepgram AI Agent",
   description: `Deepgram's AI Agent Demo shows just how fast Speech-to-Text and Text-to-Speech can be.`,
   robots: {
