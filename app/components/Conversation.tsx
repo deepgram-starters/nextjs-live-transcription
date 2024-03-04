@@ -21,6 +21,8 @@ import { useNowPlaying } from "../context/NowPlaying";
 import { usePlayQueue } from "../context/PlayQueue";
 import { Spinner } from "flowbite-react";
 import { useMicrophone } from "../context/Microphone";
+import { MessageMetadata } from "../lib/types";
+import { useMessageData } from "../context/MessageMetadata";
 
 /**
  * Conversation element that contains the conversational AI app.
@@ -84,12 +86,26 @@ export default function Conversation(): JSX.Element {
     [enqueueItem]
   );
 
+  const [llmNewLatency, setLlmNewLatency] = useState<{
+    start: number;
+    response: number;
+  }>();
+
   const onFinish = useCallback(
     (msg: any) => {
       requestTtsAudio(msg);
     },
     [requestTtsAudio]
   );
+
+  const onResponse = useCallback((res: Response) => {
+    (async () => {
+      setLlmNewLatency({
+        start: Number(res.headers.get("x-llm-start")),
+        response: Number(res.headers.get("x-llm-response")),
+      });
+    })();
+  }, []);
 
   const greeting = useMemo(
     () =>
@@ -110,6 +126,7 @@ export default function Conversation(): JSX.Element {
     handleInputChange,
     input,
     handleSubmit,
+    isLoading: llmLoading,
   } = useChat({
     id: "aura",
     api: "/api/brain",
@@ -121,7 +138,35 @@ export default function Conversation(): JSX.Element {
       greeting,
     ],
     onFinish,
+    onResponse,
   });
+
+  // const [messageData, setMessageData] = useState<MessageMetadata[]>([]);
+
+  // const addMessageData = useCallback((message: MessageMetadata): void => {
+  //   setMessageData((d) => [...d, message]);
+  // }, []);
+
+  const { addMessageData } = useMessageData();
+
+  useEffect(() => {
+    if (llmLoading) return;
+    if (!llmNewLatency) return;
+
+    const latestLlmMessage: MessageMetadata = {
+      ...chatMessages[chatMessages.length - 1],
+      ...llmNewLatency,
+      end: Date.now(),
+    };
+
+    addMessageData(latestLlmMessage);
+  }, [
+    chatMessages,
+    llmNewLatency,
+    setLlmNewLatency,
+    llmLoading,
+    addMessageData,
+  ]);
 
   /**
    * Contextual functions

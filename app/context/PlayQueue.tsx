@@ -8,14 +8,14 @@ import {
   useContext,
   useState,
 } from "react";
-import { PlayQueueItem } from "../lib/types";
+import { AudioPacket } from "../lib/types";
 
 type PlayQueueContext = {
-  playQueue: PlayQueueItem[];
-  setPlayQueue: Dispatch<SetStateAction<PlayQueueItem[]>>;
+  playQueue: AudioPacket[];
+  setPlayQueue: Dispatch<SetStateAction<AudioPacket[]>>;
   clearQueue: () => void;
-  enqueueItem: (queueItem: PlayQueueItem) => void;
-  updateItem: (id: string, values: Partial<PlayQueueItem>) => void;
+  enqueueItem: (queueItem: AudioPacket) => void;
+  updateItem: (id: string, values: Partial<AudioPacket>) => void;
 };
 
 interface PlayQueueItemContextInterface {
@@ -27,25 +27,17 @@ const PlayQueueContext = createContext({} as PlayQueueContext);
 const PlayQueueContextProvider = ({
   children,
 }: PlayQueueItemContextInterface) => {
-  const [playQueue, setPlayQueue] = useState<PlayQueueItem[]>([]);
-
-  /**
-    add: addSpeechBlob,
-    remove: removeSpeechBlob,
-    last: lastSpeechBlob,
-    size: countSpeechBlobs,
-    queue: speechBlobs,
- */
+  const [playQueue, setPlayQueue] = useState<AudioPacket[]>([]);
 
   const clearQueue = () => {
     setPlayQueue([]);
   };
 
-  const enqueueItem = useCallback((queueItem: PlayQueueItem): void => {
+  const enqueueItem = useCallback((queueItem: AudioPacket): void => {
     setPlayQueue((q) => [...q, queueItem]);
   }, []);
 
-  const updateItem = (id: string, values: Partial<PlayQueueItem>): void => {
+  const updateItem = (id: string, values: Partial<AudioPacket>): void => {
     setPlayQueue((prevData) => {
       return prevData.map((item) => {
         if (item.id === id) {

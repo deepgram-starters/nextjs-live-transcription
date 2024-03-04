@@ -22,15 +22,14 @@ export async function POST(req: Request) {
       messages: messages,
     });
 
-    // Convert the response into a friendly text-stream
     const stream = OpenAIStream(response);
 
-    const headers = new Headers();
-    headers.set("X-LLM-Start", `${start}`);
-    headers.set("X-LLM-Latency", `${Date.now() - start}`);
-
-    // Respond with the stream
-    return new StreamingTextResponse(stream, { headers });
+    return new StreamingTextResponse(stream, {
+      headers: {
+        "X-LLM-Start": `${start}`,
+        "X-LLM-Response": `${Date.now()}`,
+      },
+    });
   } catch (error) {
     console.error("test", error);
   }

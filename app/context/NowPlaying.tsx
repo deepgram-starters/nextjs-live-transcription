@@ -10,12 +10,12 @@ import {
   useRef,
   useState,
 } from "react";
-import { NowPlaying } from "../lib/types";
+import { AudioPacket } from "../lib/types";
 import { usePlayQueue } from "./PlayQueue";
 
 type NowPlayingContext = {
-  nowPlaying: NowPlaying | undefined;
-  setNowPlaying: Dispatch<SetStateAction<NowPlaying | undefined>>;
+  nowPlaying: AudioPacket | undefined;
+  setNowPlaying: Dispatch<SetStateAction<AudioPacket | undefined>>;
   clearNowPlaying: () => void;
   player: MutableRefObject<HTMLAudioElement | undefined>;
 };
@@ -29,7 +29,7 @@ const NowPlayingContext = createContext({} as NowPlayingContext);
 const NowPlayingContextProvider = ({
   children,
 }: NowPlayingContextInterface) => {
-  const [nowPlaying, setNowPlaying] = useState<NowPlaying>();
+  const [nowPlaying, setNowPlaying] = useState<AudioPacket>();
   const player = useRef<HTMLAudioElement | undefined>(
     typeof Audio !== "undefined" ? new Audio("") : undefined
   );

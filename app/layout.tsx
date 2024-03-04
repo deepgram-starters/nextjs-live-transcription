@@ -11,6 +11,7 @@ import { NowPlayingContextProvider } from "./context/NowPlaying";
 import { PlayQueueContextProvider } from "./context/PlayQueue";
 import Script from "next/script";
 import { MicrophoneContextProvider } from "./context/Microphone";
+import { MessageMetadataContextProvider } from "./context/MessageMetadata";
 
 const inter = Inter({ subsets: ["latin"] });
 const favorit = localFont({
@@ -39,7 +40,11 @@ export default function RootLayout({
         <ErrorContextProvider>
           <MicrophoneContextProvider>
             <PlayQueueContextProvider>
-              <NowPlayingContextProvider>{children}</NowPlayingContextProvider>
+              <NowPlayingContextProvider>
+                <MessageMetadataContextProvider>
+                  {children}
+                </MessageMetadataContextProvider>
+              </NowPlayingContextProvider>
             </PlayQueueContextProvider>
           </MicrophoneContextProvider>
         </ErrorContextProvider>
