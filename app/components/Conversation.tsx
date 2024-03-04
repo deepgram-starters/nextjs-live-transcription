@@ -17,7 +17,7 @@ import { systemContent } from "../lib/constants";
 import { Message, useChat } from "ai/react";
 import { useQueue } from "@uidotdev/usehooks";
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
-import { utteranceText } from "../lib/helpers";
+import { contextualGreeting, utteranceText } from "../lib/helpers";
 import { useNowPlaying } from "../context/NowPlaying";
 import { usePlayQueue } from "../context/PlayQueue";
 import { Spinner } from "flowbite-react";
@@ -120,7 +120,7 @@ export default function Conversation(): JSX.Element {
       ({
         id: "welcome",
         role: "assistant",
-        content: "Hello! My name is Emily. How can I help you today?",
+        content: contextualGreeting(),
       } as Message),
     []
   );

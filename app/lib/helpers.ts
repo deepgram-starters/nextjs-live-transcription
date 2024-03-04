@@ -2,6 +2,7 @@ import { LiveTranscriptionEvent } from "@deepgram/sdk";
 import { Message } from "ai/react";
 import { CreateMessage } from "ai";
 import moment from "moment";
+import { greetings } from "./constants";
 
 /**
  * get the sentence from a LiveTranscriptionEvent
@@ -84,21 +85,52 @@ const chunkStringWithMinLength = (
  * @returns {string}
  */
 const contextualHello = () => {
-  if (moment().isBetween(3, 12, "hour")) {
+  const hour = moment().hour();
+
+  if (hour > 3 && hour <= 12) {
     return "Good morning";
-  } else if (moment().isBetween(12, 15, "hour")) {
-    return "Good mfternoon";
-  } else if (moment().isBetween(15, 20, "hour")) {
+  } else if (hour > 12 && hour <= 15) {
+    return "Good afternoon";
+  } else if (hour > 15 && hour <= 20) {
     return "Good evening";
-  } else if (moment().isBetween(20, 3, "hour")) {
+  } else if (hour > 20 && hour <= 3) {
     return "You're up late";
   } else {
     return "Hello";
   }
 };
 
+const sprintf = (template: string, ...args: any[]) => {
+  return template.replace(/%[sdf]/g, (match: any) => {
+    const arg = args.shift();
+    switch (match) {
+      case "%s":
+        return String(arg);
+      case "%d":
+        return parseInt(arg, 10).toString();
+      case "%f":
+        return parseFloat(arg).toString();
+      default:
+        return match;
+    }
+  });
+};
+
+const randomArrayValue = (array: any[]) => {
+  const key = Math.floor(Math.random() * array.length);
+
+  return array[key];
+};
+
+const contextualGreeting = () => {
+  const greeting = randomArrayValue(greetings);
+
+  return sprintf(greeting.text, ...greeting.strings);
+};
+
 export {
   contextualHello,
+  contextualGreeting,
   chunkStringWithMinLength,
   getUserMessages,
   getConversationMessages,
