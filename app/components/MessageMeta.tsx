@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CaretIcon } from "./icons/CaretIcon";
 import { useMessageData } from "../context/MessageMetadata";
 import { Tooltip } from "@nextui-org/react";
+import { BoltIcon } from "./icons/BoltIcon";
 
 const TTFB = () => (
   <Tooltip
@@ -45,93 +46,105 @@ const MessageMeta = ({
       const ttsTotal = ttsTtfb + 100;
 
       return (
-        <div
-          className={`flex gap-x-2.5 text-xs text-[#BBBBBF] ${className} flex-wrap`}
-        >
-          <span>
-            Total latency: {((llmTotal + ttsTotal) / 1000).toFixed(1)}s
-          </span>
-
-          <button
-            className="font-semibold hover:text-[#fbfbff]"
-            onClick={() => setBreakdown(!breakdown)}
+        <>
+          <div
+            className={`flex gap-x-2.5 text-xs text-[#BBBBBF] ${className} flex-wrap`}
           >
-            Breakdown{" "}
-            <CaretIcon
-              className={`transition-transform duration-150 ease-in-out ${
-                breakdown && "rotate-180"
-              }`}
-            />
-          </button>
+            <span>
+              <BoltIcon />
+              Total latency: {((llmTotal + ttsTotal) / 1000).toFixed(1)}s
+            </span>
 
-          <span className={breakdown ? "inline" : "hidden"}>
-            LLM total: {(llmTotal / 1000).toFixed(1)}s
-          </span>
+            <button
+              className="font-semibold hover:text-[#fbfbff]"
+              onClick={() => setBreakdown(!breakdown)}
+            >
+              Breakdown{" "}
+              <CaretIcon
+                className={`transition-transform duration-150 ease-in-out ${
+                  breakdown && "rotate-180"
+                }`}
+              />
+            </button>
 
-          <span className={breakdown ? "inline" : "hidden"}>
-            TTS <TTFB />: {(ttsTtfb / 1000).toFixed(1)}s
-          </span>
+            <span className={breakdown ? "inline" : "hidden"}>
+              LLM total: {(llmTotal / 1000).toFixed(1)}s
+            </span>
 
-          <span className={breakdown ? "inline" : "hidden"}>
-            TTS total: {(ttsTotal / 1000).toFixed(1)}s
-          </span>
-        </div>
+            <span className={breakdown ? "inline" : "hidden"}>
+              TTS <TTFB />: {(ttsTtfb / 1000).toFixed(1)}s
+            </span>
+
+            <span className={breakdown ? "inline" : "hidden"}>
+              TTS total: {(ttsTotal / 1000).toFixed(1)}s
+            </span>
+          </div>
+        </>
       );
     } else if (foundAudio) {
       const ttsTtfb = foundAudio.latency;
       const ttsTotal = ttsTtfb + 100;
 
       return (
-        <div className={`flex gap-x-2.5 text-xs text-[#BBBBBF] ${className}`}>
-          <span>TTS latency: {(ttsTotal / 1000).toFixed(1)}s</span>
+        <>
+          <div className={`flex gap-x-2.5 text-xs text-[#BBBBBF] ${className}`}>
+            <span>
+              <BoltIcon />
+              TTS latency: {(ttsTotal / 1000).toFixed(1)}s
+            </span>
 
-          <button
-            className="font-semibold hover:text-[#fbfbff]"
-            onClick={() => setBreakdown(!breakdown)}
-          >
-            Breakdown{" "}
-            <CaretIcon
-              className={`transition-transform duration-150 ease-in-out ${
-                breakdown && "rotate-180"
-              }`}
-            />
-          </button>
+            <button
+              className="font-semibold hover:text-[#fbfbff]"
+              onClick={() => setBreakdown(!breakdown)}
+            >
+              Breakdown{" "}
+              <CaretIcon
+                className={`transition-transform duration-150 ease-in-out ${
+                  breakdown && "rotate-180"
+                }`}
+              />
+            </button>
 
-          <span className={breakdown ? "inline" : "hidden"}>
-            TTS <TTFB />: {(ttsTtfb / 1000).toFixed(1)}s
-          </span>
+            <span className={breakdown ? "inline" : "hidden"}>
+              TTS <TTFB />: {(ttsTtfb / 1000).toFixed(1)}s
+            </span>
 
-          <span className={breakdown ? "inline" : "hidden"}>
-            Network: {((ttsTotal - ttsTtfb) / 1000).toFixed(1)}s
-          </span>
-        </div>
+            <span className={breakdown ? "inline" : "hidden"}>
+              Network: {((ttsTotal - ttsTtfb) / 1000).toFixed(1)}s
+            </span>
+          </div>
+        </>
       );
     } else if (foundData) {
       const llmTtfb = foundData.response - foundData.start;
       const llmTotal = foundData.end - foundData.start;
 
       return (
-        <div className={`flex gap-x-2.5 text-xs text-[#BBBBBF] ${className}`}>
-          <span>LLM latency: {(llmTotal / 1000).toFixed(1)}s</span>
-          <button
-            className="font-semibold hover:text-[#fbfbff]"
-            onClick={() => setBreakdown(!breakdown)}
-          >
-            Breakdown{" "}
-            <CaretIcon
-              className={`transition-transform duration-150 ease-in-out ${
-                breakdown && "rotate-180"
-              }`}
-            />
-          </button>
-          <span className={breakdown ? "inline" : "hidden"}>
-            LLM <TTFB />: {(llmTotal / 1000).toFixed(1)}s
-          </span>
+        <>
+          <div className={`flex gap-x-2.5 text-xs text-[#BBBBBF] ${className}`}>
+            <span>
+              <BoltIcon /> LLM latency: {(llmTotal / 1000).toFixed(1)}s
+            </span>
+            <button
+              className="font-semibold hover:text-[#fbfbff]"
+              onClick={() => setBreakdown(!breakdown)}
+            >
+              Breakdown{" "}
+              <CaretIcon
+                className={`transition-transform duration-150 ease-in-out ${
+                  breakdown && "rotate-180"
+                }`}
+              />
+            </button>
+            <span className={breakdown ? "inline" : "hidden"}>
+              LLM <TTFB />: {(llmTotal / 1000).toFixed(1)}s
+            </span>
 
-          <span className={breakdown ? "inline" : "hidden"}>
-            Network: {((llmTotal - llmTtfb) / 1000).toFixed(1)}s
-          </span>
-        </div>
+            <span className={breakdown ? "inline" : "hidden"}>
+              Network: {((llmTotal - llmTtfb) / 1000).toFixed(1)}s
+            </span>
+          </div>
+        </>
       );
     }
   }
