@@ -93,7 +93,7 @@ const contextualHello = () => {
     return "Good afternoon";
   } else if (hour > 15 && hour <= 20) {
     return "Good evening";
-  } else if (hour > 20 && hour <= 3) {
+  } else if (hour > 20 || hour <= 3) {
     return "You're up late";
   } else {
     return "Hello";

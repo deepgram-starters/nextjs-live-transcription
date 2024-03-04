@@ -57,7 +57,7 @@ export const Controls = ({
             <MicrophoneIcon micOpen={microphoneOpen} />
             <span>
               {microphoneOpen ? (
-                <>Listening...</>
+                <>Now listening...</>
               ) : (
                 <>{`${isTablet || isMobile ? "Tap" : "Click"} to speak`}</>
               )}
