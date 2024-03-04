@@ -13,6 +13,16 @@ const MessageMeta = ({
   const { playQueue } = usePlayQueue();
   const [breakdown, setBreakdown] = useState(false);
 
+  if (message.role === "user") {
+    return (
+      <div
+        className={`flex flex-row-reverse gap-x-2.5 text-xs text-[#BBBBBF] ${className}`}
+      >
+        <span>STT latency: 0.4s</span>
+      </div>
+    );
+  }
+
   if (message.role === "assistant") {
     const foundAudio = playQueue.findLast((item) => item.id === message.id);
 
@@ -33,28 +43,16 @@ const MessageMeta = ({
           </button>
 
           {message.id !== "welcome" && (
-            <span
-              className={`overflow-hidden whitespace-nowrap w-0 transition-width duration-500 ease-in-out ${
-                breakdown && "w-fit"
-              }`}
-            >
+            <span className={breakdown ? "inline" : "hidden"}>
               LLM: {(foundAudio?.latency / 1000).toFixed(1)}s
             </span>
           )}
 
-          <span
-            className={`overflow-hidden whitespace-nowrap w-0 transition-width duration-500 ease-in-out ${
-              breakdown && "w-fit"
-            }`}
-          >
+          <span className={breakdown ? "inline" : "hidden"}>
             Text-to-speech: {(foundAudio?.latency / 1000).toFixed(1)}s
           </span>
 
-          <span
-            className={`overflow-hidden whitespace-nowrap w-0 transition-width duration-500 ease-in-out ${
-              breakdown && "w-fit"
-            }`}
-          >
+          <span className={breakdown ? "inline" : "hidden"}>
             Network: {(foundAudio?.latency / 1000).toFixed(1)}s
           </span>
         </div>

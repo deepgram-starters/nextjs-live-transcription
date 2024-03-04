@@ -3,7 +3,13 @@ import { Avatar } from "./Avatar";
 import { MessageMeta } from "./MessageMeta";
 import { TextContent } from "./TextContext";
 
-export const RightBubble = ({ message }: { message: Message; id?: string }) => {
+export const RightBubble = ({
+  message,
+  text,
+}: {
+  message?: Message;
+  text?: string;
+}) => {
   return (
     <>
       <div className="col-start-6 col-end-13 p-3">
@@ -13,11 +19,11 @@ export const RightBubble = ({ message }: { message: Message; id?: string }) => {
           </div>
           <div className="glass relative text-sm py-2 px-4 shadow rounded-s-xl rounded-ee-xl">
             <div className="text-sm font-normal text-white/80 markdown">
-              <TextContent text={message.content} />
+              <TextContent text={message?.content ?? text ?? ""} />
             </div>
           </div>
         </div>
-        <MessageMeta message={message} />
+        {message && <MessageMeta className="mr-7 pt-3" message={message} />}
       </div>
     </>
   );

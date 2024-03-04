@@ -392,7 +392,7 @@ export default function Conversation(): JSX.Element {
                         ))}
 
                       {currentUtterance && (
-                        <RightBubble message={currentUtterance}></RightBubble>
+                        <RightBubble text={currentUtterance}></RightBubble>
                       )}
 
                       <div
