@@ -1,8 +1,8 @@
 import { Message } from "ai/react";
 import { useMessageData } from "../context/MessageMetadata";
-import moment from "moment";
-import { voiceMap } from "../context/Deepgram";
 import { usePlayQueue } from "../context/PlayQueue";
+import { voiceMap } from "../context/Deepgram";
+import moment from "moment";
 
 const MessageHeader = ({
   message,
@@ -22,9 +22,9 @@ const MessageHeader = ({
       <div className="flex items-center space-x-2 rtl:space-x-reverse">
         <span className="text-sm font-semibold text-white">
           {foundAudio?.model
-            ? voiceMap(foundAudio?.model)
+            ? voiceMap(foundAudio?.model).name
             : foundData?.ttsModel
-            ? voiceMap(foundData?.ttsModel)
+            ? voiceMap(foundData?.ttsModel).name
             : "Deepgram AI"}
         </span>
         <span className="text-xs font-normal text-gray-400">

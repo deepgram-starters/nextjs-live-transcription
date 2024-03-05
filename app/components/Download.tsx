@@ -1,6 +1,6 @@
 import { Message } from "ai/react";
 import { DownloadIcon } from "./icons/DownloadIcon";
-import { useDeepgram } from "../context/Deepgram";
+import { useDeepgram, voiceMap } from "../context/Deepgram";
 
 const DownloadButton = ({ content }: { content: string }) => {
   const file = new Blob([content], { type: "text/plain" });
@@ -23,7 +23,7 @@ const DownloadButton = ({ content }: { content: string }) => {
 
 export const Download = ({ messages }: { messages: Message[] }) => {
   const { ttsOptions } = useDeepgram();
-  const voice = ttsOptions.model;
+  const voice = voiceMap(ttsOptions.model).name;
   const context = messages
     .filter((m) => ["user", "assistant"].includes(m.role))
     .map((m) => {
@@ -41,5 +41,4 @@ export const Download = ({ messages }: { messages: Message[] }) => {
       <DownloadButton content={context.join("\n\n")} />
     </div>
   );
-  // return ;
 };

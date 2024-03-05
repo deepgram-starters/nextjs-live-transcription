@@ -16,19 +16,19 @@ interface DeepgramContextInterface {
 
 const DeepgramContext = createContext({} as DeepgramContext);
 
-const voices: { [key: string]: string } = {
-  "aura-asteria-en": "Asteria",
-  "aura-luna-en": "Luna",
-  "aura-stella-en": "Stella",
-  "aura-athena-en": "Athena",
-  "aura-hera-en": "Hera",
-  "aura-orion-en": "Orion",
-  "aura-arcas-en": "Arcas",
-  "aura-perseus-en": "Perseus",
-  "aura-angus-en": "Angus",
-  "aura-orpheus-en": "Orpheus",
-  "aura-helios-en": "Helios",
-  "aura-zeus-en": "Zeus",
+const voices: { [key: string]: { name: string; avatar: string } } = {
+  "aura-asteria-en": { name: "Asteria", avatar: "/aura-asteria-en.svg" },
+  "aura-luna-en": { name: "Luna", avatar: "/aura-luna-en.svg" },
+  "aura-stella-en": { name: "Stella", avatar: "/aura-stella-en.svg" },
+  "aura-athena-en": { name: "Athena", avatar: "/aura-athena-en.svg" },
+  "aura-hera-en": { name: "Hera", avatar: "/aura-hera-en.svg" },
+  "aura-orion-en": { name: "Orion", avatar: "/aura-orion-en.svg" },
+  "aura-arcas-en": { name: "Arcas", avatar: "/aura-arcas-en.svg" },
+  "aura-perseus-en": { name: "Perseus", avatar: "/aura-perseus-en.svg" },
+  "aura-angus-en": { name: "Angus", avatar: "/aura-angus-en.svg" },
+  "aura-orpheus-en": { name: "Orpheus", avatar: "/aura-orpheus-en.svg" },
+  "aura-helios-en": { name: "Helios", avatar: "/aura-helios-en.svg" },
+  "aura-zeus-en": { name: "Zeus", avatar: "/aura-zeus-en.svg" },
 };
 
 const voiceMap = (model: string) => {

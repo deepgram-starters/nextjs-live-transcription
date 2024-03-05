@@ -34,7 +34,10 @@ const MessageMeta = ({
       <div
         className={`flex flex-row-reverse gap-x-2.5 text-xs text-[#BBBBBF] ${className}`}
       >
-        <span>STT latency: 0.4s</span>
+        <span>
+          <BoltIcon />
+          Transcription latency: 0.4s
+        </span>
       </div>
     );
   }

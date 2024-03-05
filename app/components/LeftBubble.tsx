@@ -1,19 +1,17 @@
-import { DgSvg } from "./DgSvg";
+import { AgentAvatar } from "./AgentAvatar";
+import { Message } from "ai/react";
 import { MessageAudio } from "./MessageAudio";
+import { MessageHeader } from "./MessageHeader";
 import { MessageMeta } from "./MessageMeta";
 import { TextContent } from "./TextContext";
-import { useMemo } from "react";
-import moment from "moment";
-import { Message } from "ai/react";
-import { MessageHeader } from "./MessageHeader";
 
 export const LeftBubble = ({ message }: { message: Message }) => {
   return (
     <>
       <div className="col-start-1 col-end-13 sm:col-end-11 md:col-end-9 lg:col-end-8 xl:col-end-7 p-3">
         <div className="flex items-start gap-2">
-          <div className="h-5 w-5 text-white shrink-0 mt-1">
-            <DgSvg />
+          <div className="h-5 w-12 text-white shrink-0">
+            <AgentAvatar message={message} />
           </div>
           <div className="glass flex p-4 rounded-e-xl rounded-es-xl">
             <div className="flex flex-col">
@@ -27,7 +25,7 @@ export const LeftBubble = ({ message }: { message: Message }) => {
             <MessageAudio message={message} />
           </div>
         </div>
-        <MessageMeta className="ml-7 pt-3" message={message} />
+        <MessageMeta className="ml-14 pt-3" message={message} />
       </div>
     </>
   );
