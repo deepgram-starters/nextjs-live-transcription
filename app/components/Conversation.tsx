@@ -53,6 +53,7 @@ export default function Conversation(): JSX.Element {
     add: addTranscriptPart,
     queue: transcriptParts,
     clear: clearTranscriptParts,
+    last: lastTranscriptPart,
   } = useQueue<{ is_final: boolean; speech_final: boolean; text: string }>([]);
 
   /**
@@ -272,7 +273,7 @@ export default function Conversation(): JSX.Element {
             // });
 
             let content = utteranceText(data);
-            if (content) {
+            if (content || data.speech_final) {
               /**
                * use an outbound message queue to build up the unsent utterance
                */
@@ -312,7 +313,13 @@ export default function Conversation(): JSX.Element {
   useEffect(() => {
     const parts = getCurrentUtterance();
     const last = parts[parts.length - 1];
-    const content = parts.map(({ text }) => text).join(" ");
+    const content = parts
+      .map(({ text }) => text)
+      .join(" ")
+      .trim();
+
+    if (content === "") return;
+
     setCurrentUtterance(content);
 
     if (last && last.speech_final) {
