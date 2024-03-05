@@ -64,8 +64,8 @@ export default function Conversation(): JSX.Element {
   /**
    * State
    */
-  const [apiKey, setApiKey] = useState<CreateProjectKeyResponse | null>();
-  const [connection, setConnection] = useState<LiveClient | null>();
+  const [apiKey, setApiKey] = useState<CreateProjectKeyResponse>();
+  const [connection, setConnection] = useState<LiveClient>();
   const [initialLoad, setInitialLoad] = useState(true);
   const [isListening, setListening] = useState(false);
   const [isLoading, setLoading] = useState(true);
@@ -210,7 +210,7 @@ export default function Conversation(): JSX.Element {
    * Reactive effects
    */
   useEffect(() => {
-    if (!apiKey) {
+    if (!apiKey && !connection) {
       fetch("/api/authenticate", { cache: "no-store" })
         .then((res) => res.json())
         .then((object) => {
@@ -223,12 +223,12 @@ export default function Conversation(): JSX.Element {
           console.error(e);
         });
     }
-  }, [apiKey]);
+  }, [apiKey, connection]);
 
   const { player, clearNowPlaying } = useNowPlaying();
 
   useEffect(() => {
-    if (apiKey?.key && !connection) {
+    if (apiKey && !connection) {
       const deepgram = createClient(apiKey?.key ?? "");
       const connection = deepgram.listen.live({
         model: "nova-2",
@@ -250,8 +250,8 @@ export default function Conversation(): JSX.Element {
          */
         connection.on(LiveTranscriptionEvents.Close, (e: any) => {
           setListening(false);
-          setApiKey(null);
-          setConnection(null);
+          setApiKey(undefined);
+          setConnection(undefined);
         });
 
         /**
