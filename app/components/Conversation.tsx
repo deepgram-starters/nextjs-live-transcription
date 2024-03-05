@@ -88,6 +88,7 @@ export default function Conversation(): JSX.Element {
         id: message.id,
         blob: await res.blob(),
         latency: Number(headers.get("X-DG-Latency")) ?? Date.now() - start,
+        networkLatency: Date.now() - start,
         played: false,
       });
     },

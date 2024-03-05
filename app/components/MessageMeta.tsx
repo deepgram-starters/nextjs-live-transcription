@@ -43,7 +43,7 @@ const MessageMeta = ({
     if (foundData && foundAudio) {
       const llmTotal = foundData.end - foundData.start;
       const ttsTtfb = foundAudio.latency;
-      const ttsTotal = ttsTtfb + 100;
+      const ttsTotal = foundAudio.networkLatency;
 
       return (
         <>
@@ -83,7 +83,7 @@ const MessageMeta = ({
       );
     } else if (foundAudio) {
       const ttsTtfb = foundAudio.latency;
-      const ttsTotal = ttsTtfb + 100;
+      const ttsTotal = foundAudio.networkLatency;
 
       return (
         <>

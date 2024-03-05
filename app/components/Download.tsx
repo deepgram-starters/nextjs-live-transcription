@@ -7,7 +7,7 @@ const DownloadButton = ({ content }: { content: string }) => {
 
   return (
     <a
-      className="glass w-[10.5rem] md:w-10 h-10 border rounded-full text-sm p-2.5 hover:w-[10.5rem]transition-all ease-in-out duration-1000 overflow-hidden whitespace-nowrap"
+      className="glass w-[10.5rem] md:w-10 h-10 border rounded-full text-sm p-2.5 hover:w-[10.5rem] transition-all ease-in-out duration-1000 overflow-hidden whitespace-nowrap"
       download="transcript.txt"
       target="_blank"
       rel="noreferrer"
