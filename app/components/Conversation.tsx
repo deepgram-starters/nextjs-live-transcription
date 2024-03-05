@@ -453,6 +453,7 @@ export default function Conversation(): JSX.Element {
               </div>
               {!initialLoad && (
                 <Controls
+                  messages={chatMessages}
                   handleSubmit={handleSubmit}
                   handleInputChange={handleInputChange}
                   input={input}

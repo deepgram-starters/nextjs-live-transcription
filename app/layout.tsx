@@ -12,6 +12,7 @@ import { PlayQueueContextProvider } from "./context/PlayQueue";
 import Script from "next/script";
 import { MicrophoneContextProvider } from "./context/Microphone";
 import { MessageMetadataContextProvider } from "./context/MessageMetadata";
+import { DeepgramContextProvider } from "./context/Deepgram";
 
 const inter = Inter({ subsets: ["latin"] });
 const favorit = localFont({
@@ -40,15 +41,17 @@ export default function RootLayout({
         className={`h-full ${classNames(favorit.variable, inter.className)}`}
       >
         <ErrorContextProvider>
-          <MicrophoneContextProvider>
-            <PlayQueueContextProvider>
-              <NowPlayingContextProvider>
-                <MessageMetadataContextProvider>
-                  {children}
-                </MessageMetadataContextProvider>
-              </NowPlayingContextProvider>
-            </PlayQueueContextProvider>
-          </MicrophoneContextProvider>
+          <DeepgramContextProvider>
+            <MicrophoneContextProvider>
+              <PlayQueueContextProvider>
+                <NowPlayingContextProvider>
+                  <MessageMetadataContextProvider>
+                    {children}
+                  </MessageMetadataContextProvider>
+                </NowPlayingContextProvider>
+              </PlayQueueContextProvider>
+            </MicrophoneContextProvider>
+          </DeepgramContextProvider>
         </ErrorContextProvider>
       </body>
       <GoogleTagManager gtmId="GTM-5R73N627" />
