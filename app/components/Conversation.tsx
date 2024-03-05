@@ -20,7 +20,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { contextualGreeting, utteranceText } from "../lib/helpers";
 import { useNowPlaying } from "../context/NowPlaying";
 import { usePlayQueue } from "../context/PlayQueue";
-import { Spinner } from "flowbite-react";
+import { Spinner } from "@nextui-org/react";
 import { useMicrophone } from "../context/Microphone";
 import { MessageMetadata } from "../lib/types";
 import { useMessageData } from "../context/MessageMetadata";
@@ -400,7 +400,7 @@ export default function Conversation(): JSX.Element {
   if (isLoadingKey) {
     return (
       <div className="w-auto h-full items-center flex justify-center">
-        <Spinner size={"md"} className="-mt-1 mr-2" />
+        <Spinner size={"sm"} className="-mt-1 mr-2" />
         Connecting...
       </div>
     );
@@ -412,7 +412,7 @@ export default function Conversation(): JSX.Element {
   if (isLoading) {
     return (
       <div className="w-auto h-full items-center flex justify-center">
-        <Spinner size={"md"} className="-mt-1 mr-2" />
+        <Spinner size={"sm"} className="-mt-1 mr-2" />
         Loading...
       </div>
     );

@@ -1,7 +1,7 @@
 import { usePlayQueue } from "../context/PlayQueue";
 import { useNowPlaying } from "../context/NowPlaying";
 import { Message } from "ai/react";
-import { Spinner } from "flowbite-react";
+import { Spinner } from "@nextui-org/react";
 import { useState } from "react";
 
 const MessageAudio = ({
@@ -36,7 +36,7 @@ const MessageAudio = ({
    * Spinner if still waiting for a response
    */
   if (!found) {
-    return <Spinner />;
+    return <Spinner size={`sm`} />;
   }
 
   /**

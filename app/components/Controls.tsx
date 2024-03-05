@@ -7,6 +7,7 @@ import { usePlayQueue } from "../context/PlayQueue";
 import { useMicrophone } from "../context/Microphone";
 import { Download } from "./Download";
 import { Message } from "ai/react";
+import { Settings } from "./Settings";
 
 export const Controls = ({
   input,
@@ -53,7 +54,7 @@ export const Controls = ({
     <form onSubmit={submitter}>
       <div className="relative">
         <div className="absolute w-full h-[4.5rem] -top-[4.5rem] p-4 flex justify-between">
-          <Download messages={messages} />
+          <Settings />
           <Download messages={messages} />
         </div>
         <div className="flex bg-[#101014] rounded-full">
