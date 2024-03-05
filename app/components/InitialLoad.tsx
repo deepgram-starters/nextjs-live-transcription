@@ -28,12 +28,30 @@ export const InitialLoad = ({ fn }: { fn: () => void }) => {
           <h2 className="font-favorit mt-2 block font-bold text-xl text-gray-100">
             Welcome to Deepgram&apos;s AI Agent Demo.
           </h2>
-          <h3 className="mt-2 block text-gray-100/80">
-            ✅ Nova-2 Speech-to-Text
-          </h3>
-          <h3 className="mt-2 block text-gray-100/80">
-            ✅ Aura Text-to-Speech
-          </h3>
+          <div className="flex justify-center">
+            <ul className="w-fit text-left">
+              <li className="block w-full mt-2 text-gray-100/80">
+                <Image
+                  alt="Speech-to-Text by Deepgram"
+                  width="0"
+                  height="0"
+                  className="w-6 h-6 inline mr-2"
+                  src="/stt.svg"
+                />{" "}
+                Nova-2 Speech-to-Text
+              </li>
+              <li className="block w-full mt-2 text-gray-100/80">
+                <Image
+                  alt="Aura Text-to-Speech by Deepgram"
+                  width="0"
+                  height="0"
+                  className="w-6 h-6 inline mr-2"
+                  src="/tts.svg"
+                />{" "}
+                Aura Text-to-Speech
+              </li>
+            </ul>
+          </div>
           <span className="mt-4 block text-sm text-gray-100/70">
             <Headphones /> For optimal enjoyment, we recommend using headphones
             while using this application.
