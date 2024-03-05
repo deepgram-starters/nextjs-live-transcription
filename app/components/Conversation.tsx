@@ -24,6 +24,7 @@ import { Spinner } from "@nextui-org/react";
 import { useMicrophone } from "../context/Microphone";
 import { MessageMetadata } from "../lib/types";
 import { useMessageData } from "../context/MessageMetadata";
+import { useDeepgram, voiceMap } from "../context/Deepgram";
 
 /**
  * Conversation element that contains the conversational AI app.
@@ -33,6 +34,7 @@ export default function Conversation(): JSX.Element {
   /**
    * Custom context providers
    */
+  const { ttsOptions } = useDeepgram();
   const { playQueue, enqueueItem, updateItem } = usePlayQueue();
   const { nowPlaying, setNowPlaying } = useNowPlaying();
   const { addMessageData } = useMessageData();
@@ -75,8 +77,9 @@ export default function Conversation(): JSX.Element {
   const requestTtsAudio = useCallback(
     async (message: Message) => {
       const start = Date.now();
+      const model = ttsOptions.model;
 
-      const res = await fetch("/api/speak", {
+      const res = await fetch(`/api/speak?model=${model}`, {
         cache: "no-store",
         method: "POST",
         body: JSON.stringify(message),
@@ -90,9 +93,10 @@ export default function Conversation(): JSX.Element {
         latency: Number(headers.get("X-DG-Latency")) ?? Date.now() - start,
         networkLatency: Date.now() - start,
         played: false,
+        model,
       });
     },
-    [enqueueItem]
+    [enqueueItem, ttsOptions.model]
   );
 
   const [llmNewLatency, setLlmNewLatency] = useState<{
@@ -158,6 +162,7 @@ export default function Conversation(): JSX.Element {
       ...chatMessages[chatMessages.length - 1],
       ...llmNewLatency,
       end: Date.now(),
+      ttsModel: ttsOptions.model,
     };
 
     addMessageData(latestLlmMessage);
@@ -167,6 +172,7 @@ export default function Conversation(): JSX.Element {
     setLlmNewLatency,
     llmLoading,
     addMessageData,
+    ttsOptions.model,
   ]);
 
   /**
@@ -179,9 +185,17 @@ export default function Conversation(): JSX.Element {
   const startConversation = useCallback(() => {
     setInitialLoad(false);
 
+    // add a stub message data with no latency
+    const welcomeMetadata: MessageMetadata = {
+      ...greeting,
+      ttsModel: ttsOptions.model,
+    };
+
+    addMessageData(welcomeMetadata);
+
     // get welcome audio
     requestWelcomeAudio();
-  }, [requestWelcomeAudio]);
+  }, [addMessageData, greeting, requestWelcomeAudio, ttsOptions.model]);
 
   /**
    * Reactive effects

@@ -6,6 +6,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useState,
 } from "react";
 import { MessageMetadata } from "../lib/types";
@@ -30,6 +31,10 @@ const MessageMetadataContextProvider = ({
   const addMessageData = useCallback((queueItem: MessageMetadata): void => {
     setMessageData((q) => [...q, queueItem]);
   }, []);
+
+  // useEffect(() => {
+  //   console.log(messageData);
+  // }, [messageData]);
 
   return (
     <MessageMetadataContext.Provider

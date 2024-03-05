@@ -29,16 +29,10 @@ export const InitialLoad = ({ fn }: { fn: () => void }) => {
             Welcome to Deepgram&apos;s AI Agent Demo.
           </h2>
           <h3 className="mt-2 block text-gray-100/80">
-            Powered by Deepgram&apos;s{" "}
-            <span className="font-semibold text-gray-100/80">
-              Speech-to-Text
-            </span>{" "}
-            &amp;
-            <br />
-            <span className="font-semibold text-gray-100/80">
-              Aura Text-to-Speech
-            </span>{" "}
-            APIs
+            ✅ Nova-2 Speech-to-Text
+          </h3>
+          <h3 className="mt-2 block text-gray-100/80">
+            ✅ Aura Text-to-Speech
           </h3>
           <span className="mt-4 block text-sm text-gray-100/70">
             <Headphones /> For optimal enjoyment, we recommend using headphones

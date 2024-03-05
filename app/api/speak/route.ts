@@ -9,11 +9,12 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   // gotta use the request object to invalidate the cache every request :vomit:
   const url = req.url;
+  const model = req.nextUrl.searchParams.get("model") ?? "aura-asteria-en";
   const message: Message = await req.json();
   const start = Date.now();
 
   return await fetch(
-    `${process.env.DEEPGRAM_STT_DOMAIN}/v1/speak?model=aura-athena-en`,
+    `${process.env.DEEPGRAM_STT_DOMAIN}/v1/speak?model=${model}`,
     {
       method: "POST",
       body: JSON.stringify({ text: message.content }),

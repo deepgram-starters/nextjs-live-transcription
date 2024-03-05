@@ -40,7 +40,7 @@ const MessageMeta = ({
   }
 
   if (message.role === "assistant") {
-    if (foundData && foundAudio) {
+    if (foundData?.end && foundData?.start && foundAudio) {
       const llmTotal = foundData.end - foundData.start;
       const ttsTtfb = foundAudio.latency;
       const ttsTotal = foundAudio.networkLatency;
@@ -115,7 +115,7 @@ const MessageMeta = ({
           </div>
         </>
       );
-    } else if (foundData) {
+    } else if (foundData?.response && foundData?.start && foundData?.end) {
       const llmTtfb = foundData.response - foundData.start;
       const llmTotal = foundData.end - foundData.start;
 

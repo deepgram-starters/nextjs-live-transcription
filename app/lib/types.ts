@@ -1,9 +1,10 @@
 import { Message } from "ai";
 
 export interface MessageMetadata extends Partial<Message> {
-  start: number;
-  response: number;
-  end: number;
+  start?: number;
+  response?: number;
+  end?: number;
+  ttsModel?: string;
 }
 
 export interface AudioPacket {
@@ -12,4 +13,5 @@ export interface AudioPacket {
   latency: number;
   networkLatency: number;
   played: boolean;
+  model: string;
 }

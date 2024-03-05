@@ -5,6 +5,7 @@ import { TextContent } from "./TextContext";
 import { useMemo } from "react";
 import moment from "moment";
 import { Message } from "ai/react";
+import { MessageHeader } from "./MessageHeader";
 
 export const LeftBubble = ({ message }: { message: Message }) => {
   return (
@@ -16,14 +17,7 @@ export const LeftBubble = ({ message }: { message: Message }) => {
           </div>
           <div className="glass flex p-4 rounded-e-xl rounded-es-xl">
             <div className="flex flex-col">
-              <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                <span className="text-sm font-semibold text-white">
-                  Deepgram AI
-                </span>
-                <span className="text-xs font-normal text-gray-400">
-                  {useMemo(() => moment().calendar(), [])}
-                </span>
-              </div>
+              <MessageHeader message={message} />
               <div className="text-sm font-normal pt-2 text-white/80 markdown">
                 <TextContent text={message.content} />
               </div>
