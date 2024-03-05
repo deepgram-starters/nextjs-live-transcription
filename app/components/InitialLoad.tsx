@@ -29,9 +29,9 @@ export const InitialLoad = ({ fn }: { fn: () => void }) => {
             Welcome to Deepgram&apos;s AI Agent Demo.
           </h2>
           <div className="flex justify-center mt-2">
-            <ul className="list-disc marker:text-[#13EF93]">
-              <li className="text-left">Nova-2 Speech-to-Text</li>
-              <li className="text-left">Aura Text-to-Speech</li>
+            <ul className="list-disc list-inside marker:text-[#13EF93]">
+              <li className="text-center">Nova-2 Speech-to-Text</li>
+              <li className="text-center">Aura Text-to-Speech</li>
             </ul>
           </div>
           <span className="mt-4 block text-sm text-gray-100/70">
