@@ -183,6 +183,8 @@ export default function Conversation(): JSX.Element {
   }, [greeting, requestTtsAudio]);
 
   const startConversation = useCallback(() => {
+    if (!initialLoad) return;
+
     setInitialLoad(false);
 
     // add a stub message data with no latency
@@ -195,7 +197,13 @@ export default function Conversation(): JSX.Element {
 
     // get welcome audio
     requestWelcomeAudio();
-  }, [addMessageData, greeting, requestWelcomeAudio, ttsOptions.model]);
+  }, [
+    addMessageData,
+    greeting,
+    initialLoad,
+    requestWelcomeAudio,
+    ttsOptions.model,
+  ]);
 
   /**
    * Reactive effects
@@ -219,7 +227,7 @@ export default function Conversation(): JSX.Element {
   const { player, clearNowPlaying } = useNowPlaying();
 
   useEffect(() => {
-    if (apiKey?.key) {
+    if (apiKey?.key && !connection) {
       const deepgram = createClient(apiKey?.key ?? "");
       const connection = deepgram.listen.live({
         model: "nova-2",
@@ -258,7 +266,10 @@ export default function Conversation(): JSX.Element {
         connection.on(
           LiveTranscriptionEvents.Transcript,
           (data: LiveTranscriptionEvent) => {
-            // console.log(data);
+            // console.log({
+            //   is_final: data.is_final,
+            //   speech_final: data.speech_final,
+            // });
 
             let content = utteranceText(data);
             if (content) {
@@ -288,7 +299,7 @@ export default function Conversation(): JSX.Element {
       setConnection(connection);
       setLoading(false);
     }
-  }, [addTranscriptPart, apiKey, append]);
+  }, [addTranscriptPart, apiKey, append, connection]);
 
   const [currentUtterance, setCurrentUtterance] = useState("");
 

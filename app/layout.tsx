@@ -44,17 +44,15 @@ export default function RootLayout({
         )}`}
       >
         <ErrorContextProvider>
-          <DeepgramContextProvider>
-            <MicrophoneContextProvider>
-              <PlayQueueContextProvider>
-                <NowPlayingContextProvider>
-                  <MessageMetadataContextProvider>
-                    {children}
-                  </MessageMetadataContextProvider>
-                </NowPlayingContextProvider>
-              </PlayQueueContextProvider>
-            </MicrophoneContextProvider>
-          </DeepgramContextProvider>
+          <MicrophoneContextProvider>
+            <PlayQueueContextProvider>
+              <NowPlayingContextProvider>
+                <MessageMetadataContextProvider>
+                  <DeepgramContextProvider>{children}</DeepgramContextProvider>
+                </MessageMetadataContextProvider>
+              </NowPlayingContextProvider>
+            </PlayQueueContextProvider>
+          </MicrophoneContextProvider>
         </ErrorContextProvider>
       </body>
       <GoogleTagManager gtmId="GTM-5R73N627" />

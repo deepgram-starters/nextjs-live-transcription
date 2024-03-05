@@ -43,6 +43,14 @@ const MicrophoneContextProvider = ({
     queue, // : microphoneBlobs,
   } = useQueue<Blob>([]);
 
+  // useEffect(() => {
+  //   window.addEventListener("", handleUserKeyPress);
+
+  //   return () => {
+  //     window.removeEventListener("keydown", handleUserKeyPress);
+  //   };
+  // }, []);
+
   useEffect(() => {
     async function setupMicrophone() {
       const userMedia = await navigator.mediaDevices.getUserMedia({
