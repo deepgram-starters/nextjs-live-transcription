@@ -38,7 +38,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body
-        className={`h-full ${classNames(favorit.variable, inter.className)}`}
+        className={`h-full dark ${classNames(
+          favorit.variable,
+          inter.className
+        )}`}
       >
         <ErrorContextProvider>
           <DeepgramContextProvider>

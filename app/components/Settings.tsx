@@ -11,83 +11,102 @@ import {
   SelectItem,
   useDisclosure,
 } from "@nextui-org/react";
-import { useDeepgram, voiceMap } from "../context/Deepgram";
+import { useDeepgram, voiceMap, voices } from "../context/Deepgram";
+import { Dispatch, SetStateAction, useState } from "react";
 
-// const ModelSelection = () => {
-//   return (
-//     <Select
-//       items={users}
-//       label="Assigned to"
-//       className="max-w-xs"
-//       variant="bordered"
-//       classNames={{
-//         label: "group-data-[filled=true]:-translate-y-5",
-//         trigger: "min-h-unit-16",
-//         listboxWrapper: "max-h-[400px]",
-//       }}
-//       listboxProps={{
-//         itemClasses: {
-//           base: [
-//             "rounded-md",
-//             "text-default-500",
-//             "transition-opacity",
-//             "data-[hover=true]:text-foreground",
-//             "data-[hover=true]:bg-default-100",
-//             "dark:data-[hover=true]:bg-default-50",
-//             "data-[selectable=true]:focus:bg-default-50",
-//             "data-[pressed=true]:opacity-70",
-//             "data-[focus-visible=true]:ring-default-500",
-//           ],
-//         },
-//       }}
-//       popoverProps={{
-//         classNames: {
-//           base: "before:bg-default-200",
-//           content: "p-0 border-small border-divider bg-background",
-//         },
-//       }}
-//       renderValue={(items) => {
-//         return items.map((item) => (
-//           <div key={item.key} className="flex items-center gap-2">
-//             <Avatar
-//               alt={item.data.name}
-//               className="flex-shrink-0"
-//               size="sm"
-//               src={item.data.avatar}
-//             />
-//             <div className="flex flex-col">
-//               <span>{item.data.name}</span>
-//               <span className="text-default-500 text-tiny">
-//                 ({item.data.email})
-//               </span>
-//             </div>
-//           </div>
-//         ));
-//       }}
-//     >
-//       {(user) => (
-//         <SelectItem key={user.id} textValue={user.name}>
-//           <div className="flex gap-2 items-center">
-//             <Avatar
-//               alt={user.name}
-//               className="flex-shrink-0"
-//               size="sm"
-//               src={user.avatar}
-//             />
-//             <div className="flex flex-col">
-//               <span className="text-small">{user.name}</span>
-//               <span className="text-tiny text-default-400">{user.email}</span>
-//             </div>
-//           </div>
-//         </SelectItem>
-//       )}
-//     </Select>
-//   );
-// }
+const arrayOfVoices = Object.entries(voices).map((e) => ({
+  ...e[1],
+  model: e[0],
+}));
+
+const ModelSelection = ({
+  model,
+  setModel,
+}: {
+  model: string;
+  setModel: Dispatch<SetStateAction<string>>;
+}) => {
+  return (
+    <Select
+      defaultSelectedKeys={["aura-model-asteria"]}
+      selectedKeys={[model]}
+      onSelectionChange={(keys: any) =>
+        setModel(keys.entries().next().value[0])
+      }
+      items={arrayOfVoices}
+      label="Selected voice"
+      color="default"
+      variant="bordered"
+      classNames={{
+        label: "group-data-[filled=true]:-translate-y-5",
+        trigger: "min-h-unit-16",
+        listboxWrapper: "max-h-[400px]",
+      }}
+      listboxProps={{
+        itemClasses: {
+          base: [
+            "rounded-md",
+            "text-default-500",
+            "transition-opacity",
+            "data-[hover=true]:text-foreground",
+            "data-[hover=true]:bg-default-100",
+            "data-[hover=true]:bg-default-50",
+            "data-[selectable=true]:focus:bg-default-50",
+            "data-[pressed=true]:opacity-70",
+            "data-[focus-visible=true]:ring-default-500",
+          ],
+        },
+      }}
+      popoverProps={{
+        classNames: {
+          base: "before:bg-default-200",
+          content: "p-0 border-small border-divider bg-background",
+        },
+      }}
+      renderValue={(items) => {
+        return items.map((item) => (
+          <div key={item.key} className="flex items-center gap-2">
+            <Avatar
+              alt={item.data?.name}
+              className="flex-shrink-0"
+              size="sm"
+              src={item.data?.avatar}
+            />
+            <div className="flex flex-col">
+              <span>{item.data?.name}</span>
+              <span className="text-default-500 text-tiny">
+                ({item.data?.model})
+              </span>
+            </div>
+          </div>
+        ));
+      }}
+    >
+      {(model) => (
+        <SelectItem key={model.model} textValue={model.model} color="default">
+          <div className="flex gap-2 items-center">
+            <Avatar
+              alt={model.name}
+              className="flex-shrink-0"
+              size="sm"
+              src={model.avatar}
+            />
+            <div className="flex flex-col">
+              <span className="text-small">{model.name}</span>
+              <span className="text-tiny text-default-400">{model.model}</span>
+            </div>
+          </div>
+        </SelectItem>
+      )}
+    </Select>
+  );
+};
 
 export const Settings = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const { ttsOptions } = useDeepgram();
+  const { ttsOptions, setTtsOptions } = useDeepgram();
+
+  const [model, setModel] = useState<string>(ttsOptions.model);
 
   return (
     <>
@@ -114,25 +133,30 @@ export const Settings = () => {
         className="glass"
       >
         <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                Settings
-              </ModalHeader>
-              <ModalBody>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Nullam pulvinar risus non risus hendrerit venenatis.
-                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                </p>
-              </ModalBody>
-              <ModalFooter>
-                <Button color="primary" onPress={onClose}>
-                  Save
-                </Button>
-              </ModalFooter>
-            </>
-          )}
+          {(onClose) => {
+            const saveAndClose = () => {
+              setTtsOptions({ ...ttsOptions, model });
+
+              onClose();
+            };
+
+            return (
+              <>
+                <ModalHeader className="flex flex-col gap-1">
+                  Settings
+                </ModalHeader>
+                <ModalBody>
+                  <h2>Text-to-Speech Settings</h2>
+                  <ModelSelection model={model} setModel={setModel} />
+                </ModalBody>
+                <ModalFooter>
+                  <Button color="primary" onPress={saveAndClose}>
+                    Save
+                  </Button>
+                </ModalFooter>
+              </>
+            );
+          }}
         </ModalContent>
       </Modal>
     </>

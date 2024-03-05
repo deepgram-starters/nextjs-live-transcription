@@ -1,6 +1,9 @@
 import { Message } from "ai/react";
 import { DownloadIcon } from "./icons/DownloadIcon";
 import { useDeepgram, voiceMap } from "../context/Deepgram";
+import { useMessageData } from "../context/MessageMetadata";
+import { useQueue } from "@uidotdev/usehooks";
+import { usePlayQueue } from "../context/PlayQueue";
 
 const DownloadButton = ({ content }: { content: string }) => {
   const file = new Blob([content], { type: "text/plain" });
@@ -23,11 +26,17 @@ const DownloadButton = ({ content }: { content: string }) => {
 
 export const Download = ({ messages }: { messages: Message[] }) => {
   const { ttsOptions } = useDeepgram();
-  const voice = voiceMap(ttsOptions.model).name;
+  const { messageData } = useMessageData();
+  const { playQueue } = usePlayQueue();
   const context = messages
     .filter((m) => ["user", "assistant"].includes(m.role))
     .map((m) => {
       if (m.role === "assistant") {
+        const foundAudio = playQueue.findLast((item) => item.id === m.id);
+        const voice = foundAudio?.model
+          ? voiceMap(foundAudio?.model).name
+          : "Deepgram";
+
         return `${voice ?? "Asteria"}: ${m.content}`;
       }
 

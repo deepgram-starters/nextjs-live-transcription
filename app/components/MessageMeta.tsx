@@ -7,10 +7,7 @@ import { Tooltip } from "@nextui-org/react";
 import { BoltIcon } from "./icons/BoltIcon";
 
 const TTFB = () => (
-  <Tooltip
-    color={"primary"}
-    content="Time to first byte (TTFB) measures just how fast a website or service starts to send data."
-  >
+  <Tooltip content="Time to first byte (TTFB) measures just how fast a website or service starts to send data.">
     <span className="underline decoration-wavy">TTFB</span>
   </Tooltip>
 );

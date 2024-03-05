@@ -69,8 +69,8 @@ export default function Home() {
 
         {/* height 4rem */}
         <div className=" backdrop-blur-[2px] h-[4rem] flex items-center">
-          <footer className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 flex items-center justify-center gap-4 md:text-xl font-inter font-semibold text-[#4e4e52]">
-            <span>share it</span>
+          <footer className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 flex items-center justify-center gap-4 md:text-xl font-inter text-[#8a8a8e]">
+            <span className="text-base text-[#4e4e52]">share it</span>
             <a
               href="#"
               onClick={(e) => {
@@ -84,7 +84,7 @@ export default function Home() {
               }}
               target="_blank"
             >
-              <XIcon />
+              <XIcon className="mb-1" />
             </a>
             <a
               href="#"
@@ -98,7 +98,7 @@ export default function Home() {
                 return e.preventDefault();
               }}
             >
-              <LinkedInIcon />
+              <LinkedInIcon className="mb-1" />
             </a>
             <a
               href="#"
@@ -113,10 +113,14 @@ export default function Home() {
               }}
               target="_blank"
             >
-              <FacebookIcon />
+              <FacebookIcon className="mb-1" />
             </a>
-            <div className="border-l border-current w-px h-7">&nbsp;</div>
-            <a href="https://deepgram.com/contact-us" target="_blank">
+            <div className="border-l border-[#4e4e52] w-px h-7">&nbsp;</div>
+            <a
+              className="text-base font-semibold"
+              href="https://deepgram.com/contact-us"
+              target="_blank"
+            >
               contact us
             </a>
           </footer>
