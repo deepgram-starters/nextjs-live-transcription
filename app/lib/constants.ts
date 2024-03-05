@@ -79,7 +79,7 @@ export const greetings = [
     strings: [contextualHello()],
   },
   {
-    text: "%s! Are you looking to hear more about our new Text-to-Speech model; Aura?",
+    text: "%s! I'm excited to talk to you about Aura! Want to hear more about Deepgram's new Text-to-Speech model?",
     strings: [contextualHello()],
   },
 ];
