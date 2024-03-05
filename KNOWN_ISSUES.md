@@ -38,31 +38,9 @@ Request errors should retry (and display notice when "taking longer than usual" 
 
 Issue: https://github.com/deepgram-devs/deepgram-conversational-demo/issues/8
 
-## Mobile UX Tweaks
-
-Small tweaks to the mobile user experience, like scroll position on opening keyboard, buttons and icons in the controls bar, etc.
-
-Issue: https://github.com/deepgram-devs/deepgram-conversational-demo/issues/9
-
-## Setup OpenGraph and metadata
-
-We have some missing OG and meta information.
-
-Issue: https://github.com/deepgram-devs/deepgram-conversational-demo/issues/10
-
-## Better prompt injection protection
-
-Examples of role play and phonetically explicit responses can be prompted.
-
-Issue: https://github.com/deepgram-devs/deepgram-conversational-demo/issues/11
-
 ## Chunking TTS request and return stream from serverless function
 
 We'd like to be able to start the TTS response earlier. We have chunking logic for JavaScript, so we want to buffer the TTS input as a stream, clear the buffer into individual TTS requests, and combine the responses into a single response stream.
 
 See: https://www.npmjs.com/package/multistream
 Issue: https://github.com/deepgram-devs/deepgram-conversational-demo/issues/12
-
-## Name change
-
-Rebranding of the app
