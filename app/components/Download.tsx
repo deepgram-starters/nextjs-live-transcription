@@ -6,16 +6,18 @@ const DownloadButton = ({ content }: { content: string }) => {
   const file = new Blob([content], { type: "text/plain" });
 
   return (
-    <a
-      className="glass w-[10.5rem] md:w-10 h-10 border rounded-full text-sm p-2.5 hover:w-[10.5rem] transition-all ease-in-out duration-1000 overflow-hidden whitespace-nowrap"
-      download="transcript.txt"
-      target="_blank"
-      rel="noreferrer"
-      href={URL.createObjectURL(file)}
-    >
-      <DownloadIcon className="w-5 h-5" />
-      <span className="ml-2.5 text-xs">Download transcript</span>
-    </a>
+    <span className="bg-white/10 rounded-full flex">
+      <a
+        className={`relative m-px bg-black w-[10.5rem] md:w-10 h-10 rounded-full text-sm p-2.5 group hover:w-[10.5rem] transition-all ease-in-out duration-1000 overflow-hidden whitespace-nowrap`}
+        download="transcript.txt"
+        target="_blank"
+        rel="noreferrer"
+        href={URL.createObjectURL(file)}
+      >
+        <DownloadIcon className="w-5 h-5" />
+        <span className="ml-2.5 text-xs">Download transcript</span>
+      </a>
+    </span>
   );
 };
 
@@ -34,5 +36,10 @@ export const Download = ({ messages }: { messages: Message[] }) => {
       }
     });
 
-  return <DownloadButton content={context.join("\n\n")} />;
+  return (
+    <div className="flex items-center gap-2.5 text-sm">
+      <DownloadButton content={context.join("\n\n")} />
+    </div>
+  );
+  // return ;
 };

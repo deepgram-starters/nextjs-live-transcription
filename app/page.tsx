@@ -69,7 +69,7 @@ export default function Home() {
 
         {/* height 4rem */}
         <div className=" backdrop-blur-[2px] h-[4rem] flex items-center">
-          <footer className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 flex items-center justify-center gap-4 text-xl font-inter font-semibold text-[#4e4e52]">
+          <footer className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 flex items-center justify-center gap-4 md:text-xl font-inter font-semibold text-[#4e4e52]">
             <span>share it</span>
             <a
               href="#"
