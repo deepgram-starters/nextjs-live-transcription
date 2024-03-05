@@ -75,7 +75,7 @@ const ModelSelection = ({
             <div className="flex flex-col">
               <span>{item.data?.name}</span>
               <span className="text-default-500 text-tiny">
-                ({item.data?.model})
+                ({item.data?.model} - {item.data?.language} {item.data?.accent})
               </span>
             </div>
           </div>
@@ -93,7 +93,9 @@ const ModelSelection = ({
             />
             <div className="flex flex-col">
               <span className="text-small">{model.name}</span>
-              <span className="text-tiny text-default-400">{model.model}</span>
+              <span className="text-tiny text-default-400">
+                {model.model} - {model.language} {model.accent}
+              </span>
             </div>
           </div>
         </SelectItem>
