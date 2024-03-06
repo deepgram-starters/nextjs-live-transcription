@@ -6,7 +6,7 @@ import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 
 import "./globals.css";
-import { ErrorContextProvider } from "./context/Error";
+import { ToastContextProvider } from "./context/Toast";
 import { NowPlayingContextProvider } from "./context/NowPlaying";
 import { PlayQueueContextProvider } from "./context/PlayQueue";
 import Script from "next/script";
@@ -43,7 +43,7 @@ export default function RootLayout({
           inter.className
         )}`}
       >
-        <ErrorContextProvider>
+        <ToastContextProvider>
           <MicrophoneContextProvider>
             <PlayQueueContextProvider>
               <NowPlayingContextProvider>
@@ -53,7 +53,7 @@ export default function RootLayout({
               </NowPlayingContextProvider>
             </PlayQueueContextProvider>
           </MicrophoneContextProvider>
-        </ErrorContextProvider>
+        </ToastContextProvider>
       </body>
       <GoogleTagManager gtmId="GTM-5R73N627" />
       <Script id="heap-analytics">
