@@ -300,9 +300,9 @@ export default function Conversation(): JSX.Element {
     const interval = setInterval(() => {
       const timeLived = Date.now() - lastUtterance;
 
-      console.log(timeLived, timeLived > 2000, currentUtterance);
+      console.log(timeLived, timeLived > 1500, currentUtterance);
 
-      if (currentUtterance !== "" && timeLived > 2000) {
+      if (currentUtterance !== "" && timeLived > 1500) {
         console.log("failsafe fires! pew pew!!");
 
         append({
