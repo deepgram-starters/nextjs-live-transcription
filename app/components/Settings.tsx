@@ -13,6 +13,7 @@ import {
 } from "@nextui-org/react";
 import { useDeepgram, voiceMap, voices } from "../context/Deepgram";
 import { Dispatch, SetStateAction, useState } from "react";
+import { useToast } from "../context/Toast";
 
 const arrayOfVoices = Object.entries(voices).map((e) => ({
   ...e[1],
@@ -105,6 +106,7 @@ const ModelSelection = ({
 };
 
 export const Settings = () => {
+  const { toast } = useToast();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { ttsOptions, setTtsOptions } = useDeepgram();
 
@@ -140,6 +142,8 @@ export const Settings = () => {
           {(onClose) => {
             const saveAndClose = () => {
               setTtsOptions({ ...ttsOptions, model });
+
+              toast("Options saved.");
 
               onClose();
             };

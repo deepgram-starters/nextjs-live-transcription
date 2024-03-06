@@ -152,8 +152,6 @@ const DeepgramContextProvider = ({ children }: DeepgramContextInterface) => {
         }
       );
 
-      toast("test");
-
       setConnection(connection);
       setConnecting(false);
     }
@@ -191,12 +189,16 @@ const DeepgramContextProvider = ({ children }: DeepgramContextInterface) => {
       });
 
       connection.addListener(LiveTranscriptionEvents.Close, () => {
+        toast("The connection to Deepgram closed, we'll attempt to reconnect.");
         setConnectionReady(false);
         connection.removeAllListeners();
         setConnection(undefined);
       });
 
       connection.addListener(LiveTranscriptionEvents.Error, () => {
+        toast(
+          "An unknown error occured. We'll attempt to reconnect to Deepgram."
+        );
         setConnectionReady(false);
         connection.removeAllListeners();
         setConnection(undefined);
@@ -207,7 +209,7 @@ const DeepgramContextProvider = ({ children }: DeepgramContextInterface) => {
       setConnectionReady(false);
       connection?.removeAllListeners();
     };
-  }, [connection]);
+  }, [connection, toast]);
 
   return (
     <DeepgramContext.Provider
