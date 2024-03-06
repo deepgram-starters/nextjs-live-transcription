@@ -34,7 +34,7 @@ export default function Conversation(): JSX.Element {
   /**
    * Custom context providers
    */
-  const { ttsOptions } = useDeepgram();
+  const { ttsOptions, connection, connectionReady } = useDeepgram();
   const { playQueue, enqueueItem, updateItem } = usePlayQueue();
   const { nowPlaying, setNowPlaying } = useNowPlaying();
   const { addMessageData } = useMessageData();
@@ -64,12 +64,12 @@ export default function Conversation(): JSX.Element {
   /**
    * State
    */
-  const [apiKey, setApiKey] = useState<CreateProjectKeyResponse>();
-  const [connection, setConnection] = useState<LiveClient>();
+  // const [apiKey, setApiKey] = useState<CreateProjectKeyResponse>();
+  // const [connection, setConnection] = useState<LiveClient>();
   const [initialLoad, setInitialLoad] = useState(true);
-  const [isListening, setListening] = useState(false);
-  const [isLoading, setLoading] = useState(true);
-  const [isLoadingKey, setLoadingKey] = useState(true);
+  // const [isListening, setListening] = useState(false);
+  // const [isLoading, setLoading] = useState(true);
+  // const [isLoadingKey, setLoadingKey] = useState(true);
   const [isProcessing, setProcessing] = useState(false);
 
   /**
@@ -78,7 +78,7 @@ export default function Conversation(): JSX.Element {
   const requestTtsAudio = useCallback(
     async (message: Message) => {
       const start = Date.now();
-      const model = ttsOptions.model;
+      const model = ttsOptions?.model ?? "aura-asteria-en";
 
       const res = await fetch(`/api/speak?model=${model}`, {
         cache: "no-store",
@@ -97,7 +97,7 @@ export default function Conversation(): JSX.Element {
         model,
       });
     },
-    [enqueueItem, ttsOptions.model]
+    [enqueueItem, ttsOptions?.model]
   );
 
   const [llmNewLatency, setLlmNewLatency] = useState<{
@@ -163,7 +163,7 @@ export default function Conversation(): JSX.Element {
       ...chatMessages[chatMessages.length - 1],
       ...llmNewLatency,
       end: Date.now(),
-      ttsModel: ttsOptions.model,
+      ttsModel: ttsOptions?.model,
     };
 
     addMessageData(latestLlmMessage);
@@ -173,7 +173,7 @@ export default function Conversation(): JSX.Element {
     setLlmNewLatency,
     llmLoading,
     addMessageData,
-    ttsOptions.model,
+    ttsOptions?.model,
   ]);
 
   /**
@@ -191,7 +191,7 @@ export default function Conversation(): JSX.Element {
     // add a stub message data with no latency
     const welcomeMetadata: MessageMetadata = {
       ...greeting,
-      ttsModel: ttsOptions.model,
+      ttsModel: ttsOptions?.model,
     };
 
     addMessageData(welcomeMetadata);
@@ -203,104 +203,42 @@ export default function Conversation(): JSX.Element {
     greeting,
     initialLoad,
     requestWelcomeAudio,
-    ttsOptions.model,
+    ttsOptions?.model,
   ]);
-
-  /**
-   * Reactive effects
-   */
-  useEffect(() => {
-    if (!apiKey && !connection) {
-      fetch("/api/authenticate", { cache: "no-store" })
-        .then((res) => res.json())
-        .then((object) => {
-          if (!("key" in object)) throw new Error("No api key returned");
-
-          setApiKey(object);
-          setLoadingKey(false);
-        })
-        .catch((e) => {
-          console.error(e);
-        });
-    }
-  }, [apiKey, connection]);
 
   const { player, clearNowPlaying } = useNowPlaying();
 
   useEffect(() => {
-    if (apiKey && !connection) {
-      const deepgram = createClient(apiKey?.key ?? "");
-      const connection = deepgram.listen.live({
-        model: "nova-2",
-        interim_results: true,
-        smart_format: true,
-        endpointing: 350,
-        utterance_end_ms: 1000,
-        filler_words: true,
-      });
-
-      /**
-       * connection established
-       */
-      connection.on(LiveTranscriptionEvents.Open, (e: any) => {
-        setListening(true);
-
+    const onTranscript = (data: LiveTranscriptionEvent) => {
+      let content = utteranceText(data);
+      if (content || data.speech_final) {
         /**
-         * connection closed
+         * use an outbound message queue to build up the unsent utterance
          */
-        connection.on(LiveTranscriptionEvents.Close, (e: any) => {
-          setListening(false);
-          setApiKey(undefined);
-          setConnection(undefined);
+        addTranscriptPart({
+          is_final: data.is_final as boolean,
+          speech_final: data.speech_final as boolean,
+          text: content,
         });
+      }
+    };
 
-        /**
-         * error detected
-         */
-        connection.on(LiveTranscriptionEvents.Error, (e: any) => {
-          console.error("websocket event: Error", e);
-        });
+    const onOpen = (connection: LiveClient) => {
+      connection.addListener(LiveTranscriptionEvents.Transcript, onTranscript);
+    };
 
-        /**
-         * transcript response received
-         */
-        connection.on(
-          LiveTranscriptionEvents.Transcript,
-          (data: LiveTranscriptionEvent) => {
-            // console.log({
-            //   is_final: data.is_final,
-            //   speech_final: data.speech_final,
-            // });
-
-            let content = utteranceText(data);
-            if (content || data.speech_final) {
-              /**
-               * use an outbound message queue to build up the unsent utterance
-               */
-              addTranscriptPart({
-                is_final: data.is_final as boolean,
-                speech_final: data.speech_final as boolean,
-                text: content,
-              });
-            }
-          }
-        );
-
-        /**
-         * utterance end response received
-         */
-        connection.on(
-          LiveTranscriptionEvents.UtteranceEnd,
-          (data: UtteranceEndEvent) => {
-            // console.log(data);
-          }
-        );
-      });
-
-      setConnection(connection);
-      setLoading(false);
+    if (connection) {
+      connection.addListener(LiveTranscriptionEvents.Open, onOpen);
     }
-  }, [addTranscriptPart, apiKey, append, connection]);
+
+    return () => {
+      connection?.removeListener(LiveTranscriptionEvents.Open, onOpen);
+      connection?.removeListener(
+        LiveTranscriptionEvents.Transcript,
+        onTranscript
+      );
+    };
+  }, [addTranscriptPart, connection]);
 
   const [currentUtterance, setCurrentUtterance] = useState("");
 
@@ -353,8 +291,9 @@ export default function Conversation(): JSX.Element {
       if (microphoneQueueSize > 0 && !isProcessing) {
         setProcessing(true);
 
-        if (isListening) {
+        if (connectionReady) {
           const nextBlob = firstBlob;
+
           if (nextBlob) {
             connection?.send(nextBlob);
           }
@@ -377,7 +316,7 @@ export default function Conversation(): JSX.Element {
     firstBlob,
     microphoneQueueSize,
     isProcessing,
-    isListening,
+    connectionReady,
   ]);
 
   /**
@@ -394,11 +333,11 @@ export default function Conversation(): JSX.Element {
   }, [nowPlaying, playQueue, setNowPlaying]);
 
   /**
-   * keep alive when mic closed
+   * keep deepgram connection alive when mic closed
    */
   useEffect(() => {
     let keepAlive: any;
-    if (connection && isListening && !microphoneOpen) {
+    if (connection && connectionReady && !microphoneOpen) {
       keepAlive = setInterval(() => {
         // should stop spamming dev console when working on frontend in devmode
         if (connection?.getReadyState() !== LiveConnectionState.OPEN) {
@@ -415,7 +354,7 @@ export default function Conversation(): JSX.Element {
     return () => {
       clearInterval(keepAlive);
     };
-  }, [connection, isListening, microphoneOpen]);
+  }, [connection, connectionReady, microphoneOpen]);
 
   // this works
   useEffect(() => {
@@ -430,23 +369,11 @@ export default function Conversation(): JSX.Element {
   /**
    * loading message (api key)
    */
-  if (isLoadingKey) {
+  if (!connection) {
     return (
       <div className="w-auto h-full items-center flex justify-center">
         <Spinner size={"sm"} className="-mt-1 mr-2" />
         Connecting...
-      </div>
-    );
-  }
-
-  /**
-   * loading message (app)
-   */
-  if (isLoading) {
-    return (
-      <div className="w-auto h-full items-center flex justify-center">
-        <Spinner size={"sm"} className="-mt-1 mr-2" />
-        Loading...
       </div>
     );
   }

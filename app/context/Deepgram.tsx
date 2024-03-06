@@ -1,13 +1,30 @@
 "use client";
 
-import { LiveSchema, SpeakSchema } from "@deepgram/sdk";
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  CreateProjectKeyResponse,
+  LiveClient,
+  LiveConnectionState,
+  LiveSchema,
+  LiveTranscriptionEvents,
+  SpeakSchema,
+  createClient,
+} from "@deepgram/sdk";
+import {
+  Dispatch,
+  SetStateAction,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 type DeepgramContext = {
-  ttsOptions: any;
-  setTtsOptions: any;
-  sttOptions: any;
-  setSttOptions: any;
+  ttsOptions: SpeakSchema | undefined;
+  setTtsOptions: Dispatch<SetStateAction<SpeakSchema | undefined>>;
+  sttOptions: LiveSchema | undefined;
+  setSttOptions: Dispatch<SetStateAction<LiveSchema | undefined>>;
+  connection: LiveClient | undefined;
+  connectionReady: boolean;
 };
 
 interface DeepgramContextInterface {
@@ -102,19 +119,99 @@ const voiceMap = (model: string) => {
   return voices[model];
 };
 
+const getApiKey = async (): Promise<string> => {
+  const result: CreateProjectKeyResponse = await (
+    await fetch("/api/authenticate", { cache: "no-store" })
+  ).json();
+
+  return result.key;
+};
+
 const DeepgramContextProvider = ({ children }: DeepgramContextInterface) => {
-  const [ttsOptions, setTtsOptions] = useState<SpeakSchema>({});
-  const [sttOptions, setSttOptions] = useState<LiveSchema>({});
+  const [ttsOptions, setTtsOptions] = useState<SpeakSchema>();
+  const [sttOptions, setSttOptions] = useState<LiveSchema>();
+  const [connection, setConnection] = useState<LiveClient>();
+  const [connectionReady, setConnectionReady] = useState<boolean>(false);
+
+  const connect = async () => {
+    const connection = new LiveClient(
+      await getApiKey(),
+      {},
+      {
+        model: "nova-2",
+        interim_results: true,
+        smart_format: true,
+        endpointing: 350,
+        utterance_end_ms: 1000,
+        filler_words: true,
+      }
+    );
+
+    setConnection(connection);
+  };
 
   useEffect(() => {
-    setTtsOptions({
-      model: "aura-asteria-en",
-    });
-  }, []);
+    // it must be the first open of the page, let's set up the defaults
+    if (!ttsOptions && !sttOptions && !connection) {
+      setTtsOptions({
+        model: "aura-asteria-en",
+      });
+
+      setSttOptions({
+        model: "nova-2",
+        interim_results: true,
+        smart_format: true,
+        endpointing: 350,
+        utterance_end_ms: 1000,
+        filler_words: true,
+      });
+
+      connect();
+    }
+  }, [connection, sttOptions, ttsOptions]);
+
+  useEffect(() => {
+    // we need to reconnect
+    if (ttsOptions && sttOptions && !connection) {
+      connect();
+    }
+  }, [connection, sttOptions, ttsOptions]);
+
+  useEffect(() => {
+    if (connection && connection?.getReadyState() !== undefined) {
+      connection.addListener(LiveTranscriptionEvents.Open, () => {
+        setConnectionReady(true);
+      });
+
+      connection.addListener(LiveTranscriptionEvents.Close, () => {
+        setConnectionReady(false);
+        connection.removeAllListeners();
+        setConnection(undefined);
+      });
+
+      connection.addListener(LiveTranscriptionEvents.Error, () => {
+        setConnectionReady(false);
+        connection.removeAllListeners();
+        setConnection(undefined);
+      });
+    }
+
+    return () => {
+      setConnectionReady(false);
+      connection?.removeAllListeners();
+    };
+  }, [connection]);
 
   return (
     <DeepgramContext.Provider
-      value={{ ttsOptions, setTtsOptions, sttOptions, setSttOptions }}
+      value={{
+        ttsOptions,
+        setTtsOptions,
+        sttOptions,
+        setSttOptions,
+        connection,
+        connectionReady,
+      }}
     >
       {children}
     </DeepgramContext.Provider>
