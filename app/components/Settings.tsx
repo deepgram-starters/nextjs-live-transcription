@@ -108,7 +108,7 @@ export const Settings = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { ttsOptions, setTtsOptions } = useDeepgram();
 
-  const [model, setModel] = useState<string>(ttsOptions?.model);
+  const [model, setModel] = useState<string>(ttsOptions?.model as string);
 
   return (
     <>
@@ -125,7 +125,9 @@ export const Settings = () => {
         </span>
         <span className="hidden md:inline-block text-white/50 font-inter">
           Voice:{" "}
-          <span className="text-white">{voiceMap(ttsOptions?.model).name}</span>
+          <span className="text-white">
+            {voiceMap(ttsOptions?.model as string).name}
+          </span>
         </span>
       </div>
       <Modal
