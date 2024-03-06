@@ -294,7 +294,7 @@ export default function Conversation(): JSX.Element {
         if (connectionReady) {
           const nextBlob = firstBlob;
 
-          if (nextBlob) {
+          if (nextBlob && nextBlob?.size > 0) {
             connection?.send(nextBlob);
           }
 
