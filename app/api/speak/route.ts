@@ -13,11 +13,27 @@ export async function POST(req: NextRequest) {
   const message: Message = await req.json();
   const start = Date.now();
 
+  let text = message.content;
+
+  text = text
+    .replaceAll("https://", "")
+    .replaceAll("http://", "")
+    .replaceAll(".com", " dot com")
+    .replaceAll(".org", " dot org")
+    .replaceAll(".co.uk", " dot co dot UK")
+    .replaceAll(/```[\s\S]*?```/g, "\nAs shown on the app.\n")
+    .replaceAll(
+      /([a-zA-Z0-9])\/([a-zA-Z0-9])/g,
+      (match, precedingText, followingText) => {
+        return precedingText + " forward slash " + followingText;
+      }
+    );
+
   return await fetch(
     `${process.env.DEEPGRAM_STT_DOMAIN}/v1/speak?model=${model}`,
     {
       method: "POST",
-      body: JSON.stringify({ text: message.content }),
+      body: JSON.stringify({ text }),
       headers: {
         "Content-Type": `application/json`,
         Authorization: `token ${process.env.DEEPGRAM_API_KEY || ""}`,
