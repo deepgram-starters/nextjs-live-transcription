@@ -300,8 +300,6 @@ export default function Conversation(): JSX.Element {
     const interval = setInterval(() => {
       const timeLived = Date.now() - lastUtterance;
 
-      console.log(timeLived, timeLived > 1500, currentUtterance);
-
       if (currentUtterance !== "" && timeLived > 1500) {
         console.log("failsafe fires! pew pew!!");
 
@@ -326,12 +324,15 @@ export default function Conversation(): JSX.Element {
   useEffect(() => {
     if (!currentUtterance || currentUtterance === "") return;
 
+    console.log("barging in");
+
     if (nowPlaying) {
-      player?.current?.pause();
-      clearNowPlaying();
+      player?.pause();
       updateItem(nowPlaying.id, { played: true });
+      clearNowPlaying();
     }
-  }, [currentUtterance, clearNowPlaying, nowPlaying, player, updateItem]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUtterance, clearNowPlaying, nowPlaying, updateItem]);
 
   /**
    * magic microphone audio queue processing
@@ -410,7 +411,6 @@ export default function Conversation(): JSX.Element {
   useEffect(() => {
     if (messageMarker.current) {
       messageMarker.current.scrollIntoView({
-        block: "end",
         behavior: "auto",
       });
     }

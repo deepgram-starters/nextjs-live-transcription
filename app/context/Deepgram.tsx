@@ -33,6 +33,9 @@ interface DeepgramContextInterface {
 
 const DeepgramContext = createContext({} as DeepgramContext);
 
+/**
+ * TTS Voice Options
+ */
 const voices: {
   [key: string]: {
     name: string;
@@ -160,6 +163,10 @@ const DeepgramContextProvider = ({ children }: DeepgramContextInterface) => {
 
   useEffect(() => {
     // it must be the first open of the page, let's set up the defaults
+
+    /**
+     * Default TTS Voice when the app loads.
+     */
     if (ttsOptions === undefined) {
       setTtsOptions({
         model: "aura-asteria-en",

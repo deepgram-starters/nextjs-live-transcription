@@ -2,7 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+/**
+ * iOS input fix
+ */
+input {
+  border-radius: 0;
+}
+
+input[type="search"] {
+  -webkit-appearance: none;
+}
+
+/**
+ * General stuff
+ */
 :root {
+  background: #0b0b0c;
   font-size: 16px;
   color-scheme: dark;
 }

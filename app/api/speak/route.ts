@@ -44,6 +44,7 @@ export async function POST(req: NextRequest) {
     .then(async (response) => {
       const headers = new Headers();
       headers.set("X-DG-Latency", `${Date.now() - start}`);
+      headers.set("Content-Type", "audio/mp3");
 
       if (!response?.body) {
         return new NextResponse("Unable to get response from API.", {

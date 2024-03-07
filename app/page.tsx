@@ -25,11 +25,8 @@ export default function Home() {
           <header className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 flex items-center justify-between">
             <div>
               <a className="flex items-center" href="/">
-                <h1 className="mr-2 -mb-px font-favorit text-xl font-semibold text-white/60">
-                  Powered by
-                </h1>
                 <Image
-                  className="w-auto h-6 mb-1"
+                  className="w-auto h-8 max-w-[12.5rem] sm:max-w-none"
                   src="/deepgram.svg"
                   alt="Deepgram Logo"
                   width={0}

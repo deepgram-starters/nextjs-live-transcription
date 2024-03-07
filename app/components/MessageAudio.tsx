@@ -2,7 +2,7 @@ import { usePlayQueue } from "../context/PlayQueue";
 import { useNowPlaying } from "../context/NowPlaying";
 import { Message } from "ai/react";
 import { Spinner } from "@nextui-org/react";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const MessageAudio = ({
   message,
@@ -20,13 +20,13 @@ const MessageAudio = ({
 
   const pause = () => {
     setPaused(true);
-    player?.current?.pause();
+    player?.pause();
   };
 
   const play = () => {
     if (nowPlaying?.id === message?.id) {
       setPaused(false);
-      player?.current?.play();
+      player?.play();
     } else {
       setNowPlaying(found);
     }

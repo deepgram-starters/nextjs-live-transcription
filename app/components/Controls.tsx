@@ -8,6 +8,7 @@ import { useMicrophone } from "../context/Microphone";
 import { Download } from "./Download";
 import { Message } from "ai/react";
 import { Settings } from "./Settings";
+import { Tooltip } from "@nextui-org/react";
 
 export const Controls = ({
   input,
@@ -41,13 +42,14 @@ export const Controls = ({
   const submitter = useCallback(
     (e: any) => {
       if (nowPlaying) {
-        player?.current?.pause();
-        clearNowPlaying();
+        player?.pause();
         updateItem(nowPlaying.id, { played: true });
+        clearNowPlaying();
       }
       handleSubmit(e);
     },
-    [clearNowPlaying, handleSubmit, nowPlaying, player, updateItem]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [clearNowPlaying, handleSubmit, nowPlaying, updateItem]
   );
 
   return (
@@ -58,38 +60,58 @@ export const Controls = ({
           <Download messages={messages} />
         </div>
         <div className="flex bg-[#101014] rounded-full">
-          <span className="flex-grow sm:flex-grow-0 rounded-s-full bg-gradient-to-r bg-gradient to-[#13EF93]/50 from-[#149AFB]/80 ps-0.5 py-0.5">
-            <a
-              href="#"
-              onClick={(e: any) => microphoneToggle(e)}
-              className="group py-4 px-2 sm:px-8 w-full rounded-s-full font-bold bg-[#101014] betterhover:hover:bg-transparent text-light-900 text-sm sm:text-base flex items-center"
-            >
-              <MicrophoneIcon micOpen={microphoneOpen} />
-              <span>
+          <span
+            className={`rounded-s-full ps-0.5 py-0.5 ${
+              microphoneOpen
+                ? "bg-gradient-to-r bg-gradient to-[#13EF93]/50 from-red-500"
+                : "bg-gradient-to-r bg-gradient to-[#13EF93]/50 from-[#149AFB]/80"
+            }`}
+          >
+            <Tooltip showArrow content="Toggle microphone on/off.">
+              <a
+                href="#"
+                onClick={(e: any) => microphoneToggle(e)}
+                className={`w-20 sm:w-24 py-4 px-2 sm:px-8 rounded-s-full font-bold bg-[#101014] text-light-900 text-sm sm:text-base flex items-center justify-center group`}
+              >
+                {microphoneOpen && (
+                  <div className="w-auto items-center justify-center hidden sm:flex absolute shrink-0">
+                    <MicrophoneIcon
+                      micOpen={microphoneOpen}
+                      className="h-6 animate-ping-short"
+                    />
+                  </div>
+                )}
+                <div className="w-auto flex items-center justify-center shrink-0">
+                  <MicrophoneIcon micOpen={microphoneOpen} className="h-6" />
+                </div>
+                {/* <span>
                 {microphoneOpen ? (
                   <>Now listening...</>
                 ) : (
                   <>{`${isTablet || isMobile ? "Tap" : "Click"} to speak`}</>
                 )}
-              </span>
-            </a>
+              </span> */}
+              </a>
+            </Tooltip>
           </span>
 
-          <span className="sm:flex-grow bg-[#13EF93]/50 py-0.5">
+          <span className="flex-grow bg-[#13EF93]/50 py-0.5">
             <input
               type="text"
-              className="p-4 w-full h-full bg-[#101014] text-light-900 border-0 text-sm sm:text-base outline-none focus:ring-0"
-              placeholder="You can send text too"
+              className="py-4 sm:px-4 w-full h-full bg-[#101014] text-light-900 border-0 text-sm sm:text-base outline-none focus:ring-0"
+              placeholder="Type a message to send..."
               value={input}
               onChange={handleInputChange}
             />
           </span>
 
           <span className="rounded-e-full bg-gradient-to-l to-[#13EF93]/50 from-[#149AFB]/80 pe-0.5 py-0.5">
-            <button className="py-4 px-2 sm:px-8 rounded-e-full font-bold bg-[#101014] betterhover:hover:bg-transparent text-light-900 text-sm sm:text-base flex items-center">
-              <span>Send text</span>
-              <SendIcon />
-            </button>
+            <Tooltip showArrow content="Send a message.">
+              <button className="w-20 sm:w-24 py-4 px-2 sm:px-8 rounded-e-full font-bold bg-[#101014] text-light-900 text-sm sm:text-base flex items-center justify-center">
+                {/* <span>Send text</span> */}
+                <SendIcon className="h-6 w-6" />
+              </button>
+            </Tooltip>
           </span>
         </div>
       </div>
