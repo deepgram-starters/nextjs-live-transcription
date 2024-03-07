@@ -211,7 +211,9 @@ export default function Conversation(): JSX.Element {
   useEffect(() => {
     const onTranscript = (data: LiveTranscriptionEvent) => {
       let content = utteranceText(data);
-      if (content || data.speech_final) {
+
+      // i only want an empty transcript part if it is speech_final
+      if (content !== "" || data.speech_final) {
         /**
          * use an outbound message queue to build up the unsent utterance
          */
@@ -240,13 +242,15 @@ export default function Conversation(): JSX.Element {
     };
   }, [addTranscriptPart, connection]);
 
-  const [currentUtterance, setCurrentUtterance] = useState("");
+  const [currentUtterance, setCurrentUtterance] = useState<string>();
 
   const getCurrentUtterance = useCallback(() => {
     return transcriptParts.filter(({ is_final, speech_final }, i, arr) => {
       return is_final || speech_final || (!is_final && i === arr.length - 1);
     });
   }, [transcriptParts]);
+
+  const [lastUtterance, setLastUtterance] = useState<number>();
 
   useEffect(() => {
     const parts = getCurrentUtterance();
@@ -256,19 +260,65 @@ export default function Conversation(): JSX.Element {
       .join(" ")
       .trim();
 
-    if (content === "") return;
+    /**
+     * if the entire utterance is empty, don't go any further
+     * for example, many many many empty transcription responses
+     */
+    if (!content) return;
 
+    /**
+     * display the concatenated utterances
+     */
     setCurrentUtterance(content);
 
+    /**
+     * record the last time we recieved a word
+     */
+    if (last.text !== "") {
+      setLastUtterance(Date.now());
+    }
+
+    /**
+     * if the last part of the utterance, empty or not, is speech_final, send to the LLM.
+     */
     if (last && last.speech_final) {
       append({
         role: "user",
         content,
       });
       clearTranscriptParts();
-      setCurrentUtterance("");
+      setCurrentUtterance(undefined);
     }
   }, [getCurrentUtterance, clearTranscriptParts, append]);
+
+  /**
+   * incomplete speech final failsafe
+   */
+  useEffect(() => {
+    if (!lastUtterance || !currentUtterance) return;
+
+    const interval = setInterval(() => {
+      const timeLived = Date.now() - lastUtterance;
+
+      console.log(timeLived, timeLived > 1500, currentUtterance);
+
+      if (currentUtterance !== "" && timeLived > 1500) {
+        console.log("failsafe fires! pew pew!!");
+
+        append({
+          role: "user",
+          content: currentUtterance,
+        });
+        clearTranscriptParts();
+        setCurrentUtterance(undefined);
+      }
+    }, 100);
+
+    return () => {
+      clearInterval(interval);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastUtterance, currentUtterance]);
 
   /**
    * barge-in
