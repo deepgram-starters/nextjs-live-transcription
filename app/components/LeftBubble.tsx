@@ -8,7 +8,7 @@ import { TextContent } from "./TextContext";
 export const LeftBubble = ({ message }: { message: Message }) => {
   return (
     <>
-      <div className="col-start-1 col-end-13 sm:col-end-11 md:col-end-9 lg:col-end-8 xl:col-end-7 p-3">
+      <div className="col-start-1 col-end-13 sm:col-end-11 md:col-end-9 lg:col-end-8 xl:col-end-7 px-3 pt-3">
         <div className="flex items-start gap-2">
           <div className="h-5 w-12 text-white shrink-0">
             <AgentAvatar message={message} />
@@ -25,7 +25,9 @@ export const LeftBubble = ({ message }: { message: Message }) => {
             <MessageAudio message={message} />
           </div>
         </div>
-        <MessageMeta className="ml-14 pt-3" message={message} />
+      </div>
+      <div className="col-start-1 col-end-13 px-3 pb-3">
+        <MessageMeta className="ml-14" message={message} />
       </div>
     </>
   );
