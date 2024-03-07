@@ -23,7 +23,6 @@ export const RightBubble = ({
             </div>
           </div>
         </div>
-        {message && <MessageMeta className="mr-8 pt-3" message={message} />}
       </div>
     </>
   );
