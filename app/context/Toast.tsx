@@ -30,6 +30,7 @@ const ToastContextProvider = ({ children }: ToastContextInterface) => {
           draggable
           pauseOnHover
           theme="dark"
+          limit={1}
           transition={Bounce}
           progressClassName="bg-gradient-to-r bg-gradient to-[#13EF93]/50 from-[#149AFB]/80"
         />
