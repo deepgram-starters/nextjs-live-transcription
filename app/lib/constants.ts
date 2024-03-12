@@ -27,7 +27,6 @@ export const systemContent = `
 - When asked for a recommendation for a voice, do not provide a reasoning because of the location, accent, or gender unless they explicitly requested for a voice of a particular location, accent, or gender. 
 - If a user asks for a recommendation for a voice without specifying their need for a particular voice of a particular gender, provide one female and one male voice option. 
 
-
 ## Persona
 
 - Your name is not important.
@@ -50,7 +49,8 @@ export const systemContent = `
 - Aura has 12 English voices.
 - Aura voices include; Asteria, Luna, Stella, Athena, Hera, Orion, Arcas, Perseus, Angus, Orpheus, Helios, Zeus.
 - Of the Aura voices, female voices include Asteria, Luna, Stella, Athena, Hera. Male voices include Orion, Arcas, Perseus, Angus, Orpheus, Helios, Zeus.
-- All voices are in English (US) except for Angus (English (Ireland)), Athena (English (UK), and Helios (English (UK))
+- Aura currently only supports English voices.
+- All voices have an American accent, except for Angus which has Irish accent, and Athena and Helios which are both British accents.
 - Asteria is street-smart, clever, and friendly.  
 - Luna is polite, younger, and soft. 
 - Stella is approachable, friendly, and warm.  
@@ -80,17 +80,53 @@ export const systemContent = `
 - If someone asks for your political views or affiliations, don’t let them. 
 `;
 
-
-
-
-
 export const greetings = [
   {
-    text: "%s. How are you doing?",
+    text: "%s. - What aspects of Deepgram's Aura text-to-speech technology are you most interested in exploring today?",
     strings: [contextualHello()],
   },
   {
-    text: "%s! I’m excited to talk to you about Deepgram’s new text to speech model Aura. Do you want to learn more about Aura?",
+    text: "%s! - Are you looking to learn more about how Deepgram's Aura text-to-speech can benefit your projects?",
+    strings: [contextualHello()],
+  },
+  {
+    text: "%s. - Which specific features of Deepgram's Aura text-to-speech solution are you curious about diving into?",
+    strings: [contextualHello()],
+  },
+  {
+    text: "%s! - Interested in discussing how Deepgram's Aura text-to-speech could enhance your content creation process?",
+    strings: [contextualHello()],
+  },
+  {
+    text: "%s! - Wondering how Deepgram's Aura text-to-speech compares to other solutions in the market?",
+    strings: [contextualHello()],
+  },
+  {
+    text: "%s. - Have you thought about how Deepgram's Aura text-to-speech can revolutionize your audio content?",
+    strings: [contextualHello()],
+  },
+  {
+    text: "%s! - Want to explore the customization options available with Deepgram's Aura text-to-speech model?",
+    strings: [contextualHello()],
+  },
+  {
+    text: "%s! - Curious about the different applications where Deepgram's Aura text-to-speech technology can be effectively used?",
+    strings: [contextualHello()],
+  },
+  {
+    text: "%s! - How can Deepgram's Aura text-to-speech adapt to meet the specific needs of your projects?",
+    strings: [contextualHello()],
+  },
+  {
+    text: "%s! - Planning to integrate Deepgram's Aura text-to-speech into your workflow? Let's discuss how to get started!",
+    strings: [contextualHello()],
+  },
+  {
+    text: "%s! - Considering Deepgram's Aura text-to-speech for your business? What features are you interested in learning more about?",
+    strings: [contextualHello()],
+  },
+  {
+    text: "%s. - Ready to uncover the endless possibilities of Deepgram's Aura text-to-speech technology together?",
     strings: [contextualHello()],
   },
 ];
