@@ -36,4 +36,4 @@ jobs:
       - name: Create a release
         run: npx semantic-release
         env:
-          GIT_CREDENTIALS: ${{ secrets.GIT_CREDENTIALS }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
