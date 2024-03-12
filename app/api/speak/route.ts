@@ -16,6 +16,7 @@ export async function POST(req: NextRequest) {
   let text = message.content;
 
   text = text
+    .replaceAll("¡", "")
     .replaceAll("https://", "")
     .replaceAll("http://", "")
     .replaceAll(".com", " dot com")
