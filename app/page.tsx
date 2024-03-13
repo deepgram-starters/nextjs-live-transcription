@@ -2,12 +2,11 @@
 
 import Conversation from "./components/Conversation";
 import Image from "next/image";
+import GitHubButton from "react-github-btn";
 
 export const runtime = "edge";
 import * as FullStory from "@fullstory/browser";
 import { useEffect } from "react";
-import { NextUIProvider } from "@nextui-org/react";
-import { BoltIcon } from "./components/icons/BoltIcon";
 import { XIcon } from "./components/icons/XIcon";
 import { FacebookIcon } from "./components/icons/FacebookIcon";
 import { LinkedInIcon } from "./components/icons/LinkedInIcon";
@@ -35,8 +34,19 @@ export default function Home() {
                 />
               </a>
             </div>
-            <div className="flex items-center gap-4 text-sm">
-              <span className="bg-white rounded">
+            <div className="flex items-center gap-6 text-sm">
+              <span className="mt-2">
+                <GitHubButton
+                  href="https://github.com/deepgram-devs/deepgram-conversational-demo"
+                  data-color-scheme="no-preference: light; light: light; dark: light;"
+                  data-show-count="true"
+                  aria-label="Star deepgram-devs/deepgram-conversational-demo on GitHub"
+                >
+                  Star
+                </GitHubButton>
+              </span>
+
+              {/* <span className="bg-white rounded">
                 <a
                   href="https://github.com/deepgram-devs/deepgram-conversational-demo"
                   target="_blank"
@@ -44,13 +54,13 @@ export default function Home() {
                 >
                   View the code
                 </a>
-              </span>
+              </span> */}
 
               <span className="gradient-shadow bg-gradient-to-r to-[#13EF93]/50 from-[#149AFB]/80 rounded">
                 <a
                   href="https://console.deepgram.com/signup?jump=keys"
                   target="_blank"
-                  className="hidden md:inline-block bg-black text-white rounded m-px px-4 py-2 font-semibold"
+                  className="hidden text-xs md:inline-block bg-black text-white rounded m-px px-8 py-2 font-semibold"
                 >
                   Get an API Key
                 </a>

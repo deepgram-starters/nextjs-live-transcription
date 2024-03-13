@@ -25,13 +25,14 @@ export const InitialLoad = ({ fn }: { fn: () => void }) => {
             </ul>
           </div>
           <span className="mt-4 block font-semibold">
-            <div className="bg-white text-black rounded px-6 py-3 font-semibold sm:w-fit sm:mx-auto">
+            <div className="bg-white text-black rounded px-10 py-3 font-semibold sm:w-fit sm:mx-auto">
               {isBrowser ? "Click" : "Tap"} here to start
             </div>
           </span>
           <span className="mt-4 block text-sm text-gray-100/70">
             <Headphones /> For optimal enjoyment, we recommend using headphones
-            while using this application. Minor bugs and annoyances may appear while using this demo. Pull requests are welcome.
+            while using this application. Minor bugs and annoyances may appear
+            while using this demo. Pull requests are welcome.
           </span>
         </button>
       </div>

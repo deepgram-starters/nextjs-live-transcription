@@ -52,7 +52,9 @@ body {
   }
 
   .gradient-shadow {
-    box-shadow: -1rem 0px 2rem 0px #13ef9335, 1rem 0px 2rem 0px #149afb35;
+    box-shadow:
+      -1rem 0px 2rem 0px #13ef9335,
+      1rem 0px 2rem 0px #149afb35;
   }
 }
 
