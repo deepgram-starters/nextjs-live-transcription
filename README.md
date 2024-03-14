@@ -21,7 +21,6 @@ Check out our [KNOWN ISSUES](./KNOWN_ISSUES.md) before reporting.
 - Capture streaming audio using [Deepgram Streaming Speech to Text](https://developers.deepgram.com/docs/getting-started-with-live-streaming-audio).
 - Natural Language responses using an OpenAI LLM.
 - Speech to Text conversion using [Deepgram Aura Text to Speech](https://developers.deepgram.com/docs/text-to-speech).
-- A quirky British sense of humour. 🇬🇧
 
 ## What is Deepgram?
 
