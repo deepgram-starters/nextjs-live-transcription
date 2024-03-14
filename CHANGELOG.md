@@ -1,3 +1,24 @@
+Change Log
+
+# [0.1.0](https://github.com/deepgram-devs/deepgram-conversational-demo/compare/0.0.33...0.1.0) (2024-03-14)
+
+
+### Bug Fixes
+
+* limit toast to 1 ([745df35](https://github.com/deepgram-devs/deepgram-conversational-demo/commit/745df356870b4e46e06041e11adca6b113b0eb80))
+* remove un-speechable character ([620a085](https://github.com/deepgram-devs/deepgram-conversational-demo/commit/620a085c0bdb7e70c674be8053d7775049a2c442))
+
+
+### Features
+
+* improve latency output ([8717682](https://github.com/deepgram-devs/deepgram-conversational-demo/commit/8717682e096e9dfb3ae6abcea2a39e70b9934035))
+* introduce audio element instead of dom record for audio playback ([#23](https://github.com/deepgram-devs/deepgram-conversational-demo/issues/23)) ([72941bf](https://github.com/deepgram-devs/deepgram-conversational-demo/commit/72941bf628562248794dbee1be0868caf97394a6))
+* introduce failsafe for uncaptured utterance ([#22](https://github.com/deepgram-devs/deepgram-conversational-demo/issues/22)) ([8ae14d5](https://github.com/deepgram-devs/deepgram-conversational-demo/commit/8ae14d5af013964e56e9d951488d74eb26a276ea))
+* replace code link with stars count button and link ([26853d6](https://github.com/deepgram-devs/deepgram-conversational-demo/commit/26853d687a6467a90676a9b4c47a1510ac7e535b))
+* update readme ([544aa1b](https://github.com/deepgram-devs/deepgram-conversational-demo/commit/544aa1b3ea85d1c842fb3248b4311a86c5d4f3c4))
+* updating copy ([#25](https://github.com/deepgram-devs/deepgram-conversational-demo/issues/25)) ([43748e7](https://github.com/deepgram-devs/deepgram-conversational-demo/commit/43748e71624ae373785cdfc1d561722243ed79c7))
+* welcome and prompt tweaks ([a50f1e6](https://github.com/deepgram-devs/deepgram-conversational-demo/commit/a50f1e68cc2a040c773321821dcd901012531c4d))
+
 # Change Log
 
 ## 0.0.33 (2024-03-07)
