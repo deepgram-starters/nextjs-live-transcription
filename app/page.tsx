@@ -35,26 +35,17 @@ export default function Home() {
               </a>
             </div>
             <div className="flex items-center gap-6 text-sm">
-              <span className="mt-2">
+              <span className="mt-1">
                 <GitHubButton
                   href="https://github.com/deepgram-devs/deepgram-conversational-demo"
                   data-color-scheme="no-preference: light; light: light; dark: light;"
+                  data-size="large"
                   data-show-count="true"
                   aria-label="Star deepgram-devs/deepgram-conversational-demo on GitHub"
                 >
                   Star
                 </GitHubButton>
               </span>
-
-              {/* <span className="bg-white rounded">
-                <a
-                  href="https://github.com/deepgram-devs/deepgram-conversational-demo"
-                  target="_blank"
-                  className="hidden sm:inline-block bg-white text-black rounded m-px px-4 py-2 font-semibold"
-                >
-                  View the code
-                </a>
-              </span> */}
 
               <span className="gradient-shadow bg-gradient-to-r to-[#13EF93]/50 from-[#149AFB]/80 rounded">
                 <a
