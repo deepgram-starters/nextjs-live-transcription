@@ -1,5 +1,18 @@
 Change Log
 
+# [0.2.0](https://github.com/deepgram-devs/deepgram-conversational-demo/compare/0.1.0...0.2.0) (2024-04-12)
+
+
+### Bug Fixes
+
+* better look of github stars button ([e67f35a](https://github.com/deepgram-devs/deepgram-conversational-demo/commit/e67f35aa33515885d7cc18e8b78f498585627179))
+* Fix LCP of app ([#30](https://github.com/deepgram-devs/deepgram-conversational-demo/issues/30)) ([c02cb1c](https://github.com/deepgram-devs/deepgram-conversational-demo/commit/c02cb1c03af48855a1002554855e4b8cf795463c))
+
+
+### Features
+
+* Using local VAD concept ([#26](https://github.com/deepgram-devs/deepgram-conversational-demo/issues/26)) ([69d2514](https://github.com/deepgram-devs/deepgram-conversational-demo/commit/69d251474b674668cbc13e52d59e0445ad4a313f)), closes [#28](https://github.com/deepgram-devs/deepgram-conversational-demo/issues/28)
+
 # [0.1.0](https://github.com/deepgram-devs/deepgram-conversational-demo/compare/0.0.33...0.1.0) (2024-03-14)
 
 ### Bug Fixes
