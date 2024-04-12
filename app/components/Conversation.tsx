@@ -189,13 +189,9 @@ export default function Conversation(): JSX.Element {
     return () => {
       clearTimeout(failsafeTimeout);
     };
-  }, [
-    microphoneOpen,
-    currentUtterance,
-    append,
-    clearTranscriptParts,
-    failsafeTimeout,
-  ]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [microphoneOpen, currentUtterance]);
 
   const onSpeechStart = () => {
     /**
@@ -204,7 +200,6 @@ export default function Conversation(): JSX.Element {
      * So ignore any VAD events before we "open" the mic.
      */
     if (!microphoneOpen) return;
-
 
     /**
      * We we're talking again, we want to wait for a transcript.
@@ -334,7 +329,7 @@ export default function Conversation(): JSX.Element {
     if (!content) return;
 
     /**
-     * failsafe was triggered since we last sent a message to TTS 
+     * failsafe was triggered since we last sent a message to TTS
      */
     if (failsafeTriggered) {
       clearTranscriptParts();
