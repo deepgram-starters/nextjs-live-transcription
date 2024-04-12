@@ -7,7 +7,7 @@ import {
   LiveTranscriptionEvents,
 } from "@deepgram/sdk";
 import { Message, useChat } from "ai/react";
-import { NextUIProvider, Spinner } from "@nextui-org/react";
+import { NextUIProvider } from "@nextui-org/react";
 import { useMicVAD } from "@ricky0123/vad-react";
 import { useNowPlaying } from "react-nowplaying";
 import { useQueue } from "@uidotdev/usehooks";
@@ -161,6 +161,7 @@ export default function Conversation(): JSX.Element {
 
   const [currentUtterance, setCurrentUtterance] = useState<string>();
   const [failsafeTimeout, setFailsafeTimeout] = useState<NodeJS.Timeout>();
+  const [failsafeTriggered, setFailsafeTriggered] = useState<boolean>(false);
 
   const onSpeechEnd = useCallback(() => {
     /**
@@ -174,6 +175,7 @@ export default function Conversation(): JSX.Element {
       setTimeout(() => {
         if (currentUtterance) {
           console.log("failsafe fires! pew pew!!");
+          setFailsafeTriggered(true);
           append({
             role: "user",
             content: currentUtterance,
@@ -202,6 +204,12 @@ export default function Conversation(): JSX.Element {
      * So ignore any VAD events before we "open" the mic.
      */
     if (!microphoneOpen) return;
+
+
+    /**
+     * We we're talking again, we want to wait for a transcript.
+     */
+    setFailsafeTriggered(false);
 
     if (!player?.ended) {
       stopAudio();
@@ -326,6 +334,15 @@ export default function Conversation(): JSX.Element {
     if (!content) return;
 
     /**
+     * failsafe was triggered since we last sent a message to TTS 
+     */
+    if (failsafeTriggered) {
+      clearTranscriptParts();
+      setCurrentUtterance(undefined);
+      return;
+    }
+
+    /**
      * display the concatenated utterances
      */
     setCurrentUtterance(content);
@@ -349,7 +366,13 @@ export default function Conversation(): JSX.Element {
       clearTranscriptParts();
       setCurrentUtterance(undefined);
     }
-  }, [getCurrentUtterance, clearTranscriptParts, append, failsafeTimeout]);
+  }, [
+    getCurrentUtterance,
+    clearTranscriptParts,
+    append,
+    failsafeTimeout,
+    failsafeTriggered,
+  ]);
 
   /**
    * magic microphone audio queue processing

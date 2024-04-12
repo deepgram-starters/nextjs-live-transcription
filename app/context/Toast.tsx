@@ -20,19 +20,13 @@ const ToastContextProvider = ({ children }: ToastContextInterface) => {
       <>
         {children}
         <ToastContainer
-          position="top-center"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="dark"
+          position={"bottom-center"}
+          autoClose={8000}
+          theme={"dark"}
           limit={1}
           transition={Bounce}
-          progressClassName="bg-gradient-to-r bg-gradient to-[#13EF93]/50 from-[#149AFB]/80"
+          className={"md:w-96 mb-26"}
+          progressClassName={"bg-gradient-to-r bg-gradient to-[#13EF93]/50 from-[#149AFB]/80"}
         />
       </>
     </ToastContext.Provider>

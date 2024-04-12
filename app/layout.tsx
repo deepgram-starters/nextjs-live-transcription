@@ -11,6 +11,7 @@ import { MicrophoneContextProvider } from "./context/Microphone";
 import { AudioStoreContextProvider } from "./context/AudioStore";
 import { ToastContextProvider } from "./context/Toast";
 
+import 'react-toastify/dist/ReactToastify.css';
 import "./globals.css";
 
 import type { Metadata, Viewport } from "next";
