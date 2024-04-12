@@ -1,18 +1,19 @@
-import type { Metadata, Viewport } from "next";
 import { GoogleTagManager } from "@next/third-parties/google";
-
-import classNames from "classnames";
 import { Inter } from "next/font/google";
+import { NowPlayingContextProvider } from "react-nowplaying";
+import classNames from "classnames";
 import localFont from "next/font/local";
+import Script from "next/script";
+
+import { DeepgramContextProvider } from "./context/Deepgram";
+import { MessageMetadataContextProvider } from "./context/MessageMetadata";
+import { MicrophoneContextProvider } from "./context/Microphone";
+import { AudioStoreContextProvider } from "./context/AudioStore";
+import { ToastContextProvider } from "./context/Toast";
 
 import "./globals.css";
-import { ToastContextProvider } from "./context/Toast";
-import { NowPlayingContextProvider } from "./context/NowPlaying";
-import { PlayQueueContextProvider } from "./context/PlayQueue";
-import Script from "next/script";
-import { MicrophoneContextProvider } from "./context/Microphone";
-import { MessageMetadataContextProvider } from "./context/MessageMetadata";
-import { DeepgramContextProvider } from "./context/Deepgram";
+
+import type { Metadata, Viewport } from "next";
 
 const inter = Inter({ subsets: ["latin"] });
 const favorit = localFont({
@@ -52,13 +53,13 @@ export default function RootLayout({
       >
         <ToastContextProvider>
           <MicrophoneContextProvider>
-            <PlayQueueContextProvider>
+            <AudioStoreContextProvider>
               <NowPlayingContextProvider>
                 <MessageMetadataContextProvider>
                   <DeepgramContextProvider>{children}</DeepgramContextProvider>
                 </MessageMetadataContextProvider>
               </NowPlayingContextProvider>
-            </PlayQueueContextProvider>
+            </AudioStoreContextProvider>
           </MicrophoneContextProvider>
         </ToastContextProvider>
         <GoogleTagManager gtmId="GTM-5R73N627" />

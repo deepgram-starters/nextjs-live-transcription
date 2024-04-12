@@ -94,19 +94,19 @@ export const greetings = [
     strings: [contextualHello()],
   },
   {
-    text: "%s! - Interested in discussing how Deepgram's Aura text-to-speech could enhance your content creation process?",
-    strings: [contextualHello()],
-  },
-  {
     text: "%s! - Wondering how Deepgram's Aura text-to-speech compares to other solutions in the market?",
     strings: [contextualHello()],
   },
   {
-    text: "%s. - Have you thought about how Deepgram's Aura text-to-speech can revolutionize your audio content?",
+    text: "%s. - Have you thought about how Deepgram's Aura text-to-speech can revolutionize your apps?",
     strings: [contextualHello()],
   },
   {
     text: "%s! - Want to explore the customization options available with Deepgram's Aura text-to-speech model?",
+    strings: [contextualHello()],
+  },
+  {
+    text: "%s! - Interested in the types of voices Deepgram's Aura has?",
     strings: [contextualHello()],
   },
   {

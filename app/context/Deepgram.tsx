@@ -149,8 +149,8 @@ const DeepgramContextProvider = ({ children }: DeepgramContextInterface) => {
           model: "nova-2",
           interim_results: true,
           smart_format: true,
-          endpointing: 350,
-          utterance_end_ms: 1000,
+          endpointing: 550,
+          utterance_end_ms: 1500,
           filler_words: true,
         }
       );

@@ -1,6 +1,6 @@
 import { Message } from "ai/react";
 import { useMessageData } from "../context/MessageMetadata";
-import { usePlayQueue } from "../context/PlayQueue";
+import { useAudioStore } from "../context/AudioStore";
 import { voiceMap } from "../context/Deepgram";
 import moment from "moment";
 
@@ -11,10 +11,10 @@ const MessageHeader = ({
   message: Message;
   className?: string;
 }) => {
-  const { playQueue } = usePlayQueue();
+  const { audioStore } = useAudioStore();
   const { messageData } = useMessageData();
 
-  const foundAudio = playQueue.findLast((item) => item.id === message.id);
+  const foundAudio = audioStore.findLast((item) => item.id === message.id);
   const foundData = messageData.findLast((item) => item.id === message.id);
 
   if (message.role === "assistant") {
@@ -24,8 +24,8 @@ const MessageHeader = ({
           {foundAudio?.model
             ? voiceMap(foundAudio?.model).name
             : foundData?.ttsModel
-            ? voiceMap(foundData?.ttsModel).name
-            : "Deepgram AI"}
+              ? voiceMap(foundData?.ttsModel).name
+              : "Deepgram AI"}
         </span>
         <span className="text-xs font-normal text-gray-400">
           {moment().calendar()}

@@ -2,7 +2,7 @@ import { Avatar } from "@nextui-org/react";
 import { DgSvg } from "./DgSvg";
 import { Message } from "ai/react";
 import { useMessageData } from "../context/MessageMetadata";
-import { usePlayQueue } from "../context/PlayQueue";
+import { useAudioStore } from "../context/AudioStore";
 import { voiceMap } from "../context/Deepgram";
 
 export const AgentAvatar = ({
@@ -12,10 +12,10 @@ export const AgentAvatar = ({
   message: Message;
   className?: string;
 }) => {
-  const { playQueue } = usePlayQueue();
+  const { audioStore } = useAudioStore();
   const { messageData } = useMessageData();
 
-  const foundAudio = playQueue.findLast((item) => item.id === message.id);
+  const foundAudio = audioStore.findLast((item) => item.id === message.id);
   const foundData = messageData.findLast((item) => item.id === message.id);
 
   if (foundAudio?.model) {

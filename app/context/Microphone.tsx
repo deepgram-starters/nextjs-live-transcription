@@ -22,6 +22,7 @@ type MicrophoneContext = {
   firstBlob: Blob | undefined;
   queueSize: number;
   queue: Blob[];
+  stream: MediaStream | undefined;
 };
 
 interface MicrophoneContextInterface {
@@ -34,7 +35,9 @@ const MicrophoneContextProvider = ({
   children,
 }: MicrophoneContextInterface) => {
   const [microphone, setMicrophone] = useState<MediaRecorder>();
+  const [stream, setStream] = useState<MediaStream>();
   const [microphoneOpen, setMicrophoneOpen] = useState(false);
+
   const {
     add: enqueueBlob, // addMicrophoneBlob,
     remove: removeBlob, // removeMicrophoneBlob,
@@ -45,14 +48,16 @@ const MicrophoneContextProvider = ({
 
   useEffect(() => {
     async function setupMicrophone() {
-      const userMedia = await navigator.mediaDevices.getUserMedia({
+      const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           noiseSuppression: true,
           echoCancellation: true,
         },
       });
 
-      const microphone = new MediaRecorder(userMedia);
+      setStream(stream);
+
+      const microphone = new MediaRecorder(stream);
 
       setMicrophone(microphone);
     }
@@ -114,6 +119,7 @@ const MicrophoneContextProvider = ({
         firstBlob,
         queueSize,
         queue,
+        stream,
       }}
     >
       {children}
