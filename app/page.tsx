@@ -1,106 +1,126 @@
+"use client";
+
 import Image from "next/image";
-import Microphone from "./microphone";
-export default async function Home() {
+import App from "./components/App";
+import { XIcon } from "./components/icons/XIcon";
+import { LinkedInIcon } from "./components/icons/LinkedInIcon";
+import { FacebookIcon } from "./components/icons/FacebookIcon";
+import GitHubButton from "react-github-btn";
+
+const Home = () => {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Browser transcription using&nbsp;
-          <code className="font-mono font-bold">@deepgram/sdk</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/deepgram.svg"
-              alt="Deepgram Logo"
-              width={124.3676}
-              height={24}
-              priority
-            />
-          </a>
+    <>
+      <div className="h-full overflow-hidden">
+        {/* height 4rem */}
+        <div className="bg-gradient-to-b from-black/50 to-black/10 backdrop-blur-[2px] h-[4rem] flex items-center">
+          <header className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 flex items-center justify-between">
+            <div>
+              <a className="flex items-center" href="/">
+                <Image
+                  className="w-auto h-8 max-w-[12.5rem] sm:max-w-none"
+                  src="/deepgram.svg"
+                  alt="Deepgram Logo"
+                  width={0}
+                  height={0}
+                  priority
+                />
+              </a>
+            </div>
+            <div className="flex items-center gap-6 text-sm">
+              <span className="mt-1">
+                <GitHubButton
+                  href="https://github.com/deepgram-starters/nextjs-live-transcription"
+                  data-color-scheme="no-preference: light; light: light; dark: light;"
+                  data-size="large"
+                  data-show-count="true"
+                  aria-label="Star deepgram-starters/nextjs-live-transcription on GitHub"
+                >
+                  Star
+                </GitHubButton>
+              </span>
+
+              <span className="gradient-shadow bg-gradient-to-r to-[#13EF93]/50 from-[#149AFB]/80 rounded">
+                <a
+                  href="https://console.deepgram.com/signup?jump=keys"
+                  target="_blank"
+                  className="hidden text-xs md:inline-block bg-black text-white rounded m-px px-8 py-2 font-semibold"
+                >
+                  Get an API Key
+                </a>
+              </span>
+            </div>
+          </header>
+        </div>
+
+        {/* height 100% minus 8rem */}
+        <main className="mx-auto px-4 md:px-6 lg:px-8 h-[calc(100%-4rem)] -mb-[4rem]">
+          <App />
+        </main>
+
+        {/* height 4rem */}
+        <div className="bg-black/80 h-[4rem] flex items-center absolute w-full">
+          <footer className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 flex items-center justify-center gap-4 md:text-xl font-inter text-[#8a8a8e]">
+            <span className="text-base text-[#4e4e52]">share it</span>
+            <a
+              href="#"
+              onClick={(e) => {
+                window.open(
+                  "https://twitter.com/intent/tweet?text=%F0%9F%94%A5%F0%9F%8E%89%20Check%20out%20this%20awesome%20%23AI%20demo%20by%20%40Deepgram%20and%20%40lukeocodes%0A%0A%20https%3A//aura-tts-demo.deepgram.com",
+                  "",
+                  "_blank, width=600, height=500, resizable=yes, scrollbars=yes"
+                );
+
+                return e.preventDefault();
+              }}
+              aria-label="share on twitter"
+              target="_blank"
+            >
+              <XIcon className="mb-1" />
+            </a>
+            <a
+              href="#"
+              onClick={(e) => {
+                window.open(
+                  "https://www.linkedin.com/shareArticle?mini=true&url=https%3A//aura-tts-demo.deepgram.com&title=Excellent review on my website reviews",
+                  "",
+                  "_blank, width=600, height=500, resizable=yes, scrollbars=yes"
+                );
+
+                return e.preventDefault();
+              }}
+              aria-label="share on Linkedin"
+            >
+              <LinkedInIcon className="mb-1" />
+            </a>
+            <a
+              href="#"
+              onClick={(e) => {
+                window.open(
+                  "https://www.facebook.com/sharer/sharer.php?u=https%3A//aura-tts-demo.deepgram.com",
+                  "",
+                  "_blank, width=600, height=500, resizable=yes, scrollbars=yes"
+                );
+
+                return e.preventDefault();
+              }}
+              target="_blank"
+              aria-label="share on Facebook"
+            >
+              <FacebookIcon className="mb-1" />
+            </a>
+            <div className="border-l border-[#4e4e52] w-px h-7">&nbsp;</div>
+            <a
+              className="text-base font-semibold"
+              href="https://deepgram.com/contact-us"
+              target="_blank"
+            >
+              contact us
+            </a>
+          </footer>
         </div>
       </div>
-
-      <div className="relative flex w-screen max-w-screen-lg place-items-center before:pointer-events-none after:pointer-events-none before:absolute before:right-0 after:right-1/4 before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px]">
-        <Microphone />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://github.com/deepgram/deepgram-node-sdk"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about the Deepgram JavaScript SDK.
-          </p>
-        </a>
-
-        <a
-          href="https://developers.deepgram.com"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Deepgram on our official docs site!
-          </p>
-        </a>
-
-        <a
-          href="https://playground.deepgram.com"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Playground{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore the API for pre-recorded audio.
-          </p>
-        </a>
-
-        <a
-          href="https://github.com/deepgram-starters"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Check out our other starter apps, covering many programming
-            languages.
-          </p>
-        </a>
-      </div>
-    </main>
+    </>
   );
-}
+};
+
+export default Home;

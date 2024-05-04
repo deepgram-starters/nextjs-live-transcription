@@ -8,6 +8,17 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      animation: {
+        // Bounces 5 times 1s equals 5 seconds
+        "ping-short": "ping 1s ease-in-out 5",
+      },
+      screens: {
+        betterhover: { raw: "(hover: hover)" },
+      },
+      transitionProperty: {
+        height: "height",
+        width: "width",
+      },
       dropShadow: {
         glowBlue: [
           "0px 0px 2px #000",
@@ -28,8 +39,11 @@ const config: Config = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      fontFamily: {
+        favorit: ["var(--font-favorit)"],
+        inter: ["Inter", "Arial", "sans serif"],
+      },
     },
   },
-  plugins: [],
 };
 export default config;

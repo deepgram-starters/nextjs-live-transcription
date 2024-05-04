@@ -34,3 +34,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+# Contentlayer
+.contentlayer
+
+# vscode
+.vscode
+
+# container
+.devcontainer
+
+# pycharm
+.idea

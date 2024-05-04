@@ -2,26 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
+/**
+ * General stuff
+ */
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  background: #0b0b0c;
+  font-size: 16px;
+  color-scheme: dark;
 }
 
-@media (prefers-color-scheme: dark) {
+@media only screen and (min-width: 2000px) {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    font-size: 22px;
   }
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  color: rgba(255, 255, 255, 0.87);
+  background: #0b0b0c url("/bg.svg") no-repeat top center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+* {
+  /* outline: 1px solid red; */
+}
+
+@layer utilities {
+
+  .gradient-shadow {
+    box-shadow:
+      -1rem 0px 2rem 0px #13ef9335,
+      1rem 0px 2rem 0px #149afb35;
+  }
+}
+
+/* Additional vertical padding used by kbd tag. */
+.py-05 {
+  padding-top: 0.125rem;
+  padding-bottom: 0.125rem;
 }
