@@ -1,14 +1,8 @@
-# Deepgram Aura TTS Demo
-
-> Project codename EmilyAI
+# NextJS Live Transcription with Deepgram
 
 [![Discord](https://dcbadge.vercel.app/api/server/xWRaCDBtW4?style=flat)](https://discord.gg/xWRaCDBtW4)
 
-The purpose of this demo is to showcase how you can build a Conversational AI application that engages users in natural language interactions, mimicking human conversation through natural language processing using [Deepgram](https://deepgram.com/).
-
-Examples of where you would see this type of application include: virtual assistants for tasks like answering queries and controlling smart devices, educational tutors for personalized learning, healthcare advisors for medical information, and entertainment chat bots for engaging conversations and games.
-
-These applications aim to enhance user experiences by offering efficient and intuitive interactions, reducing the need for human intervention in various tasks and services.
+The purpose of this demo is to showcase how you can build a NextJS speech to text app using [Deepgram](https://deepgram.com/).
 
 ## Issue Reporting
 
@@ -19,8 +13,6 @@ Check out our [KNOWN ISSUES](./KNOWN_ISSUES.md) before reporting.
 ## Demo features
 
 - Capture streaming audio using [Deepgram Streaming Speech to Text](https://developers.deepgram.com/docs/getting-started-with-live-streaming-audio).
-- Natural Language responses using an OpenAI LLM.
-- Speech to Text conversion using [Deepgram Aura Text to Speech](https://developers.deepgram.com/docs/text-to-speech).
 
 ## What is Deepgram?
 
@@ -38,7 +30,7 @@ Follow these steps to get started with this starter application.
 
 #### Clone the repository
 
-Go to GitHub and [clone the repository](https://github.com/deepgram-starters/live-nextjs-starter).
+Go to GitHub and [clone the repository](https://github.com/deepgram-starters/nextjs-live-transcription).
 
 #### Install dependencies
 
@@ -53,14 +45,10 @@ npm install
 Copy the code from `sample.env.local` and create a new file called `.env.local`.
 
 ```bash
-DEEPGRAM_STT_DOMAIN=https://api.deepgram.com
 DEEPGRAM_API_KEY=YOUR-DG-API-KEY
-OPENAI_API_KEY=YOUR-OPENAI-API-KEY
 ```
 
-1. For `DEEPGRAM_API_KEY` paste in the key you generated in the [Deepgram console](https://console.deepgram.com/).
-2. Set `DEEPGRAM_STT_DOMAIN` to be `https://api.deepgram.com`.
-3. `OPENAI_API_KEY` should be an OpenAI API Key that can access the chat completions API.
+For `DEEPGRAM_API_KEY` paste in the key you generated in the [Deepgram console](https://console.deepgram.com/).
 
 #### Run the application
 
@@ -74,7 +62,7 @@ npm run dev
 
 We love to hear from you so if you have questions, comments or find a bug in the project, let us know! You can either:
 
-- [Open an issue in this repository](https://github.com/deepgram-devs/deepgram-aura-tts-demo/issues)
+- [Open an issue in this repository](https://github.com/deepgram-starters/nextjs-live-transcription/issues)
 - [Join the Deepgram Github Discussions Community](https://github.com/orgs/deepgram/discussions)
 - [Join the Deepgram Discord Community](https://discord.gg/xWRaCDBtW4)
 
