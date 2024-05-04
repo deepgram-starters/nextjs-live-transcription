@@ -15,7 +15,9 @@ import {
 import Visualizer from "./Visualizer";
 
 const App: () => JSX.Element = () => {
-  const [caption, setCaption] = useState<string>("Powered by Deepgram");
+  const [caption, setCaption] = useState<string | undefined>(
+    "Powered by Deepgram"
+  );
   const { connection, connectToDeepgram, connectionState } = useDeepgram();
   const { setupMicrophone, microphone, startMicrophone, microphoneState } =
     useMicrophone();
