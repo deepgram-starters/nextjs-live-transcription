@@ -1,5 +1,12 @@
 Change Log
 
+## [1.0.1](https://github.com/deepgram-starters/nextjs-live-transcription/compare/1.0.0...1.0.1) (2024-05-04)
+
+
+### Bug Fixes
+
+* cannot set caption to undefined as it was strict string ([8c76d48](https://github.com/deepgram-starters/nextjs-live-transcription/commit/8c76d48c819bab0faa7219a7d76a064b2e7000d6))
+
 # 1.0.0 (2024-05-04)
 
 
