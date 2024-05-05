@@ -1,5 +1,12 @@
 Change Log
 
+# [0.4.0](https://github.com/deepgram-devs/deepgram-conversational-demo/compare/0.3.0...0.4.0) (2024-05-05)
+
+
+### Features
+
+* options stored in memory, responsiveness, input ([#31](https://github.com/deepgram-devs/deepgram-conversational-demo/issues/31)) ([7e26d79](https://github.com/deepgram-devs/deepgram-conversational-demo/commit/7e26d794a67ce1ba38db0ac12762a13dfc5c1c81))
+
 # [0.3.0](https://github.com/deepgram-devs/deepgram-conversational-demo/compare/0.2.0...0.3.0) (2024-04-21)
 
 
