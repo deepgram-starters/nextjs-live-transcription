@@ -1,4 +1,6 @@
-# Deepgram Aura TTS Demo
+# Deepgram AI Agent Technical Demo
+
+Combine Text-to-Speech and Speech-to-Text into a conversational agent.
 
 > Project codename EmilyAI
 
