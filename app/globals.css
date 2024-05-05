@@ -68,6 +68,13 @@ body {
   @apply leading-normal break-words;
 }
 
+.pre-overflow-y-auto pre {
+  @apply overflow-y-auto;
+}
+
+.word-break {
+  word-break: break-word;
+}
 .markdown > * + * {
   @apply my-2;
 }
