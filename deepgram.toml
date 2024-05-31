@@ -1,5 +1,5 @@
 [meta]
-  title = "Live Transcription with NextJS"
+  title = "Live Transcription with Next.js"
   description = "Basic demo for using Deepgram to transcribe microphone audio in Next.js"
   author = "Deepgram DX Team <devrel@deepgram.com> (https://developers.deepgram.com)"
   useCase = "Live"
