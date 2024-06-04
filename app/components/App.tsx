@@ -47,7 +47,11 @@ const App: () => JSX.Element = () => {
     if (!connection) return;
 
     const onData = (e: BlobEvent) => {
-      connection?.send(e.data);
+      // iOS SAFARI FIX:
+      // Prevent packetZero from being sent. If sent at size 0, the connection will close. 
+      if (e.data.size > 0) {
+        connection?.send(e.data);
+      }
     };
 
     const onTranscript = (data: LiveTranscriptionEvent) => {
