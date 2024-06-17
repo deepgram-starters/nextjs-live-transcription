@@ -42,11 +42,11 @@ export async function GET(request: NextRequest) {
             time_to_live_in_seconds: 60,
         });
 
+    console.log("foobar2", newKeyError, newKeyResult);
+
     if (newKeyError) {
         return NextResponse.json(newKeyError);
     }
-
-    console.log("foobar2", newKeyError);
 
     const response = NextResponse.json({ ...newKeyResult, url });
     response.headers.set("Surrogate-Control", "no-store");
