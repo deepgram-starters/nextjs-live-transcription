@@ -1,10 +1,22 @@
 // "use client";
 import App from "./components/App";
 import ChildPlayground from "./components/ChildPlayground";
-import Dashboard from "./components/Dashboard";
+// import Dashboard from "./components/Dashboard";
 import ParentDashboard from "./components/ParentDashboard";
+import { getHumeAccessToken } from "@/lib/getHumeAccessToken";
+import dynamic from "next/dynamic";
 
-const Home = () => {
+const Chat = dynamic(() => import("@/app/components/Chat"), {
+    ssr: false,
+});
+
+export default async function Home() {
+    const accessToken = await getHumeAccessToken();
+
+    if (!accessToken) {
+        throw new Error();
+    }
+
     return (
         <div className="h-full overflow-hidden">
             {/* height 4rem */}
@@ -31,12 +43,10 @@ const Home = () => {
                         </p>
                     </div>
                     <div className="flex sm:flex-row flex-col gap-2 sm:h-[70%] h-full">
-                        <Dashboard />
+                        <Chat accessToken={accessToken} />
                     </div>
                 </div>
             </main>
         </div>
     );
-};
-
-export default Home;
+}
