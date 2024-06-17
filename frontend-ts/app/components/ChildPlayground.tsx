@@ -2,15 +2,22 @@ import App from "./App";
 
 const ChildPlayground: React.FC<{
     selectedUser: IUser | null;
+    selectedToy: IToy | null;
     children: React.ReactNode;
-}> = ({ selectedUser, children }) => {
+}> = ({ selectedUser, children, selectedToy }) => {
     const user = selectedUser;
     return (
         <div className="p-4 overflow-y-scroll">
             <p>Child playground</p>
-            {user && (
+            {user && selectedToy && (
                 <div className="p-2 flex flex-col gap-4">
-                    <p>Talking to {selectedUser?.childName}</p>
+                    <p>
+                        <span className="font-bold">{selectedToy?.name}</span>{" "}
+                        talking to{" "}
+                        <span className="font-bold">
+                            {selectedUser?.childName}
+                        </span>
+                    </p>
                     <div>
                         <div className="text-gray-600">{user.childName}</div>
                         <div className="text-gray-500 text-sm">

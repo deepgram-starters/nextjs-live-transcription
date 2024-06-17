@@ -17,19 +17,31 @@ export default function ClientComponent({
     const ref = useRef<ComponentRef<typeof Messages> | null>(null);
 
     const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
+    const [selectedToy, setSelectedToy] = useState<IToy | null>(null);
+
     const chooseUser = (user: IUser) => {
         setSelectedUser(user);
     };
+
+    const chooseToy = (toy: IToy) => {
+        setSelectedToy(toy);
+    };
+
     return (
         <>
             <div className="flex flex-col gap-2 sm:w-1/2 border border-black rounded-md">
                 <ParentDashboard
                     chooseUser={chooseUser}
                     selectedUser={selectedUser}
+                    chooseToy={chooseToy}
+                    selectedToy={selectedToy}
                 />
             </div>
             <div className="flex flex-col gap-2 sm:w-1/2 border border-black rounded-md">
-                <ChildPlayground selectedUser={selectedUser}>
+                <ChildPlayground
+                    selectedUser={selectedUser}
+                    selectedToy={selectedToy}
+                >
                     <VoiceProvider
                         auth={{ type: "accessToken", value: accessToken }}
                         onMessage={() => {
@@ -49,7 +61,10 @@ export default function ClientComponent({
                                 }
                             }, 200);
                         }}
-                        configId="6947ac53-5f3b-4499-abc5-f8b368552cb6"
+                        configId={
+                            selectedToy?.humeAiConfigId ??
+                            "6947ac53-5f3b-4499-abc5-f8b368552cb6"
+                        }
                     >
                         <Messages ref={ref} />
                         <Controls />
