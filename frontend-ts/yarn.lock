@@ -390,6 +390,13 @@
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
 
+"@radix-ui/number@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@radix-ui/number/-/number-1.0.1.tgz#644161a3557f46ed38a042acf4a770e826021674"
+  integrity sha512-T5gIdVO2mmPW3NNhjNgEP3cqMXjXL9UbO0BzWcXfvdBs+BohbQxvd/K5hSVKmn9/lbTdsQVKbUcP5WLCwvUbBg==
+  dependencies:
+    "@babel/runtime" "^7.13.10"
+
 "@radix-ui/primitive@1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@radix-ui/primitive/-/primitive-1.0.1.tgz#e46f9958b35d10e9f6dc71c497305c22e3e55dbd"
@@ -411,6 +418,13 @@
   dependencies:
     "@babel/runtime" "^7.13.10"
 
+"@radix-ui/react-direction@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@radix-ui/react-direction/-/react-direction-1.0.1.tgz#9cb61bf2ccf568f3421422d182637b7f47596c9b"
+  integrity sha512-RXcvnXgyvYvBEOhCBuddKecVkoMiI10Jcm5cTI7abJRAHYfFxeu+FBQs/DvdxSYucxR5mna0dNsL6QFlds5TMA==
+  dependencies:
+    "@babel/runtime" "^7.13.10"
+
 "@radix-ui/react-label@^2.0.2":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@radix-ui/react-label/-/react-label-2.0.2.tgz#9c72f1d334aac996fdc27b48a8bdddd82108fb6d"
@@ -419,6 +433,15 @@
     "@babel/runtime" "^7.13.10"
     "@radix-ui/react-primitive" "1.0.3"
 
+"@radix-ui/react-presence@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@radix-ui/react-presence/-/react-presence-1.0.1.tgz#491990ba913b8e2a5db1b06b203cb24b5cdef9ba"
+  integrity sha512-UXLW4UAbIY5ZjcvzjfRFo5gxva8QirC9hF7wRE4U5gz+TP0DbRk+//qyuAQ1McDxBt1xNMBTaciFGvEmJvAZCg==
+  dependencies:
+    "@babel/runtime" "^7.13.10"
+    "@radix-ui/react-compose-refs" "1.0.1"
+    "@radix-ui/react-use-layout-effect" "1.0.1"
+
 "@radix-ui/react-primitive@1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@radix-ui/react-primitive/-/react-primitive-1.0.3.tgz#d49ea0f3f0b2fe3ab1cb5667eb03e8b843b914d0"
@@ -426,6 +449,22 @@
   dependencies:
     "@babel/runtime" "^7.13.10"
     "@radix-ui/react-slot" "1.0.2"
+
+"@radix-ui/react-scroll-area@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@radix-ui/react-scroll-area/-/react-scroll-area-1.0.5.tgz#01160c6893f24a2ddb5aa399ae5b3ba84ad4d3cc"
+  integrity sha512-b6PAgH4GQf9QEn8zbT2XUHpW5z8BzqEc7Kl11TwDrvuTrxlkcjTD5qa/bxgKr+nmuXKu4L/W5UZ4mlP/VG/5Gw==
+  dependencies:
+    "@babel/runtime" "^7.13.10"
+    "@radix-ui/number" "1.0.1"
+    "@radix-ui/primitive" "1.0.1"
+    "@radix-ui/react-compose-refs" "1.0.1"
+    "@radix-ui/react-context" "1.0.1"
+    "@radix-ui/react-direction" "1.0.1"
+    "@radix-ui/react-presence" "1.0.1"
+    "@radix-ui/react-primitive" "1.0.3"
+    "@radix-ui/react-use-callback-ref" "1.0.1"
+    "@radix-ui/react-use-layout-effect" "1.0.1"
 
 "@radix-ui/react-slot@1.0.2":
   version "1.0.2"
@@ -583,6 +622,11 @@
   version "2.0.10"
   resolved "https://registry.yarnpkg.com/@types/unist/-/unist-2.0.10.tgz#04ffa7f406ab628f7f7e97ca23e290cd8ab15efc"
   integrity sha512-IfYcSBWE3hLpBg8+X2SEa8LVkJdJEkT2Ese2aaLs3ptGdVtABxndrMaxuFlQ1qdFf9Q5rDvDpxI3WwgvKFAsQA==
+
+"@types/uuid@^9.0.8":
+  version "9.0.8"
+  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-9.0.8.tgz#7545ba4fc3c003d6c756f651f3bf163d8f0f29ba"
+  integrity sha512-jg+97EGIcY9AGHJJRaaPVgetKDsrTgbRjQ5Msgjh/DQKEFl0DtyRr/VCOyD1T2R1MNeWPK/u7JoGhlDZnKBAfA==
 
 "@types/websocket@^1.0.9":
   version "1.0.10"
@@ -3884,6 +3928,11 @@ util-deprecate@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
   integrity sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==
+
+uuid@^10.0.0:
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-10.0.0.tgz#5a95aa454e6e002725c79055fd42aaba30ca6294"
+  integrity sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==
 
 webidl-conversions@^3.0.0:
   version "3.0.1"

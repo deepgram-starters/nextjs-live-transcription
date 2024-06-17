@@ -1,6 +1,7 @@
 // "use client";
 import App from "./components/App";
 import ChildPlayground from "./components/ChildPlayground";
+import Dashboard from "./components/Dashboard";
 import ParentDashboard from "./components/ParentDashboard";
 
 const Home = () => {
@@ -30,12 +31,7 @@ const Home = () => {
                         </p>
                     </div>
                     <div className="flex sm:flex-row flex-col gap-2 sm:h-[70%] h-full">
-                        <div className="flex flex-col gap-2 sm:w-1/2 border border-black rounded-md">
-                            <ParentDashboard />
-                        </div>
-                        <div className="flex flex-col gap-2 sm:w-1/2 border border-black rounded-md">
-                            <ChildPlayground />
-                        </div>
+                        <Dashboard />
                     </div>
                 </div>
             </main>

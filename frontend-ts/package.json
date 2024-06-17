@@ -11,7 +11,9 @@
   "dependencies": {
     "@deepgram/sdk": "^3.3.0",
     "@radix-ui/react-label": "^2.0.2",
+    "@radix-ui/react-scroll-area": "^1.0.5",
     "@radix-ui/react-switch": "^1.0.3",
+    "@types/uuid": "^9.0.8",
     "class-variance-authority": "^0.7.0",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
@@ -23,7 +25,8 @@
     "react-github-btn": "^1.4.0",
     "react-syntax-highlighter": "^15.5.0",
     "tailwind-merge": "^2.3.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.1.0",

@@ -121,7 +121,7 @@ const App: () => JSX.Element = () => {
     }, [microphoneState, connectionState, isListening]);
 
     return (
-        <div>
+        <>
             <div className="flex items-center space-x-2">
                 <Switch
                     id="listening-switch"
@@ -135,7 +135,7 @@ const App: () => JSX.Element = () => {
             <div className="max-w-4xl mx-auto text-center">
                 {caption && <span>{caption}</span>}
             </div>
-        </div>
+        </>
     );
 };
 
