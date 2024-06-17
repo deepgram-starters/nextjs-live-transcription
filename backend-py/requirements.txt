@@ -1,2 +1,6 @@
 fastapi
 python-dotenv
+openai
+anthropic
+litellm
+pydantic-settings
