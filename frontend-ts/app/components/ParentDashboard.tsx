@@ -35,8 +35,8 @@ const ParentDashboard: React.FC<ParentDashboardProps> = ({
                     return (
                         <div
                             key={toy.id}
-                            className={`flex flex-col gap-2 p-2 mb-4 hover:bg-slate-50 rounded-md cursor-pointer ${
-                                chosen ? "bg-slate-100" : ""
+                            className={`flex flex-col gap-2 p-2 mb-4 hover:bg-slate-100 rounded-md cursor-pointer ${
+                                chosen ? "bg-slate-200" : ""
                             } transition-colors duration-200 ease-in-out`}
                             onClick={() => chooseToy(toy)}
                         >
@@ -58,8 +58,8 @@ const ParentDashboard: React.FC<ParentDashboardProps> = ({
                         return (
                             <div
                                 key={user.id}
-                                className={`flex flex-col gap-2 p-2 mb-4 hover:bg-slate-50 rounded-md cursor-pointer ${
-                                    chosen ? "bg-slate-100" : ""
+                                className={`flex flex-col gap-2 p-2 mb-4 hover:bg-slate-100 rounded-md cursor-pointer ${
+                                    chosen ? "bg-slate-200" : ""
                                 } transition-colors duration-200 ease-in-out`}
                                 onClick={() => chooseUser(user)}
                             >
