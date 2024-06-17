@@ -53,7 +53,7 @@ const ParentDashboard: React.FC<ParentDashboardProps> = ({
                                         return (
                                             <Badge
                                                 key={index}
-                                                variant="secondary"
+                                                // variant="defaul"
                                             >
                                                 {module}
                                             </Badge>

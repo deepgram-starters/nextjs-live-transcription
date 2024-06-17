@@ -6,7 +6,7 @@ const ChildPlayground: React.FC<{
 }> = ({ selectedUser, children }) => {
     const user = selectedUser;
     return (
-        <div className="p-4">
+        <div className="p-4 overflow-y-scroll">
             <p>Child playground</p>
             {user && (
                 <div className="p-2 flex flex-col gap-4">
