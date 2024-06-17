@@ -11,8 +11,6 @@ export async function GET(request: NextRequest) {
         });
     }
 
-    console.log(process.env.DEEPGRAM_API_KEY);
-
     // gotta use the request object to invalidate the cache every request :vomit:
     const url = request.url;
     const deepgram = createClient(process.env.DEEPGRAM_API_KEY ?? "");
@@ -34,6 +32,8 @@ export async function GET(request: NextRequest) {
         );
     }
 
+    console.log("foobar1", project);
+
     let { result: newKeyResult, error: newKeyError } =
         await deepgram.manage.createProjectKey(project.project_id, {
             comment: "Temporary API key",
@@ -45,6 +45,8 @@ export async function GET(request: NextRequest) {
     if (newKeyError) {
         return NextResponse.json(newKeyError);
     }
+
+    console.log("foobar2", newKeyError);
 
     const response = NextResponse.json({ ...newKeyResult, url });
     response.headers.set("Surrogate-Control", "no-store");
