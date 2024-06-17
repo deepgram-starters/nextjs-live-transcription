@@ -22,7 +22,7 @@ async def stream_processor(response):
 @router.post("/analyze_text")
 async def analyze_text(input: TextInput):
     try:
-        response = await openai_response(messages=[input])
+        response = await openai_response(input_text=input.text)
 
         # metadata = {}
         # response = {"original_text": input.text, "analysis": metadata}

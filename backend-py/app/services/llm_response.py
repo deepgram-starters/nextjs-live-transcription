@@ -8,7 +8,7 @@ import os
 # model_name = settings.MODEL_NAME
 
 
-async def openai_response(messages: list):
+async def openai_response(input_text: str):
 
     # return acompletion(
     #     model=os.getenv("MODEL_NAME"),
@@ -20,6 +20,6 @@ async def openai_response(messages: list):
     return await client.aclient_azure_4o.chat.completions.create(
         model=os.getenv("MODEL_NAME"),
         temperature=0.5,
-        messages=[{"role": "user", "content": "Hey, how's it going?"}],
+        messages=[{"role": "user", "content": input_text}],
         stream=True,
     )
