@@ -12,6 +12,7 @@
     "@deepgram/sdk": "^3.3.0",
     "@humeai/voice": "^0.1.7",
     "@humeai/voice-react": "^0.1.7",
+    "@radix-ui/react-hover-card": "^1.0.7",
     "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-scroll-area": "^1.0.5",
     "@radix-ui/react-slot": "^1.0.2",

@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
-
 export const toys: IToy[] = [
     {
         id: "6c3eb71a-8d68-4fc6-85c5-27d283ecabc8",
@@ -26,7 +24,7 @@ export const toys: IToy[] = [
 
 export const users: IUser[] = [
     {
-        id: uuidv4(),
+        id: "0c41d48c-2a13-4b30-baa7-1c0e99e09969",
         parentName: "Alice Johnson",
         childName: "Timmy",
         childPersona:
@@ -35,7 +33,7 @@ export const users: IUser[] = [
         modules: ["MATH", "GENERAL_TRIVIA", "SPELLING", "SCIENCE"],
     },
     {
-        id: uuidv4(),
+        id: "24ecc593-098e-4550-b48a-6551f837fd8b",
         parentName: "Bob Smith",
         childName: "Lucy",
         childPersona:
@@ -44,7 +42,7 @@ export const users: IUser[] = [
         modules: ["GENERAL_TRIVIA"],
     },
     {
-        id: uuidv4(),
+        id: "6779509a-b063-486f-8876-f352571d6449",
         parentName: "Catherine Lee",
         childName: "Ethan",
         childPersona:
@@ -53,7 +51,7 @@ export const users: IUser[] = [
         modules: ["MATH", "GENERAL_TRIVIA", "SPELLING"],
     },
     {
-        id: uuidv4(),
+        id: "d3a6e11f-6388-4a2e-a689-c5a127313550",
         parentName: "David Kim",
         childName: "Sophia",
         childPersona:
@@ -62,7 +60,7 @@ export const users: IUser[] = [
         modules: ["GENERAL_TRIVIA", "SPELLING", "SCIENCE"],
     },
     {
-        id: uuidv4(),
+        id: "9fea943e-8ca8-469a-a528-995e90f32ac5",
         parentName: "Emma Brown",
         childName: "Jake",
         childPersona:
@@ -71,7 +69,7 @@ export const users: IUser[] = [
         modules: ["MATH", "GENERAL_TRIVIA", "SPELLING", "SCIENCE"],
     },
     {
-        id: uuidv4(),
+        id: "28db97c2-1903-45b1-9312-cf0f9fb1bc13",
         parentName: "Frank Green",
         childName: "Mia",
         childPersona:
@@ -80,7 +78,7 @@ export const users: IUser[] = [
         modules: ["GENERAL_TRIVIA", "SPELLING", "SCIENCE"],
     },
     {
-        id: uuidv4(),
+        id: "3b277bea-753a-4d3f-bf2b-e805dd665ab2",
         parentName: "Grace White",
         childName: "Aiden",
         childPersona:
@@ -89,7 +87,7 @@ export const users: IUser[] = [
         modules: ["MATH", "GENERAL_TRIVIA", "SPELLING", "SCIENCE"],
     },
     {
-        id: uuidv4(),
+        id: "3150ea2a-f137-42b2-b977-1f2bd6763208",
         parentName: "Henry Black",
         childName: "Ella",
         childPersona:
@@ -98,7 +96,7 @@ export const users: IUser[] = [
         modules: ["GENERAL_TRIVIA", "SPELLING", "SCIENCE"],
     },
     {
-        id: uuidv4(),
+        id: "74d57304-f6be-4f3c-9347-2b3bbf111388",
         parentName: "Ivy Parker",
         childName: "Liam",
         childPersona:
@@ -107,7 +105,7 @@ export const users: IUser[] = [
         modules: ["MATH", "GENERAL_TRIVIA", "SPELLING", "SCIENCE"],
     },
     {
-        id: uuidv4(),
+        id: "0ae4152c-5410-4bbc-bbc6-8d7dba66e5d0",
         parentName: "Jack Taylor",
         childName: "Chloe",
         childPersona:

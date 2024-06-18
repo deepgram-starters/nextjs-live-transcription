@@ -10,7 +10,7 @@ const ChildPlayground: React.FC<{
         <div className="p-4 overflow-y-scroll">
             <p>Child playground</p>
             {user && selectedToy && (
-                <div className="p-2 flex flex-col gap-4">
+                <div>
                     <p>
                         <span className="font-bold">{selectedToy?.name}</span>{" "}
                         talking to{" "}
@@ -18,7 +18,7 @@ const ChildPlayground: React.FC<{
                             {selectedUser?.childName}
                         </span>
                     </p>
-                    <div>
+                    {/* <div>
                         <div className="text-gray-600">{user.childName}</div>
                         <div className="text-gray-500 text-sm">
                             {user.childPersona}
@@ -26,7 +26,7 @@ const ChildPlayground: React.FC<{
                         <div className="text-gray-400 text-xs">
                             {user.childAge} years old
                         </div>
-                    </div>
+                    </div> */}
                     {children}
                     {/* <App /> */}
                 </div>

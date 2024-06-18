@@ -3,6 +3,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { users, toys } from "@/lib/data";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import {
+    HoverCard,
+    HoverCardContent,
+    HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 interface ParentDashboardProps {
     selectedUser: IUser | null;
@@ -28,26 +33,38 @@ const ParentDashboard: React.FC<ParentDashboardProps> = ({
     }, [selectedUser]);
     return (
         <div className="p-4 overflow-hidden w-full flex-auto">
-            <p>Parent dashboard</p>
-            <div className="flex flex-row gap-2 items-center justify-center">
+            <p>Parent dashboard (choose your characters)</p>
+            <div className="flex mt-2 flex-row gap-2 items-center justify-center">
                 {toys.map((toy) => {
                     const chosen = selectedToy?.id === toy.id;
                     return (
-                        <div
-                            key={toy.id}
-                            className={`flex flex-col gap-2 p-2 mb-4 hover:bg-slate-100 rounded-md cursor-pointer ${
-                                chosen ? "bg-slate-200" : ""
-                            } transition-colors duration-200 ease-in-out`}
-                            onClick={() => chooseToy(toy)}
-                        >
-                            <Image
-                                src={toy.imageSrc!}
-                                width={200}
-                                height={200}
-                                alt={toy.name}
-                            />
-                            <div className="font-bold">{toy.name}</div>
-                        </div>
+                        <HoverCard key={toy.id}>
+                            <HoverCardTrigger asChild>
+                                <div
+                                    key={toy.id}
+                                    className={`flex flex-col border gap-2 p-2 mb-4 hover:shadow-md rounded-md cursor-pointer ${
+                                        chosen ? "bg-slate-100 shadow-lg" : ""
+                                    } transition-colors duration-200 ease-in-out`}
+                                    onClick={() => chooseToy(toy)}
+                                >
+                                    <Image
+                                        src={toy.imageSrc!}
+                                        width={200}
+                                        height={200}
+                                        alt={toy.name}
+                                    />
+                                    <div className="font-bold">{toy.name}</div>
+                                </div>
+                            </HoverCardTrigger>
+                            <HoverCardContent className="w-80">
+                                <div className="p-4">
+                                    <div className="font-bold">{toy.name}</div>
+                                    <div className="text-gray-600">
+                                        {toy.prompt}
+                                    </div>
+                                </div>
+                            </HoverCardContent>
+                        </HoverCard>
                     );
                 })}
             </div>
@@ -58,8 +75,8 @@ const ParentDashboard: React.FC<ParentDashboardProps> = ({
                         return (
                             <div
                                 key={user.id}
-                                className={`flex flex-col gap-2 p-2 mb-4 hover:bg-slate-100 rounded-md cursor-pointer ${
-                                    chosen ? "bg-slate-200" : ""
+                                className={`flex flex-col gap-2 mr-3 border p-2 mb-4 hover:shadow-md rounded-md cursor-pointer ${
+                                    chosen ? "bg-slate-100 shadow-lg" : ""
                                 } transition-colors duration-200 ease-in-out`}
                                 onClick={() => chooseUser(user)}
                             >

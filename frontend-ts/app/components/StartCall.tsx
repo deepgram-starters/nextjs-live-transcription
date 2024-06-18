@@ -3,9 +3,27 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Phone } from "lucide-react";
 import React from "react";
+import { constructUserPrompt } from "@/lib/utils";
 
-export default function StartCall() {
-    const { status, connect, lastVoiceMessage, lastUserMessage } = useVoice();
+interface StartCallProps {
+    selectedUser: IUser | null;
+}
+
+const StartCall: React.FC<StartCallProps> = ({ selectedUser }) => {
+    const {
+        status,
+        connect,
+        lastVoiceMessage,
+        lastUserMessage,
+        sendUserInput,
+        sendAssistantInput,
+        sendPauseAssistantMessage,
+        sendSessionSettings,
+    } = useVoice();
+
+    const userPrompt = selectedUser
+        ? constructUserPrompt(selectedUser)
+        : "You are talking to a young child who is 10 years old.";
 
     React.useEffect(() => {
         if (lastVoiceMessage) {
@@ -47,7 +65,14 @@ export default function StartCall() {
                                 className={"z-50 flex items-center gap-1.5"}
                                 onClick={() => {
                                     connect()
-                                        .then(() => {})
+                                        .then(() => {
+                                            // sendSessionSettings({
+                                            //     systemPrompt: userPrompt,
+                                            // });
+                                            sendUserInput(
+                                                `My name is ${selectedUser?.childName}`
+                                            );
+                                        })
                                         .catch(() => {})
                                         .finally(() => {});
                                 }}
@@ -67,4 +92,6 @@ export default function StartCall() {
             ) : null}
         </AnimatePresence>
     );
-}
+};
+
+export default StartCall;
