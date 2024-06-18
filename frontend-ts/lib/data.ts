@@ -35,7 +35,7 @@ export const users: IUser[] = [
         child_name: "Timmy",
         child_persona:
             "Timmy is a smart kid in elementary who loves sports, especially soccer, and is a huge fan of Batman. He enjoys solving puzzles and building with LEGO.",
-        child_age: "7",
+        child_age: 7,
         modules: ["MATH", "GENERAL_TRIVIA", "SPELLING", "SCIENCE"],
     },
     {
@@ -44,7 +44,7 @@ export const users: IUser[] = [
         child_name: "Lucy",
         child_persona:
             "Lucy is a creative and artistic child who loves to draw and paint. She adores unicorns and spends hours crafting and making up stories about magical lands.",
-        child_age: "8",
+        child_age: 8,
         modules: ["GENERAL_TRIVIA"],
     },
     {
@@ -53,7 +53,7 @@ export const users: IUser[] = [
         child_name: "Ethan",
         child_persona:
             "Ethan is a curious and energetic boy who is fascinated by dinosaurs and space. He loves exploring the outdoors and has a knack for science experiments.",
-        child_age: "6",
+        child_age: 6,
         modules: ["MATH", "GENERAL_TRIVIA", "SPELLING"],
     },
     {
@@ -62,7 +62,7 @@ export const users: IUser[] = [
         child_name: "Sophia",
         child_persona:
             "Sophia is a thoughtful and caring girl who loves animals and reading books. She often pretends to be a vet and takes great care of her stuffed animals.",
-        child_age: "5",
+        child_age: 5,
         modules: ["GENERAL_TRIVIA", "SPELLING", "SCIENCE"],
     },
     {
@@ -71,7 +71,7 @@ export const users: IUser[] = [
         child_name: "Jake",
         child_persona:
             "Jake is an adventurous and brave boy who enjoys action figures and superheroes. He dreams of being a firefighter and is always ready to help others.",
-        child_age: "7",
+        child_age: 7,
         modules: ["MATH", "GENERAL_TRIVIA", "SPELLING", "SCIENCE"],
     },
     {
@@ -80,7 +80,7 @@ export const users: IUser[] = [
         child_name: "Mia",
         child_persona:
             "Mia is a lively and cheerful girl who loves dancing and singing. She is a big fan of princesses and spends her time dressing up and putting on performances.",
-        child_age: "6",
+        child_age: 6,
         modules: ["GENERAL_TRIVIA", "SPELLING", "SCIENCE"],
     },
     {
@@ -89,7 +89,7 @@ export const users: IUser[] = [
         child_name: "Aiden",
         child_persona:
             "Aiden is a tech-savvy and imaginative boy who enjoys video games and robots. He is always tinkering with gadgets and has a vivid imagination.",
-        child_age: "8",
+        child_age: 8,
         modules: ["MATH", "GENERAL_TRIVIA", "SPELLING", "SCIENCE"],
     },
     {
@@ -98,7 +98,7 @@ export const users: IUser[] = [
         child_name: "Ella",
         child_persona:
             "Ella is a gentle and kind-hearted girl who loves flowers and fairy tales. She enjoys gardening with her parents and creating fairy gardens in the backyard.",
-        child_age: "5",
+        child_age: 5,
         modules: ["GENERAL_TRIVIA", "SPELLING", "SCIENCE"],
     },
     {
@@ -107,7 +107,7 @@ export const users: IUser[] = [
         child_name: "Liam",
         child_persona:
             "Liam is a bright and energetic boy who loves cars and trucks. He enjoys playing with his toy vehicles and dreams of becoming a race car driver one day.",
-        child_age: "7",
+        child_age: 7,
         modules: ["MATH", "GENERAL_TRIVIA", "SPELLING", "SCIENCE"],
     },
     {
@@ -116,7 +116,7 @@ export const users: IUser[] = [
         child_name: "Chloe",
         child_persona:
             "Chloe is a bubbly and adventurous girl who loves the beach and marine life. She enjoys swimming and learning about different sea creatures.",
-        child_age: "6",
+        child_age: 6,
         modules: ["GENERAL_TRIVIA", "SPELLING", "SCIENCE"],
     },
 ];
