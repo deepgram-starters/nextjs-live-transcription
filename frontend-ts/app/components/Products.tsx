@@ -63,7 +63,7 @@ const Products = () => {
                     );
                 })}
             </div>
-            {selectedToy && (
+            {selectedToy ? (
                 <div className="flex flex-row gap-4 rounded-md font-quicksand self-center items-center p-2 w-fit">
                     <div className="flex flex-col">
                         <p className="font-bold text-lg">
@@ -74,6 +74,10 @@ const Products = () => {
                         Get started
                     </Button>
                 </div>
+            ) : (
+                <p className="flex self-center">
+                    (pick your favorite plushie to get started!)
+                </p>
             )}
         </div>
     );
