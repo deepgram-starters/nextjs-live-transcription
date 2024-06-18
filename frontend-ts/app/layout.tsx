@@ -16,6 +16,8 @@ import "./globals.css";
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import supabaseServerClient from "@/db/supabaseServerClient";
+import NavbarButtons from "./components/NavbarButtons";
 
 const inter = Inter({
     subsets: ["latin"],
@@ -79,11 +81,17 @@ export const metadata: Metadata = {
     },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
+    const supabase = supabaseServerClient();
+
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
     return (
         <html lang="en" className={`h-dvh ${fonts}`}>
             <body className={`h-full`}>
@@ -98,11 +106,7 @@ export default function RootLayout({
                             </a>
                             <p className="text-sm text-gray-600">beta</p>
                         </div>
-                        <Link href="/login">
-                            <Button variant="pink" className="font-bold">
-                                Signup / Login
-                            </Button>
-                        </Link>
+                        <NavbarButtons user={user} />
                     </header>
                 </div>
                 <MicrophoneContextProvider>

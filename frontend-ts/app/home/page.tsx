@@ -1,13 +1,22 @@
-// "use client";
-// import Dashboard from "./components/Dashboard";
 import { getHumeAccessToken } from "@/lib/getHumeAccessToken";
-import dynamic from "next/dynamic";
-
-const Chat = dynamic(() => import("@/app/components/Chat"), {
-    ssr: false,
-});
+import Playground from "../components/Playground";
+import supabaseServerClient from "@/db/supabaseServerClient";
+import { getUserById } from "@/db/users";
+import { getToyById } from "@/db/toys";
 
 export default async function Home() {
+    const supabase = supabaseServerClient();
+
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    const dbUser = await getUserById(supabase, user!.id);
+    const dbToy = await getToyById(supabase, dbUser?.toy_id!);
+
+    console.log("dbUser", dbUser);
+    console.log("dbToy", dbToy);
+
     const accessToken = await getHumeAccessToken();
 
     if (!accessToken) {
@@ -15,8 +24,15 @@ export default async function Home() {
     }
 
     return (
-        <div className="flex sm:flex-row flex-col gap-2 sm:h-[70%] h-full">
-            <Chat accessToken={accessToken} />
+        <div className="flex flex-col gap-2 font-baloo2">
+            <h1 className="text-4xl font-semibold">Playground</h1>
+            {dbUser && dbToy && (
+                <Playground
+                    accessToken={accessToken}
+                    selectedUser={dbUser}
+                    selectedToy={dbToy}
+                />
+            )}
         </div>
     );
 }

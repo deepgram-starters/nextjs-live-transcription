@@ -20,7 +20,7 @@ export default async function Login() {
                 <CardHeader>
                     <CardTitle className="flex flex-row gap-1 items-center">
                         Log In / Sign Up to Parakeet AI
-                        <Sparkles size={16} fill="black" />
+                        <Sparkles size={20} fill="black" />
                     </CardTitle>
                     <CardDescription>
                         Log into your Parakeet AI account to continue.

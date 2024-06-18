@@ -9,6 +9,7 @@ export const createUser = async (supabase: SupabaseClient, user: User) => {
             child_name: "",
             child_age: 3,
             child_persona: "",
+            toy_id: "2eab6067-5583-47f9-8850-005ceb08935b", // selecting coco
         } as Omit<IUser, "modules">,
     ]);
 
@@ -21,7 +22,7 @@ export const getUserById = async (supabase: SupabaseClient, id: string) => {
     const { data, error } = await supabase
         .from("users")
         .select("*")
-        .eq("id", id)
+        .eq("user_id", id)
         .single();
 
     if (error) {

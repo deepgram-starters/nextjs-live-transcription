@@ -38,7 +38,7 @@ const Products = () => {
                         // </HoverCard>
                         <div key={toy.toy_id} className="flex flex-col gap-2 ">
                             <div
-                                className={`flex flex-col max-w-[350px] max-h-[350px] border gap-2 mb-4 hover:shadow-lg rounded-2xl overflow-hidden cursor-pointer ${
+                                className={`flex flex-col max-w-[350px] max-h-[350px] border gap-2 mb-4 shadow-lg hover:shadow-xl rounded-2xl overflow-hidden cursor-pointer ${
                                     chosen ? "shadow-2xl" : ""
                                 } transition-colors duration-200 ease-in-out`}
                                 onClick={() => chooseToy(toy)}
@@ -51,34 +51,46 @@ const Products = () => {
                                     className="transition-transform duration-300 ease-in-out transform hover:scale-105"
                                 />
                             </div>
-                            <div>
+                            <div className="flex flex-col gap-3">
                                 <div className="font-baloo2 text-2xl font-normal">
                                     {toy.name}
                                 </div>
-                                <div className="font-quicksand max-w-[350px] text-gray-600 text-sm font-normal">
-                                    {toy.third_person_prompt}
-                                </div>
+                                {chosen && (
+                                    <>
+                                        <div className="font-quicksand max-w-[350px] text-gray-600 text-sm font-normal">
+                                            {toy.third_person_prompt}
+                                        </div>
+                                        <Button
+                                            variant="pink"
+                                            className="font-bold"
+                                        >
+                                            Get started
+                                        </Button>
+                                    </>
+                                )}
                             </div>
                         </div>
                     );
                 })}
             </div>
-            {selectedToy ? (
+            {!selectedToy && (
+                <p className="flex self-center">
+                    (pick your favorite plushie to get started!)
+                </p>
+            )}
+            {/* {selectedToy ? (
                 <div className="flex flex-row gap-4 rounded-md font-quicksand self-center items-center p-2 w-fit">
                     <div className="flex flex-col">
                         <p className="font-bold text-lg">
                             Great choice! You picked {selectedToy.name}
                         </p>
                     </div>
-                    <Button variant="pink" className="font-bold">
-                        Get started
-                    </Button>
                 </div>
             ) : (
                 <p className="flex self-center">
                     (pick your favorite plushie to get started!)
                 </p>
-            )}
+            )} */}
         </div>
     );
 };

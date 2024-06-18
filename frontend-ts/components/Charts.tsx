@@ -1,3 +1,5 @@
+"use client";
+
 import { MyResponsiveBar } from "./ui/BarChart";
 
 export const data: BarChartData[] = [
