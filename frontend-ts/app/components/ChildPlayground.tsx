@@ -15,7 +15,7 @@ const ChildPlayground: React.FC<{
                         <span className="font-bold">{selectedToy?.name}</span>{" "}
                         talking to{" "}
                         <span className="font-bold">
-                            {selectedUser?.childName}
+                            {selectedUser?.child_name}
                         </span>
                     </p>
                     {/* <div>

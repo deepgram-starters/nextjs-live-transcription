@@ -14,6 +14,8 @@ import { MicrophoneContextProvider } from "./context/MicrophoneContextProvider";
 import "./globals.css";
 
 import type { Metadata, Viewport } from "next";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const inter = Inter({
     subsets: ["latin"],
@@ -85,6 +87,24 @@ export default function RootLayout({
     return (
         <html lang="en" className={`h-dvh ${fonts}`}>
             <body className={`h-full`}>
+                <div className="bg-[#fff0f3] h-[4rem] flex items-center">
+                    <header className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 flex items-center justify-between">
+                        <div className="flex flex-row gap-1">
+                            <a
+                                className="flex items-center font-extrabold font-quicksand text-4xl text-pink-600"
+                                href="/"
+                            >
+                                Parakeet AI
+                            </a>
+                            <p className="text-sm text-gray-600">beta</p>
+                        </div>
+                        <Link href="/home">
+                            <Button variant="pink" className="font-bold">
+                                Signup / Login
+                            </Button>
+                        </Link>
+                    </header>
+                </div>
                 <MicrophoneContextProvider>
                     <DeepgramContextProvider>
                         {children}

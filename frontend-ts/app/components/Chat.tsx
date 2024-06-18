@@ -62,7 +62,7 @@ export default function ClientComponent({
                             }, 200);
                         }}
                         configId={
-                            selectedToy?.humeAiConfigId ??
+                            selectedToy?.hume_ai_config_id ??
                             "6947ac53-5f3b-4499-abc5-f8b368552cb6"
                         }
                     >
