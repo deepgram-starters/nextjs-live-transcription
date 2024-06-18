@@ -98,7 +98,7 @@ export default function RootLayout({
                             </a>
                             <p className="text-sm text-gray-600">beta</p>
                         </div>
-                        <Link href="/home">
+                        <Link href="/login">
                             <Button variant="pink" className="font-bold">
                                 Signup / Login
                             </Button>

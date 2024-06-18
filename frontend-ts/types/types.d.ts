@@ -3,7 +3,7 @@ interface IUser {
     parent_name: string;
     child_name: string;
     child_persona: string;
-    child_age: string;
+    child_age: number;
     modules: Module[];
 }
 

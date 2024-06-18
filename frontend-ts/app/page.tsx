@@ -5,6 +5,8 @@ import dynamic from "next/dynamic";
 import Products from "./components/Products";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import supabaseServerClient from "@/db/supabaseServerClient";
 
 const Chat = dynamic(() => import("@/app/components/Chat"), {
     ssr: false,
@@ -16,6 +18,13 @@ export default async function Home() {
     if (!accessToken) {
         throw new Error();
     }
+    const supabase = supabaseServerClient();
+
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    console.log(user);
 
     return (
         <div className="h-full font-quicksand">
