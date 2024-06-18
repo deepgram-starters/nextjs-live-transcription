@@ -24,7 +24,7 @@ export default async function Home() {
                 <header className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 flex items-center justify-between">
                     <div>
                         <a
-                            className="flex items-center text-2xl font-bold text-pink-600"
+                            className="flex items-center font-baloo2 text-2xl font-bold text-pink-600"
                             href="/"
                         >
                             Parakeet AI

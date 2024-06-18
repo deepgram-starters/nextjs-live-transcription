@@ -1,5 +1,5 @@
 interface IUser {
-    id: string;
+    user_id: string;
     parentName: string;
     childName: string;
     childPersona: string;
@@ -7,8 +7,17 @@ interface IUser {
     modules: Module[];
 }
 
+interface IConversation {
+    conversation_id?: string;
+    toy_id: string;
+    user_id: string;
+    role: string;
+    content: string;
+    metadata: any;
+}
+
 interface IToy {
-    id: string;
+    toy_id: string;
     name: string;
     humeAiConfigId: string;
     prompt: string;

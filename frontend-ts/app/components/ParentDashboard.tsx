@@ -27,7 +27,9 @@ const ParentDashboard: React.FC<ParentDashboardProps> = ({
         if (selectedUser) {
             setDisplayUsers([
                 selectedUser,
-                ...users.filter((user) => user.id !== selectedUser.id),
+                ...users.filter(
+                    (user) => user.user_id !== selectedUser.user_id
+                ),
             ]);
         }
     }, [selectedUser]);
@@ -36,12 +38,12 @@ const ParentDashboard: React.FC<ParentDashboardProps> = ({
             <p>Parent dashboard (choose your characters)</p>
             <div className="flex mt-2 flex-row gap-2 items-center justify-center">
                 {toys.map((toy) => {
-                    const chosen = selectedToy?.id === toy.id;
+                    const chosen = selectedToy?.toy_id === toy.toy_id;
                     return (
-                        <HoverCard key={toy.id}>
+                        <HoverCard key={toy.toy_id}>
                             <HoverCardTrigger asChild>
                                 <div
-                                    key={toy.id}
+                                    key={toy.toy_id}
                                     className={`flex flex-col border gap-2 p-2 mb-4 hover:shadow-md rounded-md cursor-pointer ${
                                         chosen ? "bg-slate-100 shadow-lg" : ""
                                     } transition-colors duration-200 ease-in-out`}
@@ -71,10 +73,10 @@ const ParentDashboard: React.FC<ParentDashboardProps> = ({
             <div className="flex flex-row gap-2 h-full py-4">
                 <ScrollArea>
                     {displayUsers.map((user) => {
-                        const chosen = selectedUser?.id === user.id;
+                        const chosen = selectedUser?.user_id === user.user_id;
                         return (
                             <div
-                                key={user.id}
+                                key={user.user_id}
                                 className={`flex flex-col gap-2 mr-3 border p-2 mb-4 hover:shadow-md rounded-md cursor-pointer ${
                                     chosen ? "bg-slate-100 shadow-lg" : ""
                                 } transition-colors duration-200 ease-in-out`}

@@ -68,7 +68,10 @@ export default function ClientComponent({
                     >
                         <Messages ref={ref} />
                         <Controls />
-                        <StartCall selectedUser={selectedUser} />
+                        <StartCall
+                            selectedUser={selectedUser}
+                            selectedToy={selectedToy}
+                        />
                     </VoiceProvider>
                 </ChildPlayground>
             </div>
