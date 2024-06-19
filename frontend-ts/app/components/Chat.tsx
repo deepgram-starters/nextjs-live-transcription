@@ -31,15 +31,14 @@ export default function ClientComponent({
         <>
             <div className="flex flex-col gap-2 sm:w-1/2 border border-black rounded-md">
                 <ParentDashboard
-                    chooseUser={chooseUser}
                     selectedUser={selectedUser}
-                    chooseToy={chooseToy}
                     selectedToy={selectedToy}
+                    allToys={[]}
                 />
             </div>
             <div className="flex flex-col gap-2 sm:w-1/2 border border-black rounded-md">
                 <ChildPlayground
-                    selectedUser={selectedUser}
+                    selectedUser={selectedUser!}
                     selectedToy={selectedToy}
                 >
                     <VoiceProvider
