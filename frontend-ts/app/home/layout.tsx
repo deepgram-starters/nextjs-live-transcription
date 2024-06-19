@@ -7,12 +7,12 @@ const sidebarNavItems = [
         href: "/home",
     },
     {
-        title: "Parent controls",
-        href: "/home/parent",
+        title: "Insights",
+        href: "/home/track",
     },
     {
-        title: "Track",
-        href: "/home/track",
+        title: "Parent controls",
+        href: "/home/parent",
     },
 ];
 

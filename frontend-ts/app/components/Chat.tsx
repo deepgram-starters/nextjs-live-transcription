@@ -66,7 +66,13 @@ export default function ClientComponent({
                             "6947ac53-5f3b-4499-abc5-f8b368552cb6"
                         }
                     >
-                        <Messages ref={ref} />
+                        {selectedUser && selectedToy && (
+                            <Messages
+                                ref={ref}
+                                selectedUser={selectedUser}
+                                selectedToy={selectedToy}
+                            />
+                        )}
                         <Controls />
                         <StartCall
                             selectedUser={selectedUser}

@@ -25,7 +25,6 @@ export default async function Home() {
 
     return (
         <div className="flex flex-col gap-2 font-baloo2">
-            <h1 className="text-4xl font-semibold">Playground</h1>
             {dbUser && dbToy && (
                 <Playground
                     accessToken={accessToken}
