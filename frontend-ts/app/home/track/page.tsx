@@ -1,4 +1,4 @@
-import Charts from "@/components/Charts";
+import Charts from "@/app/components/Charts";
 import { getHumeAccessToken } from "@/lib/getHumeAccessToken";
 
 export default async function Home() {

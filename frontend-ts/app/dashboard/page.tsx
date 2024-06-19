@@ -1,9 +1,5 @@
-import Charts from "@/components/Charts";
+import Charts from "@/app/components/Charts";
 
 export default function Page() {
-  return (
-    <div className="">
-      <Charts selectedUser={null} selectedToy={null} />
-    </div>
-  );
+    return <div className=""></div>;
 }
