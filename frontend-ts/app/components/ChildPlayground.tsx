@@ -3,7 +3,7 @@ import Image from "next/image";
 const IMAGE_SIZE = 200;
 
 const ChildPlayground: React.FC<{
-    selectedUser: IUser | null;
+    selectedUser: IUser;
     selectedToy: IToy | null;
     children: React.ReactNode;
 }> = ({ selectedUser, children, selectedToy }) => {

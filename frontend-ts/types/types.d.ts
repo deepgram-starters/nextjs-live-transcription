@@ -8,6 +8,7 @@ declare global {
         child_persona: string;
         child_age: number;
         toy_id: string;
+        toy?: IToy;
         modules: Module[];
     }
 

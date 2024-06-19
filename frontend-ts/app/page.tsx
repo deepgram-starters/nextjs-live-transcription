@@ -1,16 +1,7 @@
-// "use client";
-// import Dashboard from "./components/Dashboard";
 import { getHumeAccessToken } from "@/lib/getHumeAccessToken";
-import dynamic from "next/dynamic";
 import Products from "./components/Products";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import supabaseServerClient from "@/db/supabaseServerClient";
-
-const Chat = dynamic(() => import("@/app/components/Chat"), {
-    ssr: false,
-});
+import { getAllToys } from "@/db/toys";
 
 export default async function Home() {
     const accessToken = await getHumeAccessToken();
@@ -25,6 +16,8 @@ export default async function Home() {
     } = await supabase.auth.getUser();
 
     console.log(user);
+
+    const allToys = await getAllToys(supabase);
 
     return (
         <div className="h-full font-quicksand">
@@ -41,7 +34,7 @@ export default async function Home() {
                             learning & growth.
                         </p>
                     </div>
-                    <Products />
+                    <Products allToys={allToys} />
                 </div>
             </main>
         </div>

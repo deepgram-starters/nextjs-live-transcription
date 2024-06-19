@@ -83,7 +83,11 @@ const StartCall: React.FC<StartCallProps> = ({ selectedUser, selectedToy }) => {
                         }}
                     >
                         <Button
-                            disabled={status.value === "connected"}
+                            disabled={
+                                status.value === "connected" ||
+                                !selectedUser ||
+                                !selectedToy
+                            }
                             className={"z-50 flex items-center gap-1.5"}
                             onClick={() => {
                                 connect()

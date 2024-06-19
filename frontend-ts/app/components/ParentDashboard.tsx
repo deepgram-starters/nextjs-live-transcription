@@ -1,42 +1,35 @@
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { users, toys } from "@/lib/data";
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import {
-    HoverCard,
-    HoverCardContent,
-    HoverCardTrigger,
-} from "@/components/ui/hover-card";
+"use client";
+
+import ToyPicker from "./ToyPicker";
 
 interface ParentDashboardProps {
     selectedUser: IUser | null;
-    chooseUser: (user: IUser) => void;
+    // chooseUser: (user: IUser) => void;
     selectedToy: IToy | null;
-    chooseToy: (toy: IToy) => void;
+    // chooseToy: (toy: IToy) => void;
+    allToys: IToy[];
 }
 
 const ParentDashboard: React.FC<ParentDashboardProps> = ({
     selectedUser,
-    chooseUser,
     selectedToy,
-    chooseToy,
+    allToys,
 }) => {
-    const [displayUsers, setDisplayUsers] = useState<IUser[]>(users);
-    useEffect(() => {
-        if (selectedUser) {
-            setDisplayUsers([
-                selectedUser,
-                ...users.filter(
-                    (user) => user.user_id !== selectedUser.user_id
-                ),
-            ]);
-        }
-    }, [selectedUser]);
+    // const [displayUsers, setDisplayUsers] = useState<IUser[]>(users);
+    // useEffect(() => {
+    //     if (selectedUser) {
+    //         setDisplayUsers([
+    //             selectedUser,
+    //             ...users.filter(
+    //                 (user) => user.user_id !== selectedUser.user_id
+    //             ),
+    //         ]);
+    //     }
+    // }, [selectedUser]);
     return (
         <div className="p-4 overflow-hidden w-full flex-auto">
-            <p>Parent dashboard (choose your characters)</p>
-            <div className="flex mt-2 flex-row gap-2 items-center justify-center">
+            {/* <p>Parent dashboard (choose your characters)</p> */}
+            {/* <div className="flex mt-2 flex-row gap-2 items-center justify-center">
                 {toys.map((toy) => {
                     const chosen = selectedToy?.toy_id === toy.toy_id;
                     return (
@@ -69,8 +62,8 @@ const ParentDashboard: React.FC<ParentDashboardProps> = ({
                         </HoverCard>
                     );
                 })}
-            </div>
-            <div className="flex flex-row gap-2 h-full py-4">
+            </div> */}
+            {/* <div className="flex flex-row gap-2 h-full py-4">
                 <ScrollArea>
                     {displayUsers.map((user) => {
                         const chosen = selectedUser?.user_id === user.user_id;
@@ -110,7 +103,14 @@ const ParentDashboard: React.FC<ParentDashboardProps> = ({
                         );
                     })}
                 </ScrollArea>
-            </div>
+            </div> */}
+            <ToyPicker
+                allToys={allToys}
+                selectedToy={selectedToy}
+                buttonText={"Pick"}
+                imageSize={200}
+                chooseToy={() => {}}
+            />
         </div>
     );
 };
