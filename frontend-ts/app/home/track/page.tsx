@@ -10,7 +10,7 @@ export default async function Home() {
 
     return (
         <div className="flex flex-col gap-2 font-baloo2">
-            <h1 className="text-4xl font-semibold">Track growth</h1>
+            <h1 className="text-4xl font-semibold">Insights</h1>
             <div className="">
                 <Charts selectedUser={null} selectedToy={null} />
             </div>
