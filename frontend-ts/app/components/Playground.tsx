@@ -19,10 +19,10 @@ const Playground: React.FC<PlaygroundProps> = ({
     accessToken,
 }) => {
     const timeout = useRef<number | null>(null);
-    const ref = useRef<ComponentRef<typeof Messages> | null>(null);
+    const ref: any = useRef<ComponentRef<typeof Messages> | null>(null);
 
     return (
-        <ChildPlayground selectedUser={selectedUser} selectedToy={selectedToy}>
+        <>
             <VoiceProvider
                 auth={{ type: "accessToken", value: accessToken }}
                 onMessage={() => {
@@ -46,14 +46,26 @@ const Playground: React.FC<PlaygroundProps> = ({
                     "6947ac53-5f3b-4499-abc5-f8b368552cb6"
                 }
             >
-                <Messages ref={ref} />
-                <Controls />
-                <StartCall
+                <div className="flex flex-row items-center gap-4">
+                    <h1 className="text-4xl font-semibold">Playground</h1>
+                    <StartCall
+                        selectedUser={selectedUser}
+                        selectedToy={selectedToy}
+                    />
+                </div>
+                <ChildPlayground
                     selectedUser={selectedUser}
                     selectedToy={selectedToy}
-                />
+                >
+                    <Messages
+                        ref={ref}
+                        selectedUser={selectedUser}
+                        selectedToy={selectedToy}
+                    />
+                    <Controls />
+                </ChildPlayground>
             </VoiceProvider>
-        </ChildPlayground>
+        </>
     );
 };
 

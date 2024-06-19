@@ -21,7 +21,7 @@ export const createUser = async (supabase: SupabaseClient, user: User) => {
 export const getUserById = async (supabase: SupabaseClient, id: string) => {
     const { data, error } = await supabase
         .from("users")
-        .select("*")
+        .select("*, toy:toy_id(*)")
         .eq("user_id", id)
         .single();
 

@@ -12,11 +12,6 @@ export default async function Home() {
     } = await supabase.auth.getUser();
 
     const dbUser = await getUserById(supabase, user!.id);
-    const dbToy = await getToyById(supabase, dbUser?.toy_id!);
-
-    console.log("dbUser", dbUser);
-    console.log("dbToy", dbToy);
-
     const accessToken = await getHumeAccessToken();
 
     if (!accessToken) {
@@ -25,12 +20,11 @@ export default async function Home() {
 
     return (
         <div className="flex flex-col gap-2 font-baloo2">
-            <h1 className="text-4xl font-semibold">Playground</h1>
-            {dbUser && dbToy && (
+            {dbUser && (
                 <Playground
                     accessToken={accessToken}
                     selectedUser={dbUser}
-                    selectedToy={dbToy}
+                    selectedToy={dbUser.toy!}
                 />
             )}
         </div>
