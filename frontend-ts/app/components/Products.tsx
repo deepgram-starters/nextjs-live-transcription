@@ -9,8 +9,9 @@ import {
 } from "@/components/ui/hover-card";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
-const IMAGE_SIZE = 350;
+const IMAGE_SIZE = 320;
 
 const Products = () => {
     const [selectedToy, setSelectedToy] = useState<IToy | null>(null);
@@ -38,9 +39,7 @@ const Products = () => {
                         // </HoverCard>
                         <div key={toy.toy_id} className="flex flex-col gap-2 ">
                             <div
-                                className={`flex flex-col max-w-[350px] max-h-[350px] border gap-2 mb-4 shadow-lg hover:shadow-xl rounded-2xl overflow-hidden cursor-pointer ${
-                                    chosen ? "shadow-2xl" : ""
-                                } transition-colors duration-200 ease-in-out`}
+                                className={`flex flex-col max-w-[320px] border max-h-[320px] gap-2 mb-4 rounded-2xl overflow-hidden cursor-pointer transition-colors duration-200 ease-in-out`}
                                 onClick={() => chooseToy(toy)}
                             >
                                 <Image
@@ -57,14 +56,18 @@ const Products = () => {
                                 </div>
                                 {chosen && (
                                     <>
-                                        <div className="font-quicksand max-w-[350px] text-gray-600 text-sm font-normal">
+                                        <div className="font-quicksand max-w-[320px] text-gray-600 text-sm font-normal">
                                             {toy.third_person_prompt}
                                         </div>
                                         <Button
                                             variant="pink"
-                                            className="font-bold"
+                                            className="font-bold text-lg flex flex-row gap-2 items-center"
                                         >
-                                            Get started
+                                            <span>Get started</span>
+                                            <ArrowRight
+                                                strokeWidth={3}
+                                                size={20}
+                                            />
                                         </Button>
                                     </>
                                 )}

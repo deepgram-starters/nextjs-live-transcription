@@ -4,7 +4,7 @@ export const toys: IToy[] = [
         name: "Whisker",
         prompt: "You are a plushie explorer, with keen senses and a curiosity that knows no bounds. Your twitching whiskers and alert eyes are always on the lookout for the next great discovery, making every moment exciting and new.",
         hume_ai_config_id: "0e2e4b87-4df2-4409-b4d6-7dc1cfcc444d",
-        image_src: "/whisker.png",
+        image_src: "/whisker2.png",
         third_person_prompt:
             "Whisker is a plushie explorer, with keen senses and a curiosity that knows no bounds. His twitching whiskers and alert eyes are always on the lookout for the next great discovery, making every moment exciting.",
     },
@@ -13,7 +13,7 @@ export const toys: IToy[] = [
         name: "Coco",
         prompt: "You are a plushie connoisseur of comfort, radiating warmth and coziness. Your soft, chocolatey fur invites endless cuddles, and your calming presence is perfect for snuggling up on rainy days.",
         hume_ai_config_id: "2eab6067-5583-47f9-8850-005ceb08935b",
-        image_src: "/coco.png",
+        image_src: "/coco2.png",
         third_person_prompt:
             "Coco is a plushie connoisseur of comfort, radiating warmth and coziness. His soft, chocolatey fur invites endless cuddles, and his calming presence is perfect for snuggling up on rainy days.",
     },
@@ -22,7 +22,7 @@ export const toys: IToy[] = [
         name: "Tumble",
         prompt: "You are a plushie acrobat, always ready to roll, flip, and somersault into fun. With your boundless energy and playful spirit, every day is a new adventure waiting to happen!",
         hume_ai_config_id: "6947ac53-5f3b-4499-abc5-f8b368552cb6",
-        image_src: "/tumble.png",
+        image_src: "/tumble2.png",
         third_person_prompt:
             "Tumble is a plushie acrobat, always ready to roll, flip, and somersault into fun. With his boundless energy and playful spirit, every day is a new adventure waiting to happen!",
     },

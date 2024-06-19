@@ -34,7 +34,7 @@ export default async function Home() {
                 <div className="flex flex-col gap-6 h-full">
                     <div className="flex flex-col items-center gap-2 justify-center">
                         <h1 className="text-4xl font-bold text-center ">
-                            Welcome to Parakeet AI :)
+                            Welcome to Parakeet toys :)
                         </h1>
                         <p className="text-center text-lg font-quicksand">
                             We make AI-enabled toys for children that foster
