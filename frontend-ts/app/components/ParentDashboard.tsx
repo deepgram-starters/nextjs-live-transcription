@@ -5,7 +5,7 @@ import ToyPicker from "./ToyPicker";
 interface ParentDashboardProps {
     selectedUser: IUser | null;
     // chooseUser: (user: IUser) => void;
-    selectedToy: IToy | null;
+    selectedToy: IToy;
     // chooseToy: (toy: IToy) => void;
     allToys: IToy[];
 }
@@ -106,10 +106,11 @@ const ParentDashboard: React.FC<ParentDashboardProps> = ({
             </div> */}
             <ToyPicker
                 allToys={allToys}
-                selectedToy={selectedToy}
+                currentToy={selectedToy}
                 buttonText={"Pick"}
                 imageSize={200}
                 chooseToy={() => {}}
+                showCurrent={true}
             />
         </div>
     );

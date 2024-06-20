@@ -1,3 +1,5 @@
+export const defaultToyId: string = "6c3eb71a-8d68-4fc6-85c5-27d283ecabc8";
+
 export const toys: IToy[] = [
     {
         toy_id: "6c3eb71a-8d68-4fc6-85c5-27d283ecabc8",

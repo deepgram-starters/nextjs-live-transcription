@@ -41,7 +41,7 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
                     >
                         {item.title}
                         {pathname === item.href && (
-                            <span className="ml-2 text-4xl">·</span>
+                            <span className="ml-2 text-5xl">·</span>
                         )}
                     </Link>
                 );

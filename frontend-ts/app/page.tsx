@@ -1,7 +1,8 @@
 import { getHumeAccessToken } from "@/lib/getHumeAccessToken";
 import Products from "./components/Products";
 import supabaseServerClient from "@/db/supabaseServerClient";
-import { getAllToys } from "@/db/toys";
+import { getAllToys, getToyById } from "@/db/toys";
+import { defaultToyId } from "@/lib/data";
 
 export default async function Home() {
     const accessToken = await getHumeAccessToken();
@@ -18,6 +19,7 @@ export default async function Home() {
     console.log(user);
 
     const allToys = await getAllToys(supabase);
+    const toy = await getToyById(supabase, defaultToyId);
 
     return (
         <div className="h-full font-quicksand">
@@ -34,7 +36,7 @@ export default async function Home() {
                             learning & growth.
                         </p>
                     </div>
-                    <Products allToys={allToys} />
+                    <Products allToys={allToys} toy={toy!} />
                 </div>
             </main>
         </div>

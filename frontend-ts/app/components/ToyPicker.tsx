@@ -1,23 +1,32 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 interface ToyPickerProps {
-    selectedToy: IToy | null;
+    currentToy: IToy;
     chooseToy: (toy: IToy) => void;
     allToys: IToy[];
     imageSize: number;
     buttonText: string;
+    showCurrent: boolean;
 }
 
 const ToyPicker: React.FC<ToyPickerProps> = ({
-    selectedToy,
+    currentToy,
     allToys,
     chooseToy,
     imageSize,
     buttonText,
+    showCurrent,
 }) => {
-    console.log("allToys", allToys);
+    const [selectedToy, setSelectedToy] = useState<IToy>(currentToy);
+
+    const onClickSelectedToy = (toy: IToy) => {
+        setSelectedToy(toy);
+        chooseToy(toy);
+    };
+
     return (
         <div className="flex md:flex-col flex-col-reverse gap-8 pb-6">
             <div className="flex md:mt-7 md:flex-row flex-col gap-8 items-center justify-center">
@@ -27,7 +36,7 @@ const ToyPicker: React.FC<ToyPickerProps> = ({
                         <div key={toy.toy_id} className="flex flex-col gap-2 ">
                             <div
                                 className={`flex flex-col max-w-[320px] max-h-[320px] gap-2 mb-4 rounded-2xl overflow-hidden cursor-pointer transition-colors duration-200 ease-in-out`}
-                                onClick={() => chooseToy(toy)}
+                                onClick={() => onClickSelectedToy(toy)}
                             >
                                 <Image
                                     src={"/" + toy.image_src! + ".png"}
@@ -38,7 +47,9 @@ const ToyPicker: React.FC<ToyPickerProps> = ({
                                 />
                             </div>
                             <div className="flex flex-col gap-3">
-                                <div className="font-baloo2 text-2xl font-normal">
+                                <div
+                                    className={`font-baloo2 text-2xl font-normal`}
+                                >
                                     {toy.name}
                                 </div>
                                 {chosen && (

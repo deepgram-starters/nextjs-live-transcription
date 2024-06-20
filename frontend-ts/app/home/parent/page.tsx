@@ -19,7 +19,7 @@ export default async function Home() {
             {dbUser && (
                 <ParentDashboard
                     selectedUser={dbUser}
-                    selectedToy={dbUser.toy ?? null}
+                    selectedToy={dbUser.toy!}
                     allToys={allToys}
                 />
             )}

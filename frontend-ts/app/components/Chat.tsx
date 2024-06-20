@@ -30,11 +30,11 @@ export default function ClientComponent({
     return (
         <>
             <div className="flex flex-col gap-2 sm:w-1/2 border border-black rounded-md">
-                <ParentDashboard
+                {/* <ParentDashboard
                     selectedUser={selectedUser}
                     selectedToy={selectedToy}
                     allToys={[]}
-                />
+                /> */}
             </div>
             <div className="flex flex-col gap-2 sm:w-1/2 border border-black rounded-md">
                 <ChildPlayground
