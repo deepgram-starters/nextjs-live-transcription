@@ -1,5 +1,12 @@
 Change Log
 
+## [1.0.2](https://github.com/deepgram-starters/nextjs-live-transcription/compare/1.0.1...1.0.2) (2024-07-11)
+
+
+### Bug Fixes
+
+* iOS Safari crash fix ([ef87b92](https://github.com/deepgram-starters/nextjs-live-transcription/commit/ef87b9211ed91c46e560c4f4e50ca8cd8687af13))
+
 ## [1.0.1](https://github.com/deepgram-starters/nextjs-live-transcription/compare/1.0.0...1.0.1) (2024-05-04)
 
 
