@@ -12,6 +12,7 @@ import React, {
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { getApiKey } from "../lib/helpers";
 import { useAuth } from "./Auth";
+import { systemContent } from "../lib/constants";
 
 // Types and Interfaces
 type Message = {
@@ -100,8 +101,7 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
           type: model.split("+")[0],
         },
         model: model.split("+")[1],
-        instructions:
-          "You are a helpful assistant who responds in 1-2 sentences at most each time.",
+        instructions: systemContent,
       },
       speak: { model: voice },
     },
