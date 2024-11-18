@@ -138,6 +138,7 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
   // WebSocket message handler
   function handleWebSocketMessage(event: MessageEvent) {
     if (typeof event.data === "string") {
+      console.log(event);
       const msgObj = JSON.parse(event.data);
       const { type: messageType } = msgObj;
 
@@ -161,7 +162,7 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
             if (incomingMessage.current) {
               incomingMessage.current = {
                 ...incomingMessage.current,
-                content: incomingMessage.current.content + text,
+                content: incomingMessage.current.content + " " + text,
               };
               setChatMessages((prev) => {
                 const updatedMessages = [...prev];
