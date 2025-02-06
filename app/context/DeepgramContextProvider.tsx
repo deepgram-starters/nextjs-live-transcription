@@ -3,7 +3,7 @@
 import {
   createClient,
   LiveClient,
-  LiveConnectionState,
+  SOCKET_STATES,
   LiveTranscriptionEvents,
   type LiveSchema,
   type LiveTranscriptionEvent,
@@ -21,7 +21,7 @@ interface DeepgramContextType {
   connection: LiveClient | null;
   connectToDeepgram: (options: LiveSchema, endpoint?: string) => Promise<void>;
   disconnectFromDeepgram: () => void;
-  connectionState: LiveConnectionState;
+  connectionState: SOCKET_STATES;
 }
 
 const DeepgramContext = createContext<DeepgramContextType | undefined>(
@@ -42,8 +42,8 @@ const DeepgramContextProvider: FunctionComponent<
   DeepgramContextProviderProps
 > = ({ children }) => {
   const [connection, setConnection] = useState<LiveClient | null>(null);
-  const [connectionState, setConnectionState] = useState<LiveConnectionState>(
-    LiveConnectionState.CLOSED
+  const [connectionState, setConnectionState] = useState<SOCKET_STATES>(
+    SOCKET_STATES.closed
   );
 
   /**
@@ -60,11 +60,11 @@ const DeepgramContextProvider: FunctionComponent<
     const conn = deepgram.listen.live(options, endpoint);
 
     conn.addListener(LiveTranscriptionEvents.Open, () => {
-      setConnectionState(LiveConnectionState.OPEN);
+      setConnectionState(SOCKET_STATES.open);
     });
 
     conn.addListener(LiveTranscriptionEvents.Close, () => {
-      setConnectionState(LiveConnectionState.CLOSED);
+      setConnectionState(SOCKET_STATES.closed);
     });
 
     setConnection(conn);
@@ -72,7 +72,7 @@ const DeepgramContextProvider: FunctionComponent<
 
   const disconnectFromDeepgram = async () => {
     if (connection) {
-      connection.finish();
+      connection.requestClose();
       setConnection(null);
     }
   };
@@ -104,7 +104,7 @@ function useDeepgram(): DeepgramContextType {
 export {
   DeepgramContextProvider,
   useDeepgram,
-  LiveConnectionState,
+  SOCKET_STATES,
   LiveTranscriptionEvents,
   type LiveTranscriptionEvent,
 };

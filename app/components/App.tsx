@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
-  LiveConnectionState,
+  SOCKET_STATES,
   LiveTranscriptionEvent,
   LiveTranscriptionEvents,
   useDeepgram,
@@ -73,7 +73,7 @@ const App: () => JSX.Element = () => {
       }
     };
 
-    if (connectionState === LiveConnectionState.OPEN) {
+    if (connectionState === SOCKET_STATES.open) {
       connection.addListener(LiveTranscriptionEvents.Transcript, onTranscript);
       microphone.addEventListener(MicrophoneEvents.DataAvailable, onData);
 
@@ -94,7 +94,7 @@ const App: () => JSX.Element = () => {
 
     if (
       microphoneState !== MicrophoneState.Open &&
-      connectionState === LiveConnectionState.OPEN
+      connectionState === SOCKET_STATES.open
     ) {
       connection.keepAlive();
 
