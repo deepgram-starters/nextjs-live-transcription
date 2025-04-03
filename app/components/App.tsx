@@ -18,16 +18,32 @@ const App: () => JSX.Element = () => {
   const [caption, setCaption] = useState<string | undefined>(
     "Powered by Deepgram"
   );
-  const { connection, connectToDeepgram, connectionState } = useDeepgram();
-  const { setupMicrophone, microphone, startMicrophone, microphoneState } =
-    useMicrophone();
+  const {
+    connection,
+    connectToDeepgram,
+    connectionState,
+    disconnectFromDeepgram,
+  } = useDeepgram();
+  const {
+    setupMicrophone,
+    microphone,
+    startMicrophone,
+    microphoneState,
+    stopMicrophone,
+  } = useMicrophone();
   const captionTimeout = useRef<any>();
   const keepAliveInterval = useRef<any>();
 
-  useEffect(() => {
-    setupMicrophone();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  async function HandleConnect() {
+    await setupMicrophone();
+  }
+
+  async function handleDisconnect() {
+    alert("dicinnect");
+    setCaption("Powered by Deepgram");
+    await disconnectFromDeepgram();
+    await stopMicrophone();
+  }
 
   useEffect(() => {
     if (microphoneState === MicrophoneState.Ready) {
@@ -48,7 +64,7 @@ const App: () => JSX.Element = () => {
 
     const onData = (e: BlobEvent) => {
       // iOS SAFARI FIX:
-      // Prevent packetZero from being sent. If sent at size 0, the connection will close. 
+      // Prevent packetZero from being sent. If sent at size 0, the connection will close.
       if (e.data.size > 0) {
         connection?.send(e.data);
       }
@@ -113,17 +129,29 @@ const App: () => JSX.Element = () => {
 
   return (
     <>
-      <div className="flex h-full antialiased">
-        <div className="flex flex-row h-full w-full overflow-x-hidden">
-          <div className="flex flex-col flex-auto h-full">
-            {/* height 100% minus 8rem */}
-            <div className="relative w-full h-full">
-              {microphone && <Visualizer microphone={microphone} />}
-              <div className="absolute bottom-[8rem]  inset-x-0 max-w-4xl mx-auto text-center">
-                {caption && <span className="bg-black/70 p-8">{caption}</span>}
-              </div>
-            </div>
+      <div className="flex h-[100vh] items-center justify-center">
+        <div className="">
+          {microphone && <Visualizer microphone={microphone} />}
+          <div className="absolute bottom-[8rem]  inset-x-0 max-w-4xl mx-auto text-center">
+            {caption && <span className="bg-black/70 p-8">{caption}</span>}
           </div>
+        </div>
+        <div className="">
+          {microphoneState !== MicrophoneState.Open ? (
+            <button
+              onClick={HandleConnect}
+              className="bg-green-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-green-700 transition-all"
+            >
+              Connect
+            </button>
+          ) : (
+            <button
+              onClick={handleDisconnect}
+              className="bg-red-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-700 transition-all"
+            >
+              Disconnect
+            </button>
+          )}
         </div>
       </div>
     </>

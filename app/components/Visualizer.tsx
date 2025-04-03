@@ -26,7 +26,7 @@ const Visualizer = ({ microphone }: { microphone: MediaRecorder }) => {
 
     draw();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [microphone]);
 
   const draw = (): void => {
     const canvas = canvasRef.current;

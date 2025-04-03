@@ -55,6 +55,32 @@ Once running, you can [access the application in your browser](http://localhost:
 npm run dev
 ```
 
+## Custom Connect/Disconnect Feature
+
+This project includes a custom connect/disconnect mechanism to streamline your workflow:
+
+### Connect Button
+
+- Initiates the microphone setup by requesting access with the appropriate audio settings.
+- Sets up a `MediaRecorder` for streaming audio.
+- Connects to Deepgram’s live transcription service using the provided API key.
+- Displays a visualizer to provide real-time feedback on the audio input.
+
+### Disconnect Button
+
+- Stops the `MediaRecorder` and all underlying media stream tracks.
+- Disconnects from Deepgram.
+- Resets the UI, ensuring that components like the Visualizer unmount and remount with fresh data on the next connection.
+- Clears any residual transcription data to prepare for a clean session.
+
+### Additional Notes
+
+- The connect/disconnect feature is designed to handle edge cases, such as microphone access denial or network interruptions, ensuring a robust user experience.
+- The implementation is modular, making it easy to extend or customize for different use cases, such as multi-language transcription or integrating additional audio processing libraries.
+
+This functionality makes it straightforward to integrate live transcription into your own projects or use this starter as a quick prototype.
+
+
 ## Issue Reporting
 
 If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Security Policy](./SECURITY.md) details the procedure for contacting Deepgram.

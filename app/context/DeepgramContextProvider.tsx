@@ -32,11 +32,14 @@ interface DeepgramContextProviderProps {
   children: ReactNode;
 }
 
-const getApiKey = async (): Promise<string> => {
+export const getApiKey = async () => {
   const response = await fetch("/api/authenticate", { cache: "no-store" });
-  const result = await response.json();
-  return result.key;
+  const result = await response.json(); // Parse JSON response
+  return result.apiKey;
 };
+
+
+
 
 const DeepgramContextProvider: FunctionComponent<
   DeepgramContextProviderProps
@@ -75,6 +78,7 @@ const DeepgramContextProvider: FunctionComponent<
       connection.finish();
       setConnection(null);
     }
+    console.log("disconnectFromDeepgram");
   };
 
   return (

@@ -12,7 +12,7 @@ interface MicrophoneContextType {
   microphone: MediaRecorder | null;
   startMicrophone: () => void;
   stopMicrophone: () => void;
-  setupMicrophone: () => void;
+  setupMicrophone: () => Promise<void>;
   microphoneState: MicrophoneState | null;
 }
 
@@ -63,13 +63,11 @@ const MicrophoneContextProvider: React.FC<MicrophoneContextProviderProps> = ({
         },
       });
 
-      const microphone = new MediaRecorder(userMedia);
-
+      const recorder = new MediaRecorder(userMedia);
+      setMicrophone(recorder);
       setMicrophoneState(MicrophoneState.Ready);
-      setMicrophone(microphone);
     } catch (err: any) {
       console.error(err);
-
       throw err;
     }
   };
@@ -77,22 +75,38 @@ const MicrophoneContextProvider: React.FC<MicrophoneContextProviderProps> = ({
   const stopMicrophone = useCallback(() => {
     setMicrophoneState(MicrophoneState.Pausing);
 
-    if (microphone?.state === "recording") {
-      microphone.pause();
-      setMicrophoneState(MicrophoneState.Paused);
+    if (
+      microphone &&
+      (microphone.state === "recording" || microphone.state === "paused")
+    ) {
+      microphone.stop(); // Stops the MediaRecorder
+
+      // Stop all tracks of the underlying MediaStream
+      if (microphone.stream) {
+        microphone.stream.getTracks().forEach((track) => track.stop());
+      }
+
+      setMicrophoneState(MicrophoneState.NotSetup);
+      console.log("Microphone stopped");
+    } else {
+      console.log("No active microphone to stop");
     }
   }, [microphone]);
 
   const startMicrophone = useCallback(() => {
     setMicrophoneState(MicrophoneState.Opening);
 
-    if (microphone?.state === "paused") {
-      microphone.resume();
-    } else {
-      microphone?.start(250);
+    if (microphone) {
+      if (microphone.state === "paused") {
+        microphone.resume();
+      } else if (microphone.state === "inactive") {
+        // if it's inactive, start it
+        microphone.start(250);
+      } else {
+        console.log("Microphone already recording or in an unknown state");
+      }
+      setMicrophoneState(MicrophoneState.Open);
     }
-
-    setMicrophoneState(MicrophoneState.Open);
   }, [microphone]);
 
   return (
