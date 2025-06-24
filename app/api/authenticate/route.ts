@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
 
   let { result: tokenResult, error: tokenError } =
     await deepgram.auth.grantToken();
-    
+
   if (tokenError) {
       return NextResponse.json(tokenError);
   }
