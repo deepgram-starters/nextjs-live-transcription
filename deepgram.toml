@@ -2,7 +2,7 @@
 title = "Next.js Live Transcription Starter"
 description = "Get started using Deepgram's Live Transcription with this Next.js demo app"
 author = "Deepgram DX Team <devrel@deepgram.com> (https://developers.deepgram.com)"
-useCase = "Live"
+useCase = "Live STT"
 language = "JavaScript"
 framework = "Next"
 
