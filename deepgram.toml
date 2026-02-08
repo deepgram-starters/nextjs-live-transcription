@@ -1,17 +1,38 @@
 [meta]
-title = "Next.js Live Transcription Starter"
+title = "Next.js Live Transcription"
 description = "Get started using Deepgram's Live Transcription with this Next.js demo app"
 author = "Deepgram DX Team <devrel@deepgram.com> (https://developers.deepgram.com)"
-useCase = "Live STT"
-language = "JavaScript"
-framework = "Next"
+repository = "https://github.com/deepgram-devs/nextjs-live-transcription"
+useCase = "live-transcription"
+language = "javascript"
+framework = "next"
+sdk = "4.5.1"
+tags = ["live-transcription", "live-stt", "real-time-transcription", "streaming-transcription", "live-speech-to-text", "javascript", "next", "nextjs", "react"]
 
-[build]
+[check]
+command = ["command -v git", "command -v node", "command -v npm"]
+message = "Prerequisites checked"
+
+[install]
 command = "npm install"
+message = "Dependencies installed"
 
-[config]
+[install.config]
 sample = "sample.env.local"
 output = ".env.local"
 
-[post-build]
-message = "Run `npm run dev` to get up and running locally."
+[start]
+command = "npm run dev"
+message = "Application running on http://localhost:3000"
+
+[update]
+command = "npm update"
+message = "Dependencies updated"
+
+[clean]
+command = ["rm -rf node_modules", "rm -rf .next"]
+message = "Build artifacts cleaned"
+
+[test]
+command = "npm run lint"
+message = "Linting complete"
