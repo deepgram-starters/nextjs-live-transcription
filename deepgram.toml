@@ -5,16 +5,16 @@ author = "Deepgram DX Team <devrel@deepgram.com> (https://developers.deepgram.co
 repository = "https://github.com/deepgram-devs/nextjs-live-transcription"
 useCase = "live-transcription"
 language = "javascript"
-framework = "next"
-sdk = "4.5.1"
-tags = ["live-transcription", "live-stt", "real-time-transcription", "streaming-transcription", "live-speech-to-text", "javascript", "next", "nextjs", "react"]
+framework = "nextjs"
+sdk = "@deepgram/sdk"
+tags = ["live-transcription", "live-stt", "real-time-transcription", "streaming-transcription", "live-speech-to-text", "javascript", "nextjs", "react"]
 
 [check]
-command = ["command -v git", "command -v node", "command -v npm"]
+command = ["command -v git", "command -v node", "command -v pnpm"]
 message = "Prerequisites checked"
 
 [install]
-command = "npm install"
+command = "corepack pnpm install"
 message = "Dependencies installed"
 
 [install.config]
@@ -22,17 +22,21 @@ sample = "sample.env.local"
 output = ".env.local"
 
 [start]
-command = "npm run dev"
+command = "corepack pnpm dev"
 message = "Application running on http://localhost:3000"
 
 [update]
-command = "npm update"
+command = "corepack pnpm update"
 message = "Dependencies updated"
 
 [clean]
 command = ["rm -rf node_modules", "rm -rf .next"]
 message = "Build artifacts cleaned"
 
+[eject-frontend]
+command = "git submodule update --init --recursive"
+message = "Frontend reference and contracts initialized"
+
 [test]
-command = "npm run lint"
-message = "Linting complete"
+command = "corepack pnpm test"
+message = "Production build completed"
