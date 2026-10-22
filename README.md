@@ -1,27 +1,31 @@
 # Next.js Live Transcription
 
-Get started using Deepgram's Live Transcription with this Next.js demo app.
+This starter serves the pinned `live-transcription-html` frontend as its user interface. Next.js hosts the REST API and the custom Node server adds only the WebSocket bridge required by live transcription; `DEEPGRAM_API_KEY` never reaches the browser.
 
-<!-- [**Live Demo →**](https://nextjs-live-transcription.vercel.app/) -->
+## Architecture
 
-## Quick Start
-
-Click the button below to fork the repo:
-
-[![Fork on GitHub](https://img.shields.io/badge/Fork_on_GitHub-blue?logo=github)](https://github.com/deepgram-devs/nextjs-live-transcription/fork)
+- `frontend/` is the shared Vite frontend, served at `http://localhost:8080` in development.
+- Next.js serves `GET /api/session` and `GET /api/metadata` at `http://localhost:8081`.
+- `server.js` hosts Next.js and `WS /api/live-transcription` on port 8081, using the `access_token.<jwt>` WebSocket subprotocol.
+- In production, Caddy serves `frontend/dist` and proxies `/api/*`, including WebSocket upgrades, to port 8081.
 
 ## Local Development
 
-```bash
-git clone https://github.com/deepgram-devs/nextjs-live-transcription.git
-cd nextjs-live-transcription
-npm install
-cp sample.env.local .env.local  # Add your DEEPGRAM_API_KEY
-npm run dev
+```sh
+git submodule update --init --recursive
+corepack pnpm install --frozen-lockfile
+cd frontend && corepack pnpm install --frozen-lockfile && cd ..
+cp sample.env.local .env.local
+# Set DEEPGRAM_API_KEY in .env.local
+make start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open http://localhost:8080. To build both production artifacts, run `make build`.
+
+## Production
+
+Build with `docker build -f deploy/Dockerfile -t nextjs-live-transcription .`. The container exposes Caddy on port 8080 and runs Next.js plus the WebSocket bridge internally on port 8081.
 
 ## License
 
-MIT - See [LICENSE](./LICENSE)
+MIT - See [LICENSE](./LICENSE).

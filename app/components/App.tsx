@@ -3,8 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import {
   LiveConnectionState,
-  LiveTranscriptionEvent,
-  LiveTranscriptionEvents,
   useDeepgram,
 } from "../context/DeepgramContextProvider";
 import {
@@ -14,15 +12,15 @@ import {
 } from "../context/MicrophoneContextProvider";
 import Visualizer from "./Visualizer";
 
-const App: () => JSX.Element = () => {
+const App = () => {
   const [caption, setCaption] = useState<string | undefined>(
     "Powered by Deepgram"
   );
   const { connection, connectToDeepgram, connectionState } = useDeepgram();
   const { setupMicrophone, microphone, startMicrophone, microphoneState } =
     useMicrophone();
-  const captionTimeout = useRef<any>();
-  const keepAliveInterval = useRef<any>();
+  const captionTimeout = useRef<any>(undefined);
+  const keepAliveInterval = useRef<any>(undefined);
 
   useEffect(() => {
     setupMicrophone();
@@ -50,11 +48,12 @@ const App: () => JSX.Element = () => {
       // iOS SAFARI FIX:
       // Prevent packetZero from being sent. If sent at size 0, the connection will close. 
       if (e.data.size > 0) {
-        connection?.send(e.data);
+        connection.sendMedia(e.data);
       }
     };
 
-    const onTranscript = (data: LiveTranscriptionEvent) => {
+    const onTranscript = (data: any) => {
+      if (data.type !== "Results") return;
       const { is_final: isFinal, speech_final: speechFinal } = data;
       let thisCaption = data.channel.alternatives[0].transcript;
 
@@ -74,7 +73,7 @@ const App: () => JSX.Element = () => {
     };
 
     if (connectionState === LiveConnectionState.OPEN) {
-      connection.addListener(LiveTranscriptionEvents.Transcript, onTranscript);
+      connection.on("message", onTranscript);
       microphone.addEventListener(MicrophoneEvents.DataAvailable, onData);
 
       startMicrophone();
@@ -82,7 +81,7 @@ const App: () => JSX.Element = () => {
 
     return () => {
       // prettier-ignore
-      connection.removeListener(LiveTranscriptionEvents.Transcript, onTranscript);
+      connection.off("message", onTranscript);
       microphone.removeEventListener(MicrophoneEvents.DataAvailable, onData);
       clearTimeout(captionTimeout.current);
     };
@@ -96,10 +95,10 @@ const App: () => JSX.Element = () => {
       microphoneState !== MicrophoneState.Open &&
       connectionState === LiveConnectionState.OPEN
     ) {
-      connection.keepAlive();
+      connection.sendKeepAlive({ type: "KeepAlive" });
 
       keepAliveInterval.current = setInterval(() => {
-        connection.keepAlive();
+        connection.sendKeepAlive({ type: "KeepAlive" });
       }, 10000);
     } else {
       clearInterval(keepAliveInterval.current);

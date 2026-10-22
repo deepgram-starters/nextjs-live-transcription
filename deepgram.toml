@@ -1,38 +1,51 @@
 [meta]
 title = "Next.js Live Transcription"
-description = "Get started using Deepgram's Live Transcription with this Next.js demo app"
+description = "Deepgram Live Transcription with a shared HTML frontend and Next.js API backend"
 author = "Deepgram DX Team <devrel@deepgram.com> (https://developers.deepgram.com)"
 repository = "https://github.com/deepgram-devs/nextjs-live-transcription"
 useCase = "live-transcription"
 language = "javascript"
-framework = "next"
-sdk = "4.5.1"
-tags = ["live-transcription", "live-stt", "real-time-transcription", "streaming-transcription", "live-speech-to-text", "javascript", "next", "nextjs", "react"]
+framework = "nextjs"
+sdk = "@deepgram/sdk"
+tags = ["live-transcription", "live-stt", "real-time-transcription", "streaming-transcription", "live-speech-to-text", "javascript", "nextjs"]
 
 [check]
-command = ["command -v git", "command -v node", "command -v npm"]
-message = "Prerequisites checked"
+command = "make check"
+message = "Node 24+ and Corepack are available"
+
+[install.pre]
+command = "git submodule update --init --recursive"
+message = "Frontend and contracts submodules initialized"
 
 [install]
-command = "npm install"
-message = "Dependencies installed"
+command = ["corepack pnpm install --frozen-lockfile", "cd frontend && corepack pnpm install --frozen-lockfile"]
+message = "Backend and frontend dependencies installed"
 
 [install.config]
 sample = "sample.env.local"
 output = ".env.local"
 
 [start]
-command = "npm run dev"
-message = "Application running on http://localhost:3000"
+command = ["corepack pnpm run dev", "cd frontend && corepack pnpm run dev -- --port 8080 --no-open"]
+parallel = true
+message = "Frontend on http://localhost:8080; Next API and WebSocket backend on http://localhost:8081"
+
+[build]
+command = ["corepack pnpm run build", "cd frontend && corepack pnpm run build"]
+message = "Next backend and production frontend built"
 
 [update]
-command = "npm update"
-message = "Dependencies updated"
+command = "git submodule update --remote --merge"
+message = "Submodules updated"
 
 [clean]
-command = ["rm -rf node_modules", "rm -rf .next"]
+command = ["rm -rf node_modules", "rm -rf .next", "rm -rf frontend/node_modules", "rm -rf frontend/dist"]
 message = "Build artifacts cleaned"
 
+[eject-frontend]
+command = "make eject-frontend"
+message = "Frontend remains pinned as a shared submodule"
+
 [test]
-command = "npm run lint"
-message = "Linting complete"
+command = "corepack pnpm test"
+message = "Next production build and WebSocket server syntax completed"
