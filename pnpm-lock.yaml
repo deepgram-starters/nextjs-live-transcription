@@ -32,6 +32,9 @@ importers:
       react-syntax-highlighter:
         specifier: ^15.5.0
         version: 15.6.6(react@19.3.1)
+      ws:
+        specifier: ^8.21.0
+        version: 8.22.0
     devDependencies:
       '@commitlint/cli':
         specifier: ^19.1.0
