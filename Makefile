@@ -1,22 +1,53 @@
-.PHONY: check install start update clean eject-frontend test
+PNPM := corepack pnpm
 
-check:
-	@command -v git && command -v node && command -v pnpm
+.PHONY: check check-prereqs init install install-frontend start start-backend start-frontend build test validate-contracts update clean status eject-frontend
+
+check: check-prereqs
+
+check-prereqs:
+	@command -v git >/dev/null && command -v node >/dev/null && command -v corepack >/dev/null
+	@test "$$(node -p 'process.versions.node.split(".")[0]')" -ge 24
+
+init: check-prereqs
+	git submodule update --init --recursive
+	$(PNPM) install --frozen-lockfile
+	cd frontend && $(PNPM) install --frozen-lockfile
 
 install:
-	@corepack pnpm install
+	$(PNPM) install --frozen-lockfile
+
+install-frontend:
+	cd frontend && $(PNPM) install --frozen-lockfile
 
 start:
-	@corepack pnpm dev
+	@$(MAKE) start-backend & $(MAKE) start-frontend & wait
 
-update:
-	@corepack pnpm update
+start-backend:
+	$(PNPM) run dev
 
-clean:
-	@rm -rf node_modules .next
+start-frontend:
+	cd frontend && $(PNPM) run dev -- --port 8080 --no-open
 
-eject-frontend:
-	@git submodule update --init --recursive
+build:
+	$(PNPM) run build
+	cd frontend && $(PNPM) run build
 
 test:
-	@corepack pnpm test
+	$(PNPM) test
+
+validate-contracts:
+	bash contracts/tests/live-transcription/structure/validate-contracts.sh .
+	bash contracts/tests/live-transcription/structure/validate-frontend.sh .
+
+update:
+	git submodule update --remote --merge
+
+clean:
+	rm -rf node_modules .next frontend/node_modules frontend/dist
+
+status:
+	git status --short
+	git submodule status
+
+eject-frontend:
+	@echo "The frontend remains a pinned submodule; use git submodule update --init --recursive."

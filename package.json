@@ -4,14 +4,14 @@
   "private": true,
   "packageManager": "pnpm@10.0.0",
   "engines": {
-    "node": ">=20.9.0",
+    "node": ">=24.0.0",
     "pnpm": ">=10.0.0"
   },
   "scripts": {
-    "dev": "next dev",
+    "dev": "node server.js",
     "build": "next build",
-    "start": "next start",
-    "test": "next build"
+    "start": "NODE_ENV=production node server.js",
+    "test": "next build && node --check server.js"
   },
   "dependencies": {
     "@deepgram/sdk": "^5.7.0",
@@ -21,7 +21,8 @@
     "react-device-detect": "^2.2.3",
     "react-dom": "^19.2.0",
     "react-github-btn": "^1.4.0",
-    "react-syntax-highlighter": "^15.5.0"
+    "react-syntax-highlighter": "^15.5.0",
+    "ws": "^8.21.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.1.0",
