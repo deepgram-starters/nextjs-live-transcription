@@ -28,7 +28,7 @@
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
-    "eslint-config-next": "14.0.1",
+    "eslint-config-next": "^15.5.18",
     "husky": "^9.0.11",
     "postcss": "^8",
     "pretty-quick": "^4.0.0",
