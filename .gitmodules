@@ -1,0 +1,6 @@
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/deepgram-starters/live-transcription-html.git
+[submodule "contracts"]
+	path = contracts
+	url = https://github.com/deepgram/starter-contracts.git
