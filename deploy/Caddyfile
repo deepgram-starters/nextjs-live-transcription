@@ -1,0 +1,43 @@
+{
+	order rate_limit before basicauth
+}
+
+:8080 {
+	@htmlpage {
+		path /
+		path /index.html
+	}
+	handle @htmlpage {
+		templates
+		root * /app/frontend/dist
+		rewrite * /index.html
+		file_server
+	}
+
+	handle /api/session {
+		rate_limit {
+			zone session {
+				key {remote_host}
+				events 5
+				window 1m
+			}
+		}
+		reverse_proxy localhost:{$BACKEND_PORT:8081}
+	}
+
+	handle /api/* {
+		rate_limit {
+			zone api {
+				key {remote_host}
+				events 120
+				window 1m
+			}
+		}
+		reverse_proxy localhost:{$BACKEND_PORT:8081}
+	}
+
+	handle {
+		root * /app/frontend/dist
+		file_server
+	}
+}
