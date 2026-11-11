@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import App from "./components/App";
 import { XIcon } from "./components/icons/XIcon";
 import { LinkedInIcon } from "./components/icons/LinkedInIcon";
@@ -15,7 +16,7 @@ const Home = () => {
         <div className="bg-gradient-to-b from-black/50 to-black/10 backdrop-blur-[2px] h-[4rem] flex items-center">
           <header className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8 flex items-center justify-between">
             <div>
-              <a className="flex items-center" href="/">
+              <Link className="flex items-center" href="/">
                 <Image
                   className="w-auto h-8 max-w-[12.5rem] sm:max-w-none"
                   src="/deepgram.svg"
@@ -24,7 +25,7 @@ const Home = () => {
                   height={0}
                   priority
                 />
-              </a>
+              </Link>
             </div>
             <div className="flex items-center gap-6 text-sm">
               <span className="mt-1">
