@@ -15,7 +15,7 @@ jobs:
     name: Release / Node ${{ matrix.node }}
     strategy:
       matrix:
-        node: ["20"]
+        node: ["24.10.0"]
 
     runs-on: ubuntu-latest
 
@@ -23,17 +23,20 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Set up Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
 
-      - run: |
-          npm ci
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Create a release
-        run: npx semantic-release
+        run: pnpm exec semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PUSH_TOKEN }}
